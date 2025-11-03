@@ -1,1 +1,1 @@
-Page Github pour mentionne dans Claude IA mon infra
+Page Github pour mentionner dans Claude IA mon infra
