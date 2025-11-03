@@ -16,8 +16,8 @@ auth.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -37,8 +37,8 @@ vault.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -55,8 +55,8 @@ freebox.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -81,8 +81,8 @@ workout.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -107,8 +107,8 @@ fail2ban.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -129,8 +129,8 @@ rss.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -153,8 +153,8 @@ terminal.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -173,8 +173,8 @@ cockpit.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -200,8 +200,8 @@ torrent.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
 
        }
     }
@@ -219,8 +219,8 @@ adguard.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -239,8 +239,8 @@ vaultwarden.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -257,8 +257,8 @@ uptime.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -275,8 +275,8 @@ bookmarks.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
@@ -293,8 +293,8 @@ pihole.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
        }
     }
 }
@@ -311,8 +311,8 @@ budget.leblais.net {
         dns ovh {
             endpoint ovh-eu
             application_key [REDACTED]
-            application_secret [REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED]
+            application_secret [REDACTED][REDACTED][REDACTED]
+            consumer_key [REDACTED][REDACTED][REDACTED]
         }
     }
 }
