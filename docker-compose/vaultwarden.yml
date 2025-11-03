@@ -1,0 +1,39 @@
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      # Domaine public
+      DOMAIN: "https://vaultwarden.leblais.net"
+      
+      # Désactiver l'inscription publique (sécurité)
+      SIGNUPS_ALLOWED: "false"
+      
+      # Permettre les invitations (tu pourras inviter des gens)
+      INVITATIONS_ALLOWED: "true"
+      
+      # Admin token pour accéder au panel admin
+      # Générer avec : openssl rand -base64 48
+      ADMIN_TOKEN: "$$argon2id$$v=19$$m=65540,t=3,p=4$$kt3LuFvyxQhcjymYAFewR5MzXJMCBvI939sUsz2ft3I$$KS7kkaTUalw6BMqfi0b3LCIebx1nbCXKB23a4F+E3YM"
+
+      # Logs
+      LOG_LEVEL: "info"
+      EXTENDED_LOGGING: "true"
+      
+      # Performances
+      ROCKET_WORKERS: 2
+      
+    volumes:
+      - ./data:/data
+    
+    ports:
+      - "127.0.0.1:8080:80"
+    
+    networks:
+      - vaultwarden-net
+
+networks:
+  vaultwarden-net:
+    driver: bridge

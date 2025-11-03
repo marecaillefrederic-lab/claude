@@ -1,0 +1,69 @@
+---
+# Authelia Configuration pour leblais.net
+
+theme: auto
+default_2fa_method: ""
+
+server:
+  address: 'tcp://0.0.0.0:9091'
+  endpoints:
+    enable_pprof: false
+    enable_expvars: false
+
+log:
+  level: info
+  format: text
+  file_path: /var/lib/authelia/authelia.log
+
+totp:
+  disable: true
+  issuer: leblais.net
+
+authentication_backend:
+  file:
+    path: /etc/authelia/users_database.yml
+    password:
+      algorithm: argon2
+      argon2:
+        variant: argon2id
+        iterations: 3
+        memory: 65536
+        parallelism: 4
+        key_length: 32
+        salt_length: 16
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: "*.leblais.net"
+      policy: one_factor
+
+session:
+  secret: wW1TJJxY9uqEU/R9/d9jqSgqrrEJYVAD7Pi2inwms+A=
+  cookies:
+    - name: authelia_session
+      domain: leblais.net
+      authelia_url: https://auth.leblais.net
+      same_site: lax
+      expiration: 1h
+      inactivity: 5m
+      remember_me: 1M
+
+regulation:
+  max_retries: 5
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  encryption_key: APoLqf3QXXLQJNFzs8fi0WuJfPAA2ZKZaT+L4dxacas=
+  local:
+    path: /var/lib/authelia/db.sqlite3
+
+identity_validation:
+  reset_password:
+    jwt_secret: wW1TJJxY9uqEU/R9/d9jqSgqrrEJYVAD7Pi2inwms+A=
+
+notifier:
+  disable_startup_check: true
+  filesystem:
+    filename: /var/lib/authelia/notification.txt

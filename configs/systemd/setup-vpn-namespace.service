@@ -1,0 +1,12 @@
+[Unit]
+Description=Setup VPN namespace pour rtorrent
+Before=protonvpn-namespace.service
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/setup-vpn-namespace.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,101 @@
+[DEFAULT]
+bantime = 1h
+findtime = 10m
+maxretry = 5
+ignoreip = 127.0.0.1/8 ::1 192.168.1.0/24
+
+[sshd]
+enabled = true
+port = 24589
+backend = systemd
+
+[caddy-cockpit]
+enabled = true
+filter = caddy-cockpit
+logpath = /var/log/caddy/cockpit-access.log
+port = 443
+
+[caddy-freebox]
+enabled = true
+filter = caddy-freebox
+logpath = /var/log/caddy/freebox-access.log
+port = 443
+
+[caddy-freshrss]
+enabled = true
+filter = caddy-freshrss
+logpath = /var/log/caddy/rss-access.log
+port = 443
+
+[fail2ban-stats]
+enabled = true
+port = http,https
+filter = fail2ban-stats
+logpath = /var/log/caddy/fail2ban-access.log
+maxretry = 20
+findtime = 60
+bantime = 3600
+action = iptables-allports[name=fail2ban-stats]
+
+[caddy-terminal]
+enabled = true
+port = http,https
+filter = caddy-terminal
+logpath = /var/log/caddy/terminal-access.log
+maxretry = 3
+findtime = 600
+bantime = 3600
+
+[caddy-torrent]
+enabled = true
+port = http,https
+filter = caddy-torrent
+logpath = /var/log/caddy/torrent-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-vaultwarden]
+enabled = true
+port = http,https
+filter = caddy-vaultwarden
+logpath = /var/log/caddy/vaultwarden-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-uptime]
+enabled = true
+port = http,https
+filter = caddy-uptime
+logpath = /var/log/caddy/uptime-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-bookmarks]
+enabled = true
+port = http,https
+filter = caddy-bookmarks
+logpath = /var/log/caddy/bookmarks-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-pihole]
+enabled = true
+port = http,https
+filter = caddy-pihole
+logpath = /var/log/caddy/pihole-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-budget]
+enabled = true
+port = http,https
+filter = caddy-budget
+logpath = /var/log/caddy/budget-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600

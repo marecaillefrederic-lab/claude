@@ -1,0 +1,33 @@
+# Répertoires
+directory.default.set = /mnt/WD_Freebox/Téléchargements/incomplete
+session.path.set = /home/freebox/rtorrent/session
+schedule2 = watch_directory,5,5,load.start=/home/freebox/rtorrent/.watch/*.torrent
+
+# Ports
+network.port_range.set = 50000-50000
+network.port_random.set = no
+dht.mode.set = auto
+dht.port.set = 6881
+protocol.pex.set = yes
+
+# Réseau
+throttle.global_down.max_rate.set_kb = 0
+throttle.global_up.max_rate.set_kb = 0
+throttle.max_peers.normal.set = 100
+throttle.max_peers.seed.set = 50
+trackers.numwant.set = 80
+
+# Déplacement automatique des fichiers terminés
+method.insert = d.data_path, simple, "if=(d.is_multi_file), (cat,(d.directory)), (cat,(d.directory),/,(d.name))"
+method.insert = d.move_to_complete, simple, "d.directory.set=$argument.1=; execute=mkdir,-p,$argument.1=; execute=mv,-u,$argument.0=,$argument.1=; d.save_full_session="
+method.set_key = event.download.finished,move_complete,"d.move_to_complete=$d.data_path=,/mnt/WD_Freebox/Téléchargements/complete/"
+
+
+# Paramètres
+pieces.memory.max.set = 1800M
+network.xmlrpc.size_limit.set = 4M
+encoding.add = UTF-8
+system.umask.set = 0022
+
+# Socket SCGI pour ruTorrent
+scgi_port = 0.0.0.0:5000

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault - leblais.net</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .service-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            flex: 1;
+        }
+
+        .service-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        .badge-authelia {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge-login {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .service-desc {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Vault leblais.net</h1>
+        <p class="subtitle">Portail d'accès aux services auto-hébergés</p>
+
+        <div class="services-grid">
+            <!-- Services protégés par Authelia -->
+            <a href="https://terminal.leblais.net" target="_blank" rel="noopener noreferrer"  class="service-card">
+                <div class="service-header">
+                    <span class="service-name">💻 Terminal Web</span>
+                    <span class="service-badge badge-authelia">Authelia</span>
+                </div>
+                <p class="service-desc">Accès terminal SSH via navigateur (ttyd)</p>
+            </a>
+
+            <a href="https://fail2ban.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">🛡️ Fail2ban Stats</span>
+                    <span class="service-badge badge-authelia">Authelia</span>
+                </div>
+                <p class="service-desc">Dashboard de monitoring et statistiques Fail2ban</p>
+            </a>
+
+            <!-- Services avec login propre -->
+            <a href="https://cockpit.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">⚙️ Cockpit</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Administration système (Debian 12)</p>
+            </a>
+
+            <a href="https://workout.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">💪 Workout Tracker</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Suivi musculation PPL avec synchronisation</p>
+            </a>
+
+            <a href="https://freebox.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">📦 Interface Freebox</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Accès à l'interface Freebox Delta</p>
+            </a>
+
+            <a href="https://rss.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">📰 FreshRSS</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Agrégateur de flux RSS</p>
+            </a>
+
+            <a href="https://torrent.leblais.net" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">🌐 ruTorrent</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Client torrent via ProtonVPN (Pologne)</p>
+            </a>
+
+             <a href="https://pihole.leblais.net/admin" target="_blank" rel="noopener noreferrer" class="service-card">
+                <div class="service-header">
+                    <span class="service-name">🛡️ Pi-hole</span>
+                    <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Blocage pub DNS</p>
+            </a>
+       
+            <a href="https://vaultwarden.leblais.net" target="_blank" rel="noopener noreferrer"  class="service-card">
+               <div class="service-header">
+                   <span class="service-name">🔐 Vaultwarden</span>
+                   <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Gestionnaire de mots de passe auto-hébergé</p>
+           </a>
+
+           <a href="https://uptime.leblais.net" target="_blank" rel="noopener noreferrer"  class="service-card">
+               <div class="service-header">
+                   <span class="service-name">📊 Uptime Kuma</span>
+                   <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Monitoring des services</p>
+           </a>
+           <a href="https://bookmarks.leblais.net" target="_blank" rel="noopener noreferrer"  class="service-card">
+               <div class="service-header">
+                   <span class="service-name">🔖 Linkding</span>
+                   <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Gestionnaire de bookmarks</p>
+           </a>
+           <a href="https://budget.leblais.net" target="_blank" rel="noopener noreferrer"  class="service-card">
+               <div class="service-header">
+                   <span class="service-name">💰 Actual Budget</span>
+                   <span class="service-badge badge-login">Login requis</span>
+                </div>
+                <p class="service-desc">Gestion des finances</p>
+           </a>
+        </div>
+        <div class="footer">
+            <p>🔐 Services protégés par <strong>Authelia</strong> | 🔑 Authentification intégrée</p>
+            <p style="margin-top: 10px; color: #999; font-size: 0.85em;">VMFreebox · Debian 12 · Proxmox</p>
+        </div>
+    </div>
+</body>
+</html>

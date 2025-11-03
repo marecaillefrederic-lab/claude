@@ -1,0 +1,318 @@
+{
+    # Configuration globale
+    email frederic@leblais.net
+}
+
+# Authelia (authentication service)
+auth.leblais.net {
+    reverse_proxy localhost:9091
+    
+    log {
+        output file /var/log/caddy/auth-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+# Vault (portail d'accueil)
+vault.leblais.net {
+    root * /var/www/vault
+    file_server
+    encode gzip
+    
+    log {
+        output file /var/log/caddy/vault-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+freebox.leblais.net {
+    reverse_proxy 192.168.1.254:80
+    
+    log {
+        output file /var/log/caddy/freebox-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+
+workout.leblais.net {
+    root * /var/www/workout
+    
+    # Exécuter les fichiers PHP via PHP-FPM
+    php_fastcgi unix//run/php/php8.2-fpm.sock
+    
+    # Servir les fichiers statiques
+    file_server
+    encode gzip
+    
+    log {
+        output file /var/log/caddy/workout-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+fail2ban.leblais.net {
+    # Protection Authelia
+    forward_auth localhost:9091 {
+        uri /api/verify?rd=https://auth.leblais.net
+        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+    }
+    
+    root * /var/www/fail2ban-stats
+    file_server
+    encode gzip
+    
+    log {
+        output file /var/log/caddy/fail2ban-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+
+rss.leblais.net {
+    root * /var/www/freshrss/p
+    php_fastcgi unix//run/php/php-fpm.sock
+    file_server
+    encode gzip
+    
+    log {
+        output file /var/log/caddy/rss-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+terminal.leblais.net {
+    # Protection Authelia (via localhost)
+    forward_auth localhost:9091 {
+        uri /api/verify?rd=https://auth.leblais.net
+        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+    }
+    
+    reverse_proxy localhost:7681
+    
+    log {
+        output file /var/log/caddy/terminal-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+
+
+cockpit.leblais.net {
+    reverse_proxy localhost:9090
+
+    log {
+        output file /var/log/caddy/cockpit-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+
+torrent.leblais.net {
+    root * /var/www/ruTorrent
+    php_fastcgi unix//run/php/php8.2-fpm.sock
+    file_server
+    encode gzip
+
+    # Authentification basique
+    basicauth {
+        freebox $2a$14$OZ2J85WRcuX7bONBJE3V0O9D9COM4KWIt4U52/7q2cD0H6zP.84JG
+    }
+
+    log {
+        output file /var/log/caddy/torrent-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+
+       }
+    }
+}
+
+adguard.leblais.net {
+    reverse_proxy localhost:3000
+
+    log {
+        output file /var/log/caddy/adguard-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+vaultwarden.leblais.net {
+    reverse_proxy localhost:8080 {
+        header_up X-Real-IP {remote_host}
+    }
+
+    log {
+        output file /var/log/caddy/vaultwarden-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+uptime.leblais.net {
+    reverse_proxy localhost:3001
+
+    log {
+        output file /var/log/caddy/uptime-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+bookmarks.leblais.net {
+    reverse_proxy localhost:9092
+
+    log {
+        output file /var/log/caddy/bookmarks-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}
+
+pihole.leblais.net {
+    reverse_proxy localhost:8081
+
+    log {
+        output file /var/log/caddy/pihole-access.log
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+       }
+    }
+}
+
+budget.leblais.net {
+    reverse_proxy localhost:5006
+    
+    log {
+        output file /var/log/caddy/budget-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key [REDACTED]
+            application_secret [REDACTED]
+            consumer_key [REDACTED]
+        }
+    }
+}

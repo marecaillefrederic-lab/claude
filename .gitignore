@@ -1,0 +1,21 @@
+# Fichiers temporaires
+*~
+*.swp
+*.bak
+.DS_Store
+
+# Secrets (au cas où)
+*credentials*
+*password*
+*secret*
+auth.txt
+caddy.env
+
+# Données sensibles
+configs/authelia/users_database.yml
+*.db
+*.sqlite
+data/
+
+# Logs
+*.log

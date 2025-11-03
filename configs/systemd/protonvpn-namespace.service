@@ -1,0 +1,17 @@
+[Unit]
+Description=ProtonVPN dans namespace pour rtorrent
+After=network-online.target setup-vpn-namespace.service
+Wants=network-online.target
+Before=rtorrent.service
+Requires=setup-vpn-namespace.service
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/protonvpn-namespace.sh
+ExecStop=/usr/bin/pkill -f "openvpn.*pl-free-13"
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

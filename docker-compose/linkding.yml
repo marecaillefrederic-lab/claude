@@ -1,0 +1,22 @@
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    container_name: linkding
+    restart: unless-stopped
+    volumes:
+      - ./data:/etc/linkding/data
+    ports:
+      - "127.0.0.1:9092:9090"
+    environment:
+      - LD_SERVER_PORT=9090
+      - LD_SUPERUSER_NAME=freebox
+      - LD_SUPERUSER_PASSWORD=Fred@debian79
+      - TZ=Europe/Paris
+      # Options supplémentaires (optionnelles)
+      - LD_DISABLE_BACKGROUND_TASKS=False
+      - LD_DISABLE_URL_VALIDATION=False
+      - LD_ENABLE_AUTH_PROXY=False
+
+networks:
+  default:
+    name: linkding-net

@@ -1,0 +1,12 @@
+[Unit]
+Description=ttyd - Terminal Web
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/ttyd -p 7681 -W su - freebox
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
