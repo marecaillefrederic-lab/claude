@@ -1,0 +1,498 @@
+Responsable moyens de paiement et fraude dans le e-commerce
+******************************************************************************************************
+Pratique de la musculation en salle 5 fois par semaine selon le modèle ppl + upper/lower
+Pratique du jeune alterné ADF
+prise de ces compléments alimentaires :
+jours de jeûne : HMB 3c/jours Electrolytes Fasting Salts 6c/jour
+jours d'alimentation: oméga-3 4c/jour protéines whey + créatine
+âge: 46 ans né le 26/03/1979
+taille 1,81m
+poids: 90kgs
+******************************************************************************************************
+Infrastructure complète de votre serveur
+Informations système
+Type : VM Debian 12 sur Proxmox (Freebox Delta)
+RAM : 2 Go (actuellement ~680 Mo utilisés)
+IP locale : 192.168.1.41
+IP publique : 82.67.173.61
+Domaine : leblais.net (DNS géré via OVH)
+DMZ : Activée sur la Freebox vers 192.168.1.41
+
+Services auto-hébergés accessibles
+
+Portail d'accueil
+URL : https://vault.leblais.net
+Installation : /var/www/vault
+Type : HTML statique avec cartes pour tous les services
+Logs : /var/log/caddy/vault-access.log
+
+Vaultwarden (gestionnaire de mots de passe)
+URL : https://vaultwarden.leblais.net
+Installation : /opt/vaultwarden (Docker)
+Port interne : 8080
+Base de données : SQLite dans /opt/vaultwarden/data
+Container : vaultwarden
+Image : vaultwarden/server:latest
+ADMIN_TOKEN : Hashé en Argon2 (sécurisé)
+Configuration :
+- SIGNUPS_ALLOWED: false (inscriptions désactivées)
+- INVITATIONS_ALLOWED: true
+- Logs : docker logs vaultwarden
+Fail2ban actif : caddy-vaultwarden
+
+Uptime Kuma (monitoring)
+URL : https://uptime.leblais.net
+Installation : /opt/uptime-kuma (Docker)
+Port interne : 3001
+Container : uptime-kuma
+Image : louislam/uptime-kuma:1
+Monitoring : Tous les services (intervalle 60s)
+Notifications : Email, Telegram, etc. configurables
+Logs : docker logs uptime-kuma
+Fail2ban actif : caddy-uptime
+
+Linkding (gestionnaire de bookmarks)
+URL : https://bookmarks.leblais.net
+Installation : /opt/linkding (Docker)
+Port interne : 9092
+Base de données : SQLite dans /opt/linkding/data
+Container : linkding
+Image : sissbruecker/linkding:latest
+Compte admin : freebox
+API Token : Disponible dans Settings → Integrations
+Bookmarklet configuré pour ajout rapide
+Fail2ban actif : caddy-bookmarks
+
+Actual Budget (gestion finances personnelles)
+URL : https://budget.leblais.net
+Installation : /opt/actual-budget (Docker)
+Port interne : 5006
+Container : actual-budget
+Image : actualbudget/actual-server:latest
+Base de données : SQLite dans /opt/actual-budget/data
+Configuration :
+- TZ : Europe/Paris
+- Sync automatique entre appareils
+- PWA mobile disponible
+- Import CSV bancaire supporté
+Logs : docker logs actual-budget
+Fail2ban actif : caddy-budget
+Documentation : https://actualbudget.org/docs/
+
+Authelia (authentification SSO)
+URL : https://auth.leblais.net
+Installation : /opt/authelia
+Port interne : 9091
+Configuration : /etc/authelia/configuration.yml
+Base utilisateurs : /etc/authelia/users_database.yml
+Base de données : SQLite dans /var/lib/authelia
+Binaire : /opt/authelia/authelia
+Service : authelia.service
+Logs : journalctl -u authelia -f
+Protège : Services sensibles via Caddy
+
+Terminal Web (ttyd)
+URL : https://terminal.leblais.net
+Installation : /usr/local/bin/ttyd
+Port interne : 7681
+Service : ttyd.service
+Authentification : Via Authelia
+Commande : bash en lecture seule
+Logs : journalctl -u ttyd -f
+Fail2ban actif : caddy-terminal
+
+Workout Tracker (suivi musculation PPL)
+URL : https://workout.leblais.net
+Installation : /var/www/workout
+Type : HTML statique (localStorage)
+Logs : /var/log/caddy/workout-access.log
+Architecture : Application HTML statique avec synchronisation API PHP
+Fichiers importants :
+- index.html : Application frontend (HTML/JS avec localStorage)
+- api.php : Backend de synchronisation
+- data/workout-data.json : Données synchronisées (20Ko)
+- data/*.backup.* : Backups automatiques (5 derniers conservés)
+API de synchronisation :
+- Endpoint : https://workout.leblais.net/api.php
+- API Key : freddebian79claudius
+- Authentification : Header "Authorization: Bearer freddebian79claudius"
+- Actions : GET ?action=load (charger) | POST ?action=save (sauvegarder)
+- Backups auto : Créés à chaque sauvegarde (5 derniers gardés)
+Configuration Caddy requise :
+Nécessite `php_fastcgi unix//run/php/php8.2-fpm.sock` pour exécuter api.php
+Sans cette ligne, l'API ne fonctionne pas et l'app affiche "hors ligne"
+Fonctionnement :
+- Données stockées localement (localStorage navigateur) + synchro serveur
+- Synchronisation automatique entre PC/tablette/téléphone via API
+- Programme PPL (Push/Pull/Legs) + Upper/Lower
+- Stats : volume hebdomadaire, progression, records, analyse
+Dépendances :
+- PHP 8.2-FPM (service php8.2-fpm)
+- Permissions : www-data:www-data sur /var/www/workout/data/
+
+Interface Freebox
+URL : https://freebox.leblais.net
+Port interne : 80 (Freebox locale sur 192.168.1.254)
+Reverse proxy via Caddy
+Certificat SSL Let's Encrypt (DNS challenge OVH)
+Fail2ban actif : caddy-freebox
+
+Cockpit (administration système)
+URL : https://cockpit.leblais.net
+Port interne : 9090
+Reverse proxy via Caddy
+Fail2ban actif : caddy-cockpit
+Config requise dans /etc/cockpit/cockpit.conf :
+[WebService]
+Origins = https://cockpit.leblais.net wss://cockpit.leblais.net
+ProtocolHeader = X-Forwarded-Proto
+ForwardedForHeader = X-Forwarded-For
+AllowUnencrypted = true
+
+FreshRSS (agrégateur RSS)
+URL : https://rss.leblais.net
+Installation : /var/www/freshrss
+Base de données : SQLite
+PHP-FPM via Caddy
+Fail2ban actif : caddy-freshrss
+
+rtorrent + ruTorrent + ProtonVPN (namespace isolé)
+URL : https://torrent.leblais.net
+Architecture :
+- rtorrent 0.9.8 tourne dans un namespace "vpn" isolé
+- Seul rtorrent passe par ProtonVPN (OpenVPN) - IP polonaise 149.102.244.x
+- Le reste de la VM (workout, cockpit, wg0, etc.) reste sur le réseau normal
+- Interface web : https://torrent.leblais.net (auth: freebox/[mdp])
+Chemins importants :
+- Config rtorrent : `/root/.rtorrent.rc` (car rtorrent tourne en root dans le namespace)
+- Config ruTorrent : `/var/www/ruTorrent/conf/config.php`
+- Téléchargements en cours : `/mnt/WD_Freebox/Téléchargements/incomplete/`
+- Téléchargements terminés : `/mnt/WD_Freebox/Téléchargements/complete/`
+- Watch folder : `/home/freebox/rtorrent/.watch/`
+- Session rtorrent : `/home/freebox/rtorrent/session/`
+- Config OpenVPN : `/etc/openvpn/protonvpn/pl-free-13.protonvpn.udp.ovpn`
+- Auth OpenVPN : `/etc/openvpn/protonvpn/auth.txt`
+- Script démarrage VPN : `/usr/local/bin/protonvpn-namespace.sh`
+- Script setup namespace : `/usr/local/bin/setup-vpn-namespace.sh`
+- Logs OpenVPN : `/var/log/openvpn-vpn-namespace.log`
+Services systemd :
+- `setup-vpn-namespace.service` : Créé le namespace "vpn" au démarrage
+- `protonvpn-namespace.service` : Lance OpenVPN dans le namespace
+- `rtorrent.service` : Lance rtorrent dans le namespace (dépend du VPN)
+Configuration réseau :
+- Namespace : `vpn`
+- Interface VPN dans namespace : `tun0` (10.96.0.x)
+- Interfaces virtuelles : `veth0` (hôte: 10.200.200.1) ↔ `veth1` (namespace: 10.200.200.2)
+- SCGI : rtorrent écoute sur `0.0.0.0:5000` dans le namespace
+- ruTorrent se connecte à `10.200.200.2:5000`
+- Timeout SCGI : 10 secondes (configuré dans config.php)
+- Port BitTorrent : 50000 (UDP/TCP)
+- Port DHT : 6881
+Commandes utiles :
+```bash
+# Redémarrer les services
+sudo systemctl restart protonvpn-namespace
+sudo systemctl restart rtorrent
+
+# Vérifier l'IP du VPN
+sudo ip netns exec vpn curl ifconfig.me  # Doit être 149.102.244.x
+
+# Voir les connexions rtorrent
+sudo ip netns exec vpn netstat -tnp | grep rtorrent
+
+# Logs
+sudo tail -f /var/log/openvpn-vpn-namespace.log
+journalctl -u rtorrent -f
+
+# Accéder à l'interface CLI rtorrent
+sudo ip netns exec vpn screen -r rtorrent  # Ctrl+A puis D pour détacher
+
+# Lister les namespaces
+sudo ip netns list
+```
+Recréer manuellement le namespace (si problème après reboot) :
+```bash
+sudo ip netns add vpn
+sudo ip link add veth0 type veth peer name veth1
+sudo ip link set veth1 netns vpn
+sudo ip addr add 10.200.200.1/24 dev veth0
+sudo ip link set veth0 up
+sudo ip netns exec vpn ip addr add 10.200.200.2/24 dev veth1
+sudo ip netns exec vpn ip link set veth1 up
+sudo ip netns exec vpn ip link set lo up
+sudo systemctl restart protonvpn-namespace
+sudo systemctl restart rtorrent
+```
+Plugins ruTorrent désactivés :
+Plusieurs plugins nécessitant un accès direct au filesystem sont désactivés (.disabled) car rtorrent est dans un namespace isolé. Les fonctions essentielles (ajout/suppression/stats) fonctionnent parfaitement.
+Sécurité :
+- Kill switch automatique : si ProtonVPN se déconnecte, rtorrent s'arrête
+- IP publique Free jamais exposée sur les trackers torrents
+- Isolation totale du trafic torrent dans le namespace
+Fail2ban actif : caddy-torrent
+
+Dashboard Fail2ban
+URL : https://fail2ban.leblais.net
+Installation : /var/www/fail2ban-stats
+Type : HTML généré dynamiquement par script Python
+Script : /var/www/fail2ban-stats/generate_stats.py
+Données : /var/www/fail2ban-stats/data/stats.json
+Mise à jour : Auto toutes les heures via cron
+Fonctionnalités :
+- Stats globales (jails actifs, IPs bannies, tentatives)
+- Graphiques : Top pays, bans par jour/heure, stats par jail
+- Tableau des 20 IPs les plus bannies avec géolocalisation
+- Cartes colorées par jail avec icônes
+- Badge META doré pour fail2ban-stats (protection auto)
+Design : Cartes modernes avec bordures colorées selon activité
+Auto-protection : fail2ban-stats jail protège le dashboard lui-même
+Fail2ban actif : fail2ban-stats
+
+WireGuard VPN
+Port : 51820/UDP
+Réseau VPN : 10.8.0.0/24
+IP serveur VPN : 10.8.0.1
+IP client mobile : 10.8.0.2
+Configuration : /etc/wireguard/wg0.conf
+Split tunneling configuré : 192.168.1.0/24 + 10.8.0.0/24
+Serveur WireGuard
+Interface : wg0
+Clés : /etc/wireguard/server_*.key
+Client configuré : 1 (mobile Android avec app WireGuard)
+DNS fourni aux clients : 10.8.0.1 (Pi-hole)
+AllowedIPs client : 192.168.1.0/24, 10.8.0.0/24 (split tunneling)
+
+Pi-hole (blocage de publicités)
+URL : https://pihole.leblais.net/admin
+Installation : /etc/pihole
+Port web : 8081
+Base de données : SQLite (/etc/pihole/gravity.db, pihole-FTL.db)
+Service : pihole-FTL.service
+Serveur web : CivetWeb (intégré dans pihole-FTL)
+Logs : /var/log/pihole/
+Configuration : /etc/pihole/pihole.toml
+Commandes utiles :
+- pihole status
+- pihole -g (update gravity)
+- pihole setpassword
+- pihole restartdns
+Fail2ban actif : caddy-pihole
+
+Infrastructure de base
+
+Reverse proxy : Caddy
+Configuration : /etc/caddy/Caddyfile
+Logs : /var/log/caddy/
+Certificats SSL automatiques via DNS challenge OVH
+Credentials OVH API configurés dans /etc/caddy/caddy.env
+Variables d'environnement :
+- OVH_APPLICATION_KEY
+- OVH_APPLICATION_SECRET
+- OVH_CONSUMER_KEY
+
+Pare-feu : UFW
+Ports autorisés : 22 (SSH custom port 24589), 80, 443, 51820/udp, 3000, 9090
+Règles spécifiques pour wg0
+
+Protection : Fail2ban
+Configuration : /etc/fail2ban/jail.local
+Jails actives (12 jails) :
+- sshd (port 24589)
+- caddy-cockpit
+- caddy-freebox
+- caddy-freshrss
+- caddy-terminal
+- caddy-torrent
+- caddy-vaultwarden
+- caddy-uptime
+- caddy-bookmarks
+- caddy-pihole
+- caddy-budget
+- fail2ban-stats (META - se protège lui-même)
+Filtres personnalisés : /etc/fail2ban/filter.d/
+
+SSH
+Port custom : 24589 (non standard)
+Redirection Freebox : WAN 24589 → LAN 22
+
+Docker
+Installation : docker.io + docker-compose
+Containers actifs :
+- vaultwarden
+- uptime-kuma
+- linkding
+- actual-budget
+
+Backups automatiques
+
+Script de backup complet
+Emplacement : /usr/local/bin/backup-vm.sh
+Exécution : Cron quotidien à 3h du matin
+Logs : /var/log/backup-vm.log
+Taille backup : ~66-107MB compressé
+
+Services sauvegardés :
+- Configurations système : Caddy, Fail2ban, WireGuard, UFW, SSH, fstab
+- Authelia : Config + base SQLite
+- Cockpit : Configuration
+- Docker : Configurations
+- ProtonVPN : Config OpenVPN
+- Services systemd : Tous les services custom
+- Scripts custom : Tout /usr/local/bin
+- rtorrent : Config + session
+- ruTorrent : Configuration
+- Sites web : Tous les sites /var/www
+- Pi-hole : Configuration + bases SQLite
+- Vaultwarden : Base de données SQLite
+- Uptime Kuma : Base de données + configuration
+- Linkding : Base de données + bookmarks
+- Actual Budget : Base de données + configuration
+- Crontabs : User + root
+- Credentials : SMB, OVH API, rclone (configs chiffrement)
+- Listes : Paquets, services, règles UFW
+- Infos système : Disques, RAM, réseau
+
+Stockage backups :
+- Local : /mnt/WD_Freebox/backups/vm-debian (30 derniers conservés)
+- Google Drive : gdrive-crypt: chiffré E2EE (30 derniers conservés)
+
+rclone + Google Drive + Chiffrement E2EE
+Installation : rclone version 1.60.1
+Configurations :
+- /root/.config/rclone/rclone.conf (utilisée par le script backup)
+- /home/freebox/.config/rclone/rclone.conf (config originale)
+Remotes configurés :
+- gdrive : Google Drive (OAuth2)
+- gdrive-crypt : Chiffrement E2EE sur gdrive:Backups/VM-Debian/
+Chiffrement : 
+- Algorithme : AES-256 (NaCl SecretBox)
+- Noms de fichiers : Chiffrés (standard)
+- Noms de dossiers : Chiffrés
+- Contenu : Chiffré
+- Clés : Stockées dans rclone.conf (sauvegardées dans les backups)
+Utilisation : Upload automatique chiffré des backups quotidiens
+Note CRITIQUE : Sans les mots de passe rclone (stockés dans Vaultwarden), impossible de déchiffrer les backups
+
+Procédure de restauration
+# Lister les backups
+sudo rclone ls gdrive-crypt:
+
+# Télécharger un backup
+sudo rclone copy gdrive-crypt:backup_vm_YYYYMMDD_HHMMSS.tar.gz /tmp/
+
+# Restaurer d'abord la config rclone (si nécessaire)
+cd /tmp
+sudo tar -xzf backup_vm_YYYYMMDD_HHMMSS.tar.gz backup_vm_YYYYMMDD_HHMMSS/root/.config/rclone/
+sudo cp -r backup_vm_YYYYMMDD_HHMMSS/root/.config/rclone /root/.config/
+
+# Extraire tout
+sudo tar -xzf backup_vm_YYYYMMDD_HHMMSS.tar.gz
+
+Accès et sécurité
+
+Redirection de ports Freebox
+SSH : 24589 → 192.168.1.41:22
+DMZ : Tous les autres ports → 192.168.1.41
+
+Certificats SSL
+Type : Let's Encrypt wildcard
+Méthode : DNS-01 challenge via OVH
+Renouvellement : Automatique par Caddy
+
+DNS OVH
+Sous-domaines configurés (tous → 82.67.173.61) :
+- vault.leblais.net
+- vaultwarden.leblais.net
+- uptime.leblais.net
+- bookmarks.leblais.net
+- budget.leblais.net
+- auth.leblais.net
+- terminal.leblais.net
+- workout.leblais.net
+- freebox.leblais.net
+- cockpit.leblais.net
+- rss.leblais.net
+- torrent.leblais.net
+- fail2ban.leblais.net
+- pihole.leblais.net
+
+Limitations connues
+RAM limitée à 2 Go (impossible d'installer des services lourds comme Bookwyrm, Nextcloud)
+Pas de swap configuré
+Applications légères privilégiées
+
+Procédures réutilisables établies
+
+Ajout d'un nouveau service via Caddy
+1. Créer sous-domaine DNS chez OVH
+2. Ajouter bloc dans Caddyfile avec logs et TLS DNS challenge
+3. Créer filtre fail2ban si nécessaire
+4. Redémarrer Caddy
+
+Fail2ban pour service Caddy
+1. Activer logs Caddy pour le service
+2. Créer filtre dans /etc/fail2ban/filter.d/
+3. Ajouter jail dans jail.local
+4. Tester avec fail2ban-regex
+5. Redémarrer fail2ban
+
+Ajout d'un site statique via Caddy
+1. Créer le répertoire et permissions
+   sudo mkdir -p /var/www/nom_service
+   sudo chown -R $USER:$USER /var/www/nom_service
+2. Créer sous-domaine DNS chez OVH (A record vers 82.67.173.61)
+3. Préparer les logs Caddy
+   sudo touch /var/log/caddy/nom_service-access.log
+   sudo chown caddy:caddy /var/log/caddy/nom_service-access.log
+   sudo chmod 644 /var/log/caddy/nom_service-access.log
+4. Ajouter bloc dans Caddyfile avec logs et TLS DNS challenge
+   Exemple de bloc :
+   nom_service.leblais.net {
+       root * /var/www/nom_service
+       file_server
+       encode gzip
+       
+       log {
+           output file /var/log/caddy/nom_service-access.log
+           format json
+       }
+       
+       tls {
+           dns ovh {
+               endpoint ovh-eu
+               application_key {env.OVH_APPLICATION_KEY}
+               application_secret {env.OVH_APPLICATION_SECRET}
+               consumer_key {env.OVH_CONSUMER_KEY}
+           }
+       }
+   }
+5. Valider : sudo caddy validate --config /etc/caddy/Caddyfile
+6. Appliquer : sudo systemctl restart caddy (restart, pas reload si nouveaux logs)
+7. Vérifier : sudo journalctl -u caddy -f
+8. Créer filtre fail2ban si nécessaire (pour services avec authentification)
+
+Ajout d'un service Docker
+1. Créer répertoire : sudo mkdir -p /opt/nom_service
+2. Créer docker-compose.yml
+3. Configurer les ports (127.0.0.1:PORT:PORT_INTERNE)
+4. Créer sous-domaine DNS chez OVH
+5. Ajouter reverse_proxy dans Caddyfile
+6. Démarrer : docker-compose up -d
+7. Ajouter à backup-vm.sh
+8. Ajouter à Uptime Kuma pour monitoring
+
+Editeur de texte en console par défaut : VIM
+Remplacer nano par vim dans les instructions
+
+Services en attente d'installation
+- Gotify : Notifications push (si besoin de centraliser toutes les alertes, sinon Uptime Kuma suffit)
+
+Notes importantes
+- Tous les services utilisent HTTPS via Caddy avec Let's Encrypt
+- Tous les services web sont protégés par Fail2ban
+- Backups quotidiens automatiques local + cloud (chiffrés E2EE)
+- Monitoring 24/7 via Uptime Kuma
+- RAM bien gérée : ~680MB/2GB utilisés
+- 12 jails Fail2ban actives
+- Dashboard fail2ban avec design moderne et cartes colorées
+- Chiffrement E2EE des backups : même Google ne peut pas lire les données
