@@ -89,6 +89,18 @@ Configuration :
 Logs : docker logs actual-budget
 Fail2ban actif : caddy-budget
 Documentation : https://actualbudget.org/docs/
+******MISE A JOUR*************
+cd /opt/actual-budget
+
+# Télécharger la nouvelle image
+docker-compose pull
+
+# Recréer le conteneur avec la nouvelle version
+docker-compose up -d
+
+# Vérifier que tout fonctionne
+docker logs actual-budget
+******************************
 
 Authelia (authentification SSO)
 URL : https://auth.leblais.net
