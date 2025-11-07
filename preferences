@@ -300,6 +300,18 @@ Commandes utiles :
 - pihole setpassword
 - pihole restartdns
 Fail2ban actif : caddy-pihole
+*********************************
+MISE A JOUR
+********************************
+# 1. Vérifier s'il y a des mises à jour
+pihole -v
+
+# 2. Si des mises à jour sont disponibles
+sudo pihole -up
+
+# 3. Vérifier que tout fonctionne
+pihole status
+curl -I http://localhost:8081/admin/
 
 Infrastructure de base
 
