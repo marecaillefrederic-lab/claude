@@ -43,6 +43,7 @@ IP locale : 192.168.1.41
 IP publique : 82.67.173.61
 Domaine : leblais.net (DNS géré via OVH)
 DMZ : Activée sur la Freebox vers 192.168.1.41
+Architecture : arm64
 
 Services auto-hébergés accessibles
 
