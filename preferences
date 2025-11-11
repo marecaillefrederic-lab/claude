@@ -547,3 +547,23 @@ Notes importantes
 - 12 jails Fail2ban actives
 - Dashboard fail2ban avec design moderne et cartes colorées
 - Chiffrement E2EE des backups : même Google ne peut pas lire les données
+
+Filebrowser (explorateur de fichiers)
+URL : https://files.leblais.net
+Installation : /opt/filebrowser (binaire)
+Port interne : 8083
+Configuration : /var/lib/filebrowser/filebrowser.json
+Base de données : SQLite dans /var/lib/filebrowser/filebrowser.db
+Binaire : /opt/filebrowser/filebrowser
+Service : filebrowser.service
+Logs : journalctl -u filebrowser -f
+Protégé par : Authelia (one_factor)
+Racine : /mnt/WD_Freebox/Téléchargements
+Utilisateurs : admin (avec permissions admin)
+Fonctionnalités :
+- Navigation dans les fichiers téléchargés
+- Prévisualisation médias (vidéos, images, PDF)
+- Téléchargement de fichiers
+- Recherche
+- Interface responsive (mobile-friendly)
+Fail2ban actif : caddy-files
