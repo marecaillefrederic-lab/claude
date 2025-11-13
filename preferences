@@ -567,3 +567,130 @@ Fonctionnalités :
 - Recherche
 - Interface responsive (mobile-friendly)
 Fail2ban actif : caddy-files
+
+# Nextcloud - Cloud personnel familial
+
+## Installation
+- **Version** : Nextcloud 32.0.1.2
+- **Date d'installation** : 13 novembre 2025
+- **Serveur** : VM Freebox Delta (ARM64 / aarch64)
+- **RAM allouée** : ~400 MB (PostgreSQL + PHP-FPM)
+- **Stockage** : SMB Freebox (875 GB disponibles sur 917 GB)
+
+## URLs et accès
+- **URL** : https://cloud.leblais.net
+- **Utilisateur admin** : frederic
+- **Note sécurité** : A+ (scan https://scan.nextcloud.com)
+
+## Architecture technique
+- **Stack** :
+  - Base de données : PostgreSQL 15
+  - Serveur web : Caddy 2.x (reverse proxy + TLS automatique)
+  - PHP : 8.2-FPM (optimisé pour 2 GB RAM)
+  - Cache : APCu (memcache local)
+
+- **Stockage** :
+  - Application : `/var/www/nextcloud`
+  - Données : `/mnt/WD_Freebox/nextcloud-data` (partage SMB)
+  - Montage : CIFS avec credentials
+
+## Configuration spécifique ARM/2GB RAM
+- **PHP-FPM** :
+  - pm.max_children = 10 (limite RAM)
+  - memory_limit = 256M
+  - upload_max_filesize = 512M
+
+- **PostgreSQL** :
+  - shared_buffers = 128MB
+  - effective_cache_size = 512MB
+  - max_connections = 20
+
+## Applications installées
+- ✅ Calendar (agenda partagé famille)
+- ✅ Contacts (carnet d'adresses synchronisé)
+- ✅ Mail (client email intégré)
+- ✅ Notes (prise de notes)
+- ✅ Talk (messagerie/visio famille)
+- ❌ Nextcloud Office (incompatible ARM - CODE impossible)
+- ❌ OnlyOffice (trop gourmand en RAM - désinstallé)
+
+## Synchronisation mobile (Android)
+- **App** : DAVx5
+- **Protocoles** :
+  - CardDAV : Contacts bidirectionnel
+  - CalDAV : Calendrier bidirectionnel
+- **Apps compatibles** : Fossify Phone, Textra SMS, Simple Contacts
+- **Google désactivé** : Contacts et Agenda migrés vers Nextcloud
+
+## Migration Google Drive
+- **Méthode** : Google Takeout (export 350 GB)
+- **Import** : Via client desktop Nextcloud
+- **Résultat** : Indépendance totale de Google Drive
+
+## Sécurité
+- **TLS** : Let's Encrypt via Caddy (DNS OVH)
+- **Fail2ban** : Protection brute-force (jail caddy-nextcloud)
+- **Backup** : Automatique quotidien (config + PostgreSQL)
+- **Headers** : HSTS, X-Frame-Options, CSP configurés
+
+## Maintenance et monitoring
+- **Cron** : Background jobs toutes les 5 minutes
+- **Backup** : Script `/usr/local/bin/backup-vm.sh`
+- **Monitoring** : Uptime Kuma (https://uptime.leblais.net)
+- **Logs** : `/mnt/WD_Freebox/nextcloud-data/nextcloud.log`
+
+## Commandes utiles
+```bash
+# Logs en temps réel
+sudo -u www-data php /var/www/nextcloud/occ log:watch
+
+# Maintenance mode
+sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --on/off
+
+# Mettre à jour Nextcloud
+sudo -u www-data php /var/www/nextcloud/occ upgrade
+
+# Vérifier config
+sudo -u www-data php /var/www/nextcloud/occ config:list system
+
+# Scan fichiers
+sudo -u www-data php /var/www/nextcloud/occ files:scan --all
+
+# Espace disque
+df -h /mnt/WD_Freebox
+du -sh /mnt/WD_Freebox/nextcloud-data
+```
+
+## Performances et limitations
+- **Upload/download** : Acceptable pour usage familial (3 personnes)
+- **Latence SMB** : Légère sur prévisualisation photos (~1-2s)
+- **RAM disponible** : ~300-400 MB après Nextcloud (suffisant)
+- **Édition documents** : En local puis sync (pas d'éditeur en ligne sur ARM)
+
+## Usage familial
+- **Utilisateurs** : 3 comptes (frederic + 2 autres)
+- **Quotas** : 100 GB par personne (personnalisable)
+- **Partage** : Liens protégés par mot de passe + expiration
+- **Collaboration** : Partage de dossiers, commentaires, notifications
+
+## Intégration avec autres services
+- **Portail** : Visible sur https://vault.leblais.net
+- **Backup** : Intégré dans backup quotidien VM
+- **Vaultwarden** : Partage notes/fichiers sensibles complémentaire
+
+## Points d'attention
+- ⚠️ OnlyOffice/CODE incompatibles ARM → Édition documents en local
+- ⚠️ Performances SMB correctes mais pas optimales (vs. disque local)
+- ⚠️ RAM limitée (2 GB) → Pas de services gourmands supplémentaires
+- ✅ Solution stable et légère adaptée à l'usage familial
+
+## Prochaines étapes potentielles
+- [ ] Brancher disque USB 1TB pour backup local données Nextcloud
+- [ ] Configurer e-mail sortant (SMTP) pour notifications
+- [ ] Activer chiffrement bout-en-bout dans Talk
+- [ ] Explorer apps : Photos (albums), Tasks, Deck (kanban)
+
+## Ressources
+- Documentation : https://docs.nextcloud.com
+- Forum : https://help.nextcloud.com
+- Apps : https://apps.nextcloud.com
