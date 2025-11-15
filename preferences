@@ -694,3 +694,93 @@ du -sh /mnt/WD_Freebox/nextcloud-data
 - Documentation : https://docs.nextcloud.com
 - Forum : https://help.nextcloud.com
 - Apps : https://apps.nextcloud.com
+
+## Optimisations Nextcloud 2GB RAM
+
+### Configuration finale
+- **RAM VM** : 2048 MB (Freebox Server Ultra)
+- **Fichiers** : 41,665 (296 GB)
+- **RAM disponible** : 320-880 MB
+
+### Modifications clés
+
+**PHP-FPM** (`/etc/php/8.2/fpm/pool.d/www.conf`) :
+```ini
+pm.max_children = 5
+pm.start_servers = 1
+pm.min_spare_servers = 1
+pm.max_spare_servers = 2
+pm.max_requests = 500
+```
+
+**PostgreSQL** (`/etc/postgresql/15/main/postgresql.conf`) :
+```ini
+shared_buffers = 64MB
+effective_cache_size = 256MB
+work_mem = 2MB
+maintenance_work_mem = 16MB
+max_connections = 15
+```
+
+**Redis** (`/etc/redis/redis.conf`) :
+```ini
+maxmemory 64mb
+```
+
+**Nextcloud** :
+```bash
+enable_previews = false
+connectivity_check_domains = []
+```
+
+**Apps désactivées** :
+activity, dashboard, weather_status, circles, user_status, etc.
+
+### Résultats
+- Navigation : Fluide (300 fichiers/dossier)
+- Stabilité : Excellente
+- RAM : 320-880 MB disponibles
+```
+
+## Prochaines étapes (quand tu veux)
+
+### ✅ Terminé
+- Installation Nextcloud
+- Migration Google Drive (290 GB)
+- Migration Contacts/Calendrier
+- Optimisation RAM 2 GB
+- Synchronisation mobile DAVx5
+
+### 🔜 À faire plus tard
+
+**Quand DD externe 1To arrive :**
+1. Brancher DD sur Freebox
+2. Monter sur VM
+3. Modifier script backup
+4. Supprimer backup Google Drive
+5. Tester backup/restore
+
+**Optionnel :**
+- Créer 2 autres comptes famille
+- Configurer notifications email
+- Explorer Talk pour visio famille
+- Installer clients desktop pour tous
+
+## Statistiques finales du projet
+```
+Durée totale projet : ~3 jours
+  - Installation : 2h
+  - Migration données : 12h (nuit)
+  - Scan fichiers : 45 min
+  - Optimisations : 1h
+  - Debug/tests : 2h
+
+Données migrées : 290 GB (41k fichiers)
+Coût mensuel : 0€
+Indépendance : 100% ✅
+
+Google services remplacés :
+  ✅ Drive → Nextcloud
+  ✅ Contacts → Nextcloud + DAVx5
+  ✅ Calendar → Nextcloud + DAVx5
+  (Gmail : conservé pour l'instant)
