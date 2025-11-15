@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1176,7 +1175,887 @@
                 display: none !important;
             }
         }
-    </style>
+        
+        /* ============================================
+           CHRONOMÈTRE TEMPS DE REPOS - STYLES
+           ============================================ */
+        
+        /* Bouton flottant */
+        .rest-timer-fab {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            border: none;
+        }
+        
+        .rest-timer-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+        }
+        
+        .rest-timer-fab:active {
+            transform: scale(0.95);
+        }
+        
+        .rest-timer-fab .fab-icon {
+            font-size: 2em;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        /* Modal du chronomètre */
+        .rest-timer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+        
+        .rest-timer-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rest-timer-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            min-width: 350px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s;
+            position: relative;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .rest-timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .rest-timer-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .rest-timer-close {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.2s;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .rest-timer-close:hover {
+            background: #f0f0f0;
+            color: #333;
+            transform: rotate(90deg);
+        }
+        
+        /* Affichage du temps */
+        .rest-timer-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .rest-timer-time {
+            font-size: 5em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            transition: color 0.3s;
+        }
+        
+        .rest-timer-time.green {
+            color: #4CAF50;
+        }
+        
+        .rest-timer-time.orange {
+            color: #FF9800;
+        }
+        
+        .rest-timer-time.red {
+            color: #f44336;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Barre de progression */
+        .rest-timer-progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .rest-timer-progress-bar {
+            height: 100%;
+            transition: width 0.1s linear, background 0.3s;
+            border-radius: 10px;
+        }
+        
+        .rest-timer-progress-bar.green {
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+        }
+        
+        .rest-timer-progress-bar.orange {
+            background: linear-gradient(90deg, #FF9800 0%, #FFC107 100%);
+        }
+        
+        .rest-timer-progress-bar.red {
+            background: linear-gradient(90deg, #f44336 0%, #FF5722 100%);
+        }
+        
+        /* Presets */
+        .rest-timer-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .rest-timer-preset {
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .rest-timer-preset:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .rest-timer-preset.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+        
+        /* Boutons de contrôle */
+        .rest-timer-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .rest-timer-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .rest-timer-btn-start {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+        }
+        
+        .rest-timer-btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .rest-timer-btn-pause {
+            background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
+            color: white;
+        }
+        
+        .rest-timer-btn-pause:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+        
+        .rest-timer-btn-reset {
+            background: linear-gradient(135deg, #f44336 0%, #FF5722 100%);
+            color: white;
+        }
+        
+        .rest-timer-btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+        
+        .rest-timer-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Badge d'état */
+        .rest-timer-status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .rest-timer-fab {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .rest-timer-content {
+                min-width: unset;
+                width: 90%;
+                padding: 20px;
+            }
+            
+            .rest-timer-time {
+                font-size: 4em;
+            }
+            
+            .rest-timer-presets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media print {
+            .rest-timer-fab, .rest-timer-modal {
+                display: none !important;
+            }
+        }
+        /* NOUVEAUX STYLES POUR LES CYCLES */
+.cycle-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid #667eea;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.cycle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cycle-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.cycle-weeks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.week-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.week-card.current {
+    border: 3px solid #4CAF50;
+    background: #f1f8f4;
+}
+
+.week-number {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.week-volume {
+    font-size: 2em;
+    font-weight: bold;
+    color: #2196F3;
+}
+
+.week-progress {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.comparison-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.comparison-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.comparison-values {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.comparison-value {
+    text-align: center;
+}
+
+.comparison-label {
+    font-size: 0.8em;
+    color: #999;
+}
+
+.comparison-number {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #2196F3;
+}
+
+.comparison-arrow {
+    font-size: 2em;
+}
+
+@media (max-width: 768px) {
+    .cycle-weeks {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+}
+    
+    /* Phase 2: Records Grid */
+    .records-grid {
+        display: grid;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .record-category {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .record-category-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+    
+    .record-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .record-item:last-child {
+        border-bottom: none;
+    }
+    
+    .record-exercise {
+        font-weight: 500;
+    }
+    
+    .record-value {
+        color: #4CAF50;
+        font-weight: 600;
+    }
+    
+    .record-date {
+        color: rgba(255,255,255,0.5);
+        font-size: 0.85em;
+        margin-left: 10px;
+    }
+    
+    .record-badge {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75em;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    /* Phase 2: Balance Grid */
+    .balance-grid {
+        display: grid;
+        gap: 20px;
+        margin-top: 15px;
+    }
+    
+    .balance-section {
+        display: grid;
+        grid-template-columns: 180px 1fr 80px;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .balance-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+    
+    .balance-emoji {
+        font-size: 1.5em;
+    }
+    
+    .balance-bar-container {
+        background: rgba(255,255,255,0.1);
+        height: 30px;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .balance-bar {
+        height: 100%;
+        border-radius: 15px;
+        transition: width 0.5s ease, background 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        font-weight: 600;
+        font-size: 0.9em;
+    }
+    
+    .push-bar {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .pull-bar {
+        background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .legs-bar {
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .balance-value {
+        text-align: right;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+    
+    .balance-alert {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(255, 152, 0, 0.1);
+        border-left: 4px solid #ff9800;
+        display: none;
+    }
+    
+    .balance-alert.visible {
+        display: block;
+    }
+    
+    .balance-alert strong {
+        color: #ff9800;
+    }
+    
+    /* Phase 2: Fatigue Card */
+    .fatigue-card {
+        margin-top: 15px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+    }
+    
+    .fatigue-metric {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+    }
+    
+    .fatigue-label {
+        font-size: 0.9em;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 10px;
+    }
+    
+    .fatigue-value {
+        font-size: 3em;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+    
+    .fatigue-status {
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    
+    .fatigue-status.optimal {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .fatigue-status.warning {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+    }
+    
+    .fatigue-status.danger {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+    
+    .fatigue-explanation {
+        padding: 15px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 8px;
+    }
+    
+    .fatigue-explanation p {
+        margin: 10px 0;
+        line-height: 1.6;
+    }
+    
+    .fatigue-explanation ul {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0 0 0;
+    }
+    
+    .fatigue-explanation li {
+        padding: 8px 0;
+        line-height: 1.5;
+    }
+    
+    @media (max-width: 768px) {
+        .fatigue-card {
+            grid-template-columns: 1fr;
+        }
+        
+        .balance-section {
+            grid-template-columns: 120px 1fr 60px;
+        }
+    }
+
+
+        /* PHASE 3: Insights & Progressions */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .insights-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .insights-subtitle {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .progression-list, .attention-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .progression-item, .attention-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid;
+        }
+
+        .progression-item {
+            border-left-color: #4CAF50;
+        }
+
+        .attention-item {
+            border-left-color: #ff9800;
+        }
+
+        .progression-exercise {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 5px;
+        }
+
+        .progression-change {
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .progression-positive {
+            color: #4CAF50;
+        }
+
+        .progression-negative {
+            color: #ff5252;
+        }
+
+        /* PHASE 3: Objectifs */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .goal-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .goal-card.volume {
+            border-left-color: #667eea;
+        }
+
+        .goal-card.pr {
+            border-left-color: #f093fb;
+        }
+
+        .goal-card.frequency {
+            border-left-color: #4facfe;
+        }
+
+        .goal-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .goal-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .goal-status {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .goal-empty {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* PHASE 3: Ratio Libre/Guidé */
+        .ratio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .ratio-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .ratio-exercise {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 10px;
+        }
+
+        .ratio-comparison {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .ratio-program {
+            flex: 1;
+            text-align: center;
+        }
+
+        .ratio-label {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .ratio-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .ratio-verdict {
+            font-size: 0.9em;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .ratio-balanced {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .ratio-libre-better {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .ratio-guide-better {
+            background: rgba(118, 75, 162, 0.2);
+            color: #764ba2;
+        }
+
+        /* PHASE 3: Prédictions */
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .prediction-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .prediction-exercise {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 10px;
+        }
+
+        .prediction-current {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .prediction-target {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+
+        .prediction-timeline {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .prediction-empty {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ratio-grid, .predictions-grid, .goals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+</style>
 </head>
 <body>
     <div class="container">
@@ -1246,6 +2125,9 @@
         <div class="stats-dashboard" id="statsDashboard">
             <div class="dashboard-tabs">
                 <button class="dashboard-tab active" onclick="switchTab('overview')">Vue d'ensemble</button>
+                <button class="dashboard-tab" onclick="switchTab('programA')">Programme A</button>
+                <button class="dashboard-tab" onclick="switchTab('programB')">Programme B</button>
+                <button class="dashboard-tab" onclick="switchTab('comparison')">Comparaison</button>
                 <button class="dashboard-tab" onclick="switchTab('progress')">Progression</button>
                 <button class="dashboard-tab" onclick="switchTab('records')">Records</button>
                 <button class="dashboard-tab" onclick="switchTab('analysis')">Analyse</button>
@@ -1275,7 +2157,7 @@
                         <span class="metric-change neutral" id="topMuscleVolume">0 kg</span>
                     </div>
                 </div>
-                
+
                 <div class="chart-container">
                     <div class="chart-title">
                         <span>📈 Évolution du Volume</span>
@@ -1304,6 +2186,316 @@
                     <div id="calendarGrid" class="calendar-grid"></div>
                 </div>
             </div>
+            
+            <!-- Nouveaux onglets pour les stats par programme -->
+               <!-- NOUVEL ONGLET: Programme A -->
+<div class="tab-content" id="programA">
+    <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">
+        📊 Programme A - Libre
+    </h2>
+
+    <!-- Cycle actuel Programme A -->
+    <div id="cycleCardProgramA"></div>
+
+    <!-- Comparaison inter-cycles Programme A -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔄 Comparaison Inter-Cycles</h3>
+        <div id="comparisonGridProgramA" class="comparison-grid"></div>
+    </div>
+
+    <!-- Volume par groupe musculaire Programme A -->
+    <div class="chart-container">
+        <h3 class="chart-title">💪 Volume par Groupe Musculaire</h3>
+        <canvas id="muscleChartProgramA" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Graphique progression long terme Programme A -->
+    <div class="chart-container">
+        <h3 class="chart-title">📈 Progression Long Terme</h3>
+        <canvas id="progressionChartProgramA" width="400" height="200"></canvas>
+    </div>
+
+    <!-- 🏆 PHASE 2: Records par programme -->
+    <div class="chart-container">
+        <h3 class="chart-title">🏆 Records du Programme A (Libre)</h3>
+        <div id="recordsGridProgramA" class="records-grid"></div>
+    </div>
+
+    <!-- ⚖️ PHASE 2: Équilibre Push/Pull/Legs -->
+    <div class="chart-container">
+        <h3 class="chart-title">⚖️ Équilibre Push/Pull/Legs</h3>
+        <div class="balance-grid">
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">💪</span>
+                    <span>Push (Poussée)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar push-bar" id="pushBarProgramA" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="pushValueProgramA">0%</div>
+            </div>
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">🔙</span>
+                    <span>Pull (Traction)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar pull-bar" id="pullBarProgramA" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="pullValueProgramA">0%</div>
+            </div>
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">🦵</span>
+                    <span>Legs (Jambes)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar legs-bar" id="legsBarProgramA" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="legsValueProgramA">0%</div>
+            </div>
+        </div>
+        <div id="balanceAlertProgramA" class="balance-alert"></div>
+    </div>
+
+    <!-- 📉 PHASE 2: Indice de fatigue -->
+    <div class="chart-container">
+        <h3 class="chart-title">📉 Analyse de Fatigue du Cycle</h3>
+        <div class="fatigue-card">
+            <div class="fatigue-metric">
+                <div class="fatigue-label">Indice de Fatigue</div>
+                <div class="fatigue-value" id="fatigueIndexProgramA">-</div>
+                <div class="fatigue-status" id="fatigueStatusProgramA"></div>
+            </div>
+            <div class="fatigue-explanation">
+                <p><strong>Comment ça marche ?</strong></p>
+                <p>Volume Semaine 3 / Volume Semaine 1</p>
+                <ul>
+                    <li>⚠️ &lt; 0.90 : Fatigue excessive, envisage un deload</li>
+                    <li>✅ 0.95-1.05 : Récupération optimale</li>
+                    <li>⚠️ &gt; 1.10 : Risque de surentraînement</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔥 PHASE 3: Top Progressions / Points d'attention -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔥 Top Progressions & ⚠️ Points d'Attention</h3>
+        <div class="insights-grid">
+            <div class="insights-section">
+                <h4 class="insights-subtitle">🔥 Top 3 Progressions</h4>
+                <div id="topProgressionsProgramA" class="progression-list"></div>
+            </div>
+            <div class="insights-section">
+                <h4 class="insights-subtitle">⚠️ Points d'Attention</h4>
+                <div id="attentionPointsProgramA" class="attention-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎯 PHASE 3: Objectifs Smart -->
+    <div class="chart-container">
+        <h3 class="chart-title">🎯 Objectifs du Programme A (Libre)</h3>
+        <div id="goalsGridProgramA" class="goals-grid">
+            <div class="goal-empty">
+                <p>📝 Pas d'objectifs définis pour ce programme</p>
+                <p style="font-size: 0.9em; color: rgba(255,255,255,0.6);">
+                    Les objectifs peuvent être ajoutés dans l'onglet "Objectifs"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚖️ PHASE 3: Ratio Libre/Guidé (uniquement pour Programme A) -->
+    <div class="chart-container">
+        <h3 class="chart-title">⚖️ Ratio Libre vs Guidé</h3>
+        <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+            Comparaison des performances sur exercices similaires entre Programme A (Libre) et B (Guidé)
+        </p>
+        <div id="ratioGridProgramA" class="ratio-grid"></div>
+    </div>
+
+    <!-- 🔮 PHASE 3: Prédictions -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔮 Prédictions de Performance</h3>
+        <div id="predictionsProgramA" class="predictions-grid"></div>
+    </div>
+
+</div>
+
+<!-- NOUVEL ONGLET: Programme B -->
+<div class="tab-content" id="programB">
+    <h2 style="text-align: center; color: #764ba2; margin-bottom: 20px;">
+        📊 Programme B - Guidé
+    </h2>
+
+    <!-- Cycle actuel Programme B -->
+    <div id="cycleCardProgramB"></div>
+
+    <!-- Comparaison inter-cycles Programme B -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔄 Comparaison Inter-Cycles</h3>
+        <div id="comparisonGridProgramB" class="comparison-grid"></div>
+    </div>
+
+    <!-- Volume par groupe musculaire Programme B -->
+    <div class="chart-container">
+        <h3 class="chart-title">💪 Volume par Groupe Musculaire</h3>
+        <canvas id="muscleChartProgramB" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Graphique progression long terme Programme B -->
+    <div class="chart-container">
+        <h3 class="chart-title">📈 Progression Long Terme</h3>
+        <canvas id="progressionChartProgramB" width="400" height="200"></canvas>
+    </div>
+
+    <!-- 🏆 PHASE 2: Records par programme -->
+    <div class="chart-container">
+        <h3 class="chart-title">🏆 Records du Programme B (Guidé)</h3>
+        <div id="recordsGridProgramB" class="records-grid"></div>
+    </div>
+
+    <!-- ⚖️ PHASE 2: Équilibre Push/Pull/Legs -->
+    <div class="chart-container">
+        <h3 class="chart-title">⚖️ Équilibre Push/Pull/Legs</h3>
+        <div class="balance-grid">
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">💪</span>
+                    <span>Push (Poussée)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar push-bar" id="pushBarProgramB" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="pushValueProgramB">0%</div>
+            </div>
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">🔙</span>
+                    <span>Pull (Traction)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar pull-bar" id="pullBarProgramB" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="pullValueProgramB">0%</div>
+            </div>
+            <div class="balance-section">
+                <div class="balance-label">
+                    <span class="balance-emoji">🦵</span>
+                    <span>Legs (Jambes)</span>
+                </div>
+                <div class="balance-bar-container">
+                    <div class="balance-bar legs-bar" id="legsBarProgramB" style="width: 33%"></div>
+                </div>
+                <div class="balance-value" id="legsValueProgramB">0%</div>
+            </div>
+        </div>
+        <div id="balanceAlertProgramB" class="balance-alert"></div>
+    </div>
+
+    <!-- 📉 PHASE 2: Indice de fatigue -->
+    <div class="chart-container">
+        <h3 class="chart-title">📉 Analyse de Fatigue du Cycle</h3>
+        <div class="fatigue-card">
+            <div class="fatigue-metric">
+                <div class="fatigue-label">Indice de Fatigue</div>
+                <div class="fatigue-value" id="fatigueIndexProgramB">-</div>
+                <div class="fatigue-status" id="fatigueStatusProgramB"></div>
+            </div>
+            <div class="fatigue-explanation">
+                <p><strong>Comment ça marche ?</strong></p>
+                <p>Volume Semaine 3 / Volume Semaine 1</p>
+                <ul>
+                    <li>⚠️ &lt; 0.90 : Fatigue excessive, envisage un deload</li>
+                    <li>✅ 0.95-1.05 : Récupération optimale</li>
+                    <li>⚠️ &gt; 1.10 : Risque de surentraînement</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔥 PHASE 3: Top Progressions / Points d'attention -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔥 Top Progressions & ⚠️ Points d'Attention</h3>
+        <div class="insights-grid">
+            <div class="insights-section">
+                <h4 class="insights-subtitle">🔥 Top 3 Progressions</h4>
+                <div id="topProgressionsProgramB" class="progression-list"></div>
+            </div>
+            <div class="insights-section">
+                <h4 class="insights-subtitle">⚠️ Points d'Attention</h4>
+                <div id="attentionPointsProgramB" class="attention-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎯 PHASE 3: Objectifs Smart -->
+    <div class="chart-container">
+        <h3 class="chart-title">🎯 Objectifs du Programme B (Guidé)</h3>
+        <div id="goalsGridProgramB" class="goals-grid">
+            <div class="goal-empty">
+                <p>📝 Pas d'objectifs définis pour ce programme</p>
+                <p style="font-size: 0.9em; color: rgba(255,255,255,0.6);">
+                    Les objectifs peuvent être ajoutés dans l'onglet "Objectifs"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔮 PHASE 3: Prédictions -->
+    <div class="chart-container">
+        <h3 class="chart-title">🔮 Prédictions de Performance</h3>
+        <div id="predictionsProgramB" class="predictions-grid"></div>
+    </div>
+</div>
+
+<!-- NOUVEL ONGLET: Comparaison -->
+<div class="tab-content" id="comparison">
+    <h2 style="text-align: center; color: #2196F3; margin-bottom: 20px;">
+        ⚖️ Comparaison Programme A vs B
+    </h2>
+
+    <!-- Métriques comparatives -->
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-title">Volume Total - Programme A</div>
+            <div class="metric-value" id="totalVolumeProgramA">0 kg</div>
+            <span class="metric-change neutral">Libre</span>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Volume Total - Programme B</div>
+            <div class="metric-value" id="totalVolumeProgramB">0 kg</div>
+            <span class="metric-change neutral">Guidé</span>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Ratio B/A</div>
+            <div class="metric-value" id="ratioBA">0x</div>
+            <span class="metric-change neutral">Multiplicateur</span>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Séances Totales</div>
+            <div class="metric-value" id="totalSessionsComparison">0</div>
+            <span class="metric-change neutral" id="sessionsSplit">A: 0 | B: 0</span>
+        </div>
+    </div>
+
+    <!-- Graphique comparatif -->
+    <div class="chart-container">
+        <h3 class="chart-title">📊 Évolution Comparative A vs B</h3>
+        <canvas id="comparisonEvolutionChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Comparaison par type de séance -->
+    <div class="chart-container">
+        <h3 class="chart-title">🏋️ Comparaison par Type de Séance</h3>
+        <canvas id="workoutTypeComparisonChart" width="400" height="200"></canvas>
+    </div>
+
+</div>
+
             
             <div class="tab-content" id="progress">
                 <div class="chart-container">
@@ -1648,7 +2840,14 @@
                 { name: "Presse à cuisses", sets: 4, reps: "8-12" },
                 { name: "Fentes avant haltères", sets: 3, reps: "10-12" },
                 { name: "Leg curls allongé", sets: 4, reps: "10-15" },
-                { name: "Superset: Abductions + Adductions", sets: 3, reps: "15-20" },
+                {
+    name: "Superset Abducteurs", 
+    isSuperset: true,
+    exercises: [
+        { name: "Abductions", sets: 3, reps: "15-20" },
+        { name: "Adductions", sets: 3, reps: "15-20" }
+    ]
+},
                 { name: "Extensions lombaires", sets: 3, reps: "12-15" },
                 { name: "Mollets machine", sets: 5, reps: "15-20" }
             ],
@@ -1659,7 +2858,14 @@
                 { name: "Machine convergente", sets: 3, reps: "10-15" },
                 { name: "Shrugs machine", sets: 3, reps: "12-15" },
                 { name: "Élévations latérales machine", sets: 3, reps: "15-20" },
-                { name: "Superset: Machine curl / Extensions poulie", sets: 3, reps: "10-12" }
+                { 
+    name: "Superset Bras", 
+    isSuperset: true,
+    exercises: [
+        { name: "Machine curl", sets: 3, reps: "10-12" },
+        { name: "Extensions poulie", sets: 3, reps: "10-12" }
+    ]
+}
             ],
             // SESSIONS CORE AJOUTÉES (aussi au programme B)
             core_a: [
@@ -1724,14 +2930,16 @@
         'Extensions triceps poulie',
         'Extensions triceps poulie haute',
         'Barre au front EZ',
-        'Superset: Machine curl / Extensions poulie'
+        'Superset: Machine curl / Extensions poulie',
+        'Extensions poulie'
     ],
     'Bras (Biceps)': [
         'Curl barre EZ',
         'Curl haltères alterné',
         'Curl marteau haltères',
         'Machine arm curl',
-        'Curl incliné haltères'
+        'Curl incliné haltères',
+        'Machine curl'
     ],
     'Quadriceps': [
         'Squat barre libre',
@@ -1757,7 +2965,9 @@
     ],
     'Fessiers/Adducteurs': [
         'Hip thrust',
-        'Superset: Abductions + Adductions'
+        'Superset: Abductions + Adductions',
+        'Abductions',
+        'Adductions'
     ],
     'Mollets': [
         'Mollets à la Smith machine',
@@ -1979,18 +3189,69 @@
     
     // Generate workout table
     function generateTable(type) {
-        const exercises = workouts[currentProgram][type];
-        if (!exercises) return;
-        
-        let html = '<table><thead><tr><th>Exercice</th><th>Séries</th><th>Reps cible</th>';
-        
-        const maxSets = Math.max(0, ...exercises.map(e => e.sets));
-        for (let i = 1; i <= maxSets; i++) {
-            html += `<th>S${i}</th>`;
+    const exercises = workouts[currentProgram][type];
+    if (!exercises) return;
+    
+    let html = '<table><thead><tr><th>Exercice</th><th>Séries</th><th>Reps cible</th>';
+    
+    // Calculer le nombre max de séries en tenant compte des supersets
+    const maxSets = Math.max(0, ...exercises.map(e => {
+        if (e.isSuperset) {
+            return Math.max(...e.exercises.map(ex => ex.sets));
         }
-        html += '<th>Poids (kg)</th><th>Notes</th></tr></thead><tbody>';
-        
-        exercises.forEach((exercise, idx) => {
+        return e.sets;
+    }));
+    
+    for (let i = 1; i <= maxSets; i++) {
+        html += `<th>S${i}</th>`;
+    }
+    html += '<th>Poids (kg)</th><th>Notes</th></tr></thead><tbody>';
+    
+    let rowIndex = 0; // Index global pour les IDs des inputs
+    
+    exercises.forEach((exercise, idx) => {
+        if (exercise.isSuperset) {
+            // Ligne d'en-tête du superset
+            html += `<tr style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
+                <td class="exercise-name" style="font-weight: 700; color: #667eea;">${exercise.name}</td>
+                <td colspan="${maxSets + 3}"></td>
+            </tr>`;
+            
+            // Lignes pour chaque exercice du superset
+            exercise.exercises.forEach((subExercise, subIdx) => {
+                html += `<tr>
+                    <td class="exercise-name" style="padding-left: 30px;">├─ ${subExercise.name}</td>
+                    <td>${subExercise.sets}</td>
+                    <td>${subExercise.reps}</td>`;
+                
+                for (let i = 0; i < maxSets; i++) {
+                    if (i < subExercise.sets) {
+                        html += `<td>
+                            <input type="number" id="reps-${rowIndex}-${i}" 
+                                   min="0" max="50" onchange="autoSave()" 
+                                   placeholder="0">
+                        </td>`;
+                    } else {
+                        html += '<td>-</td>';
+                    }
+                }
+                
+                html += `<td>
+                    <input type="number" class="weight-input" id="weight-${rowIndex}" 
+                           min="0" max="500" step="0.5" onchange="autoSave()" 
+                           placeholder="0">
+                </td>
+                <td>
+                    <input type="text" id="notes-${rowIndex}" 
+                           onchange="autoSave()" placeholder="..." 
+                           style="width: 100px;">
+                </td>
+                </tr>`;
+                
+                rowIndex++;
+            });
+        } else {
+            // Exercice normal
             html += `<tr>
                 <td class="exercise-name">${exercise.name}</td>
                 <td>${exercise.sets}</td>
@@ -1999,7 +3260,7 @@
             for (let i = 0; i < maxSets; i++) {
                 if (i < exercise.sets) {
                     html += `<td>
-                        <input type="number" id="reps-${idx}-${i}" 
+                        <input type="number" id="reps-${rowIndex}-${i}" 
                                min="0" max="50" onchange="autoSave()" 
                                placeholder="0">
                     </td>`;
@@ -2009,21 +3270,24 @@
             }
             
             html += `<td>
-                <input type="number" class="weight-input" id="weight-${idx}" 
+                <input type="number" class="weight-input" id="weight-${rowIndex}" 
                        min="0" max="500" step="0.5" onchange="autoSave()" 
                        placeholder="0">
             </td>
             <td>
-                <input type="text" id="notes-${idx}" 
+                <input type="text" id="notes-${rowIndex}" 
                        onchange="autoSave()" placeholder="..." 
                        style="width: 100px;">
             </td>
             </tr>`;
-        });
-        
-        html += '</tbody></table>';
-        document.getElementById('workoutTable').innerHTML = html;
-    }
+            
+            rowIndex++;
+        }
+    });
+    
+    html += '</tbody></table>';
+    document.getElementById('workoutTable').innerHTML = html;
+}
     
     // Data management
     function getDataKey() {
@@ -2037,81 +3301,148 @@
     }
     
     function saveData() {
-        if (!currentWorkout || currentWorkout === 'stats') return;
-        
-        const key = getDataKey();
-        const data = {};
-        const exercises = workouts[currentProgram][currentWorkout];
-        
-        exercises.forEach((exercise, idx) => {
+    if (!currentWorkout || currentWorkout === 'stats') return;
+    
+    const key = getDataKey();
+    const data = {};
+    const exercises = workouts[currentProgram][currentWorkout];
+    
+    let rowIndex = 0; // Index global pour correspondre aux IDs des inputs
+    
+    exercises.forEach((exercise, idx) => {
+        if (exercise.isSuperset) {
+            // Sauvegarder chaque exercice du superset
+            data[idx] = {
+                isSuperset: true,
+                exercises: []
+            };
+            
+            exercise.exercises.forEach((subExercise) => {
+                const reps = [];
+                for (let i = 0; i < subExercise.sets; i++) {
+                    const input = document.getElementById(`reps-${rowIndex}-${i}`);
+                    if (input) reps.push(input.value || '');
+                }
+                
+                const weightInput = document.getElementById(`weight-${rowIndex}`);
+                const notesInput = document.getElementById(`notes-${rowIndex}`);
+                
+                data[idx].exercises.push({
+                    name: subExercise.name,
+                    reps: reps,
+                    weight: weightInput ? weightInput.value : '',
+                    notes: notesInput ? notesInput.value : ''
+                });
+                
+                rowIndex++;
+            });
+        } else {
+            // Exercice normal
             const reps = [];
             for (let i = 0; i < exercise.sets; i++) {
-                const input = document.getElementById(`reps-${idx}-${i}`);
+                const input = document.getElementById(`reps-${rowIndex}-${i}`);
                 if (input) reps.push(input.value || '');
             }
             
-            const weightInput = document.getElementById(`weight-${idx}`);
-            const notesInput = document.getElementById(`notes-${idx}`);
+            const weightInput = document.getElementById(`weight-${rowIndex}`);
+            const notesInput = document.getElementById(`notes-${rowIndex}`);
             
             data[idx] = {
                 reps: reps,
                 weight: weightInput ? weightInput.value : '',
                 notes: notesInput ? notesInput.value : ''
             };
-        });
-        
-        workoutData[key] = data;
-        localStorage.setItem('workoutData', JSON.stringify(workoutData));
-        
-        // Regénère les données pré-calculées après sauvegarde
-        processAllData(); 
-        
-        calculateStreak();
-        checkForPRs(key, data);
-        showToast('Données sauvegardées !');
-        
-        // Auto-sync avec délai
-        if (API_CONFIG.autoSync) {
-            clearTimeout(syncTimeout);
-            syncTimeout = setTimeout(async () => {
-                await syncToServer(workoutData);
-            }, API_CONFIG.syncDelay);
+            
+            rowIndex++;
         }
+    });
+    
+    workoutData[key] = data;
+    localStorage.setItem('workoutData', JSON.stringify(workoutData));
+    
+    // Regénère les données pré-calculées après sauvegarde
+    processAllData(); 
+    
+    calculateStreak();
+    checkForPRs(key, data);
+    showToast('Données sauvegardées !');
+    
+    // Auto-sync avec délai
+    if (API_CONFIG.autoSync) {
+        clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(async () => {
+            await syncToServer(workoutData);
+        }, API_CONFIG.syncDelay);
     }
+}
     
     function loadData() {
-        if (!currentWorkout || currentWorkout === 'stats') return;
+    if (!currentWorkout || currentWorkout === 'stats') return;
+    
+    const key = getDataKey();
+    const data = workoutData[key] || {};
+    const exercises = workouts[currentProgram][currentWorkout];
+    
+    let rowIndex = 0; // Index global pour correspondre aux IDs des inputs
+    
+    exercises.forEach((exercise, idx) => {
+        const exerciseData = data[idx] || {};
         
-        const key = getDataKey();
-        const data = workoutData[key] || {};
-        const exercises = workouts[currentProgram][currentWorkout];
-        
-        exercises.forEach((exercise, idx) => {
-            const exerciseData = data[idx] || {};
-            
+        if (exercise.isSuperset && exerciseData.isSuperset) {
+            // Charger chaque exercice du superset
+            if (exerciseData.exercises) {
+                exerciseData.exercises.forEach((subExerciseData, subIdx) => {
+                    // Load reps
+                    if (subExerciseData.reps) {
+                        subExerciseData.reps.forEach((rep, i) => {
+                            const input = document.getElementById(`reps-${rowIndex}-${i}`);
+                            if (input) input.value = rep;
+                        });
+                    }
+                    
+                    // Load weight
+                    const weightInput = document.getElementById(`weight-${rowIndex}`);
+                    if (weightInput && subExerciseData.weight) {
+                        weightInput.value = subExerciseData.weight;
+                    }
+                    
+                    // Load notes
+                    const notesInput = document.getElementById(`notes-${rowIndex}`);
+                    if (notesInput && subExerciseData.notes) {
+                        notesInput.value = subExerciseData.notes;
+                    }
+                    
+                    rowIndex++;
+                });
+            }
+        } else {
+            // Exercice normal
             // Load reps
             if (exerciseData.reps) {
                 exerciseData.reps.forEach((rep, i) => {
-                    const input = document.getElementById(`reps-${idx}-${i}`);
+                    const input = document.getElementById(`reps-${rowIndex}-${i}`);
                     if (input) input.value = rep;
                 });
             }
             
             // Load weight
-            const weightInput = document.getElementById(`weight-${idx}`);
+            const weightInput = document.getElementById(`weight-${rowIndex}`);
             if (weightInput && exerciseData.weight) {
                 weightInput.value = exerciseData.weight;
             }
             
             // Load notes
-            const notesInput = document.getElementById(`notes-${idx}`);
+            const notesInput = document.getElementById(`notes-${rowIndex}`);
             if (notesInput && exerciseData.notes) {
                 notesInput.value = exerciseData.notes;
             }
-        });
-        
-        updateStats();
-    }
+            
+            rowIndex++;
+        }
+    });
+    
+    updateStats();
+}
     
     function loadAllData() {
         const stored = localStorage.getItem('workoutData');
@@ -2126,6 +3457,11 @@
         
         // Pré-calcule toutes les données pour les stats
         processAllData();
+        
+        // Mettre à jour les stats Phase 3
+        if (typeof updatePhase3Stats === 'function') {
+            updatePhase3Stats();
+        }
     }
     
     function processAllData() {
@@ -2142,15 +3478,20 @@
                 const exercises = workouts[program][workoutType];
                 const sessionData = workoutData[key];
                 
-                Object.keys(sessionData).forEach(exerciseIndex => {
-                    const exerciseInfo = sessionData[exerciseIndex];
-                    const exerciseTemplate = exercises[exerciseIndex];
+				Object.keys(sessionData).forEach(exerciseIndex => {
+    const exerciseInfo = sessionData[exerciseIndex];
+    const exerciseTemplate = exercises[exerciseIndex];
+    
+    if (exerciseTemplate) {
+        if (exerciseInfo.isSuperset && exerciseTemplate.isSuperset) {
+            // Traiter chaque exercice du superset
+            if (exerciseInfo.exercises) {
+                exerciseInfo.exercises.forEach((subExerciseData) => {
+                    const exerciseName = subExerciseData.name;
+                    const weight = parseFloat(subExerciseData.weight || 0);
                     
-                    if (exerciseTemplate) {
-                        const exerciseName = exerciseTemplate.name;
-                        const weight = parseFloat(exerciseInfo.weight || 0);
-                        
-                        exerciseInfo.reps.forEach((rep, setIndex) => {
+                    if (subExerciseData.reps) {
+                        subExerciseData.reps.forEach((rep, setIndex) => {
                             const reps = parseInt(rep || 0);
                             if (reps > 0) {
                                 processedData.push({
@@ -2168,6 +3509,33 @@
                         });
                     }
                 });
+            }
+        } else {
+            // Exercice normal
+            const exerciseName = exerciseTemplate.name;
+            const weight = parseFloat(exerciseInfo.weight || 0);
+            
+            if (exerciseInfo.reps) {
+                exerciseInfo.reps.forEach((rep, setIndex) => {
+                    const reps = parseInt(rep || 0);
+                    if (reps > 0) {
+                        processedData.push({
+                            date: date,
+                            dateKey: `${dateStr}-${monthStr}-${dayStr}`,
+                            program: program,
+                            workoutType: workoutType,
+                            exerciseName: exerciseName,
+                            set: setIndex + 1,
+                            reps: reps,
+                            weight: weight,
+                            volume: reps * weight
+                        });
+                    }
+                });
+            }
+        }
+    }
+});
             } catch (e) {
                 console.error(`Erreur lors du traitement de la clé: ${key}`, e);
             }
@@ -2176,21 +3544,47 @@
 
     // Statistics update
     function updateStats() {
-        if (!currentWorkout || currentWorkout === 'stats') return;
-        
-        let totalVolume = 0;
-        let totalSets = 0;
-        let totalReps = 0;
-        let maxIntensity = 0;
-        
-        const exercises = workouts[currentProgram][currentWorkout];
-        
-        exercises.forEach((exercise, idx) => {
-            const weightInput = document.getElementById(`weight-${idx}`);
+    if (!currentWorkout || currentWorkout === 'stats') return;
+    
+    let totalVolume = 0;
+    let totalSets = 0;
+    let totalReps = 0;
+    let maxIntensity = 0;
+    
+    const exercises = workouts[currentProgram][currentWorkout];
+    let rowIndex = 0; // Index global pour correspondre aux IDs des inputs
+    
+    exercises.forEach((exercise, idx) => {
+        if (exercise.isSuperset) {
+            // Traiter chaque exercice du superset
+            exercise.exercises.forEach((subExercise) => {
+                const weightInput = document.getElementById(`weight-${rowIndex}`);
+                const weight = parseFloat(weightInput?.value || 0);
+                
+                for (let i = 0; i < subExercise.sets; i++) {
+                    const repsInput = document.getElementById(`reps-${rowIndex}-${i}`);
+                    const reps = parseInt(repsInput?.value || 0);
+                    
+                    if (reps > 0) {
+                        totalSets++;
+                        totalReps += reps;
+                        totalVolume += reps * weight;
+                        
+                        if (weight > 0) {
+                            const intensity = weight / (1.0278 - 0.0278 * reps);
+                            maxIntensity = Math.max(maxIntensity, intensity);
+                        }
+                    }
+                }
+                rowIndex++;
+            });
+        } else {
+            // Exercice normal
+            const weightInput = document.getElementById(`weight-${rowIndex}`);
             const weight = parseFloat(weightInput?.value || 0);
             
             for (let i = 0; i < exercise.sets; i++) {
-                const repsInput = document.getElementById(`reps-${idx}-${i}`);
+                const repsInput = document.getElementById(`reps-${rowIndex}-${i}`);
                 const reps = parseInt(repsInput?.value || 0);
                 
                 if (reps > 0) {
@@ -2204,21 +3598,474 @@
                     }
                 }
             }
-        });
+            rowIndex++;
+        }
+    });
+    
+    document.getElementById('totalVolume').textContent = totalVolume.toFixed(0) + ' kg';
+    document.getElementById('totalSets').textContent = totalSets;
+    document.getElementById('totalReps').textContent = totalReps;
+    
+    if (maxIntensity > 0) {
+        const bodyWeight = 90; // Default body weight
+        const relativeIntensity = (maxIntensity / bodyWeight * 100).toFixed(0);
+        document.getElementById('avgRest').textContent = relativeIntensity + '%';
+    } else {
+        document.getElementById('avgRest').textContent = '-';
+    }
+}
+
+// ========================================================================
+// NOUVELLES FONCTIONS POUR LES CYCLES - PHASE 1 MVP
+// ========================================================================
+
+/**
+ * Retourne le début de la semaine (lundi) pour une date donnée
+ */
+function getWeekStart(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+}
+
+/**
+ * Détecte les cycles de 3 semaines dans les données
+ */
+function detectCycles(program) {
+    const programData = processedData.filter(item => item.program === program);
+    
+    if (programData.length === 0) return [];
+    
+    const sortedData = programData.sort((a, b) => a.date - b.date);
+    
+    const weeklyData = {};
+    sortedData.forEach(item => {
+        const weekStart = getWeekStart(item.date);
+        const weekKey = weekStart.toISOString().split('T')[0];
         
-        document.getElementById('totalVolume').textContent = totalVolume.toFixed(0) + ' kg';
-        document.getElementById('totalSets').textContent = totalSets;
-        document.getElementById('totalReps').textContent = totalReps;
+        if (!weeklyData[weekKey]) {
+            weeklyData[weekKey] = {
+                weekStart: weekStart,
+                volume: 0,
+                sessions: new Set(),
+                data: []
+            };
+        }
         
-        if (maxIntensity > 0) {
-            const bodyWeight = 90; // Default body weight
-            const relativeIntensity = (maxIntensity / bodyWeight * 100).toFixed(0);
-            document.getElementById('avgRest').textContent = relativeIntensity + '%';
-        } else {
-            document.getElementById('avgRest').textContent = '-';
+        weeklyData[weekKey].volume += item.volume;
+        weeklyData[weekKey].sessions.add(item.dateKey);
+        weeklyData[weekKey].data.push(item);
+    });
+    
+    const weeks = Object.values(weeklyData).sort((a, b) => a.weekStart - b.weekStart);
+    
+    const cycles = [];
+    for (let i = 0; i < weeks.length; i += 3) {
+        const cycleWeeks = weeks.slice(i, i + 3);
+        if (cycleWeeks.length > 0) {
+            cycles.push({
+                cycleNumber: Math.floor(i / 3) + 1,
+                weeks: cycleWeeks,
+                startDate: cycleWeeks[0].weekStart,
+                endDate: cycleWeeks[cycleWeeks.length - 1] ? 
+                    new Date(cycleWeeks[cycleWeeks.length - 1].weekStart.getTime() + 6 * 24 * 60 * 60 * 1000) : 
+                    new Date(),
+                totalVolume: cycleWeeks.reduce((sum, w) => sum + w.volume, 0),
+                completed: cycleWeeks.length === 3
+            });
         }
     }
     
+    return cycles;
+}
+
+/**
+ * Retourne le cycle actuel pour un programme donné
+ */
+function getCurrentCycle(program) {
+    const cycles = detectCycles(program);
+    if (cycles.length === 0) return null;
+    
+    const now = new Date();
+    
+    for (const cycle of cycles.reverse()) {
+        if (cycle.startDate <= now && cycle.endDate >= now) {
+            return cycle;
+        }
+    }
+    
+    return cycles[cycles.length - 1];
+}
+
+/**
+ * Affiche la carte du cycle actuel
+ */
+function displayCycleCard(program, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const cycle = getCurrentCycle(program);
+    
+    if (!cycle) {
+        container.innerHTML = `
+            <div class="cycle-card">
+                <div class="cycle-header">
+                    <div class="cycle-title">Aucun cycle détecté</div>
+                </div>
+                <p style="text-align: center; color: #666;">
+                    Commence à t'entraîner pour voir apparaître tes cycles !
+                </p>
+            </div>
+        `;
+        return;
+    }
+    
+    const now = new Date();
+    const weeklyAverage = cycle.totalVolume / cycle.weeks.length;
+    
+    let weeksHTML = '';
+    cycle.weeks.forEach((week, index) => {
+        const isCurrentWeek = week.weekStart <= now && 
+            new Date(week.weekStart.getTime() + 6 * 24 * 60 * 60 * 1000) >= now;
+        
+        const prevWeekVolume = index > 0 ? cycle.weeks[index - 1].volume : null;
+        let progressHTML = '';
+        if (prevWeekVolume && week.volume > 0) {
+            const change = ((week.volume - prevWeekVolume) / prevWeekVolume * 100).toFixed(1);
+            const sign = change >= 0 ? '+' : '';
+            const colorClass = change >= 0 ? 'positive' : 'negative';
+            progressHTML = `<span class="metric-change ${colorClass}">${sign}${change}%</span>`;
+        }
+        
+        weeksHTML += `
+            <div class="week-card ${isCurrentWeek ? 'current' : ''}">
+                <div class="week-number">Semaine ${index + 1}</div>
+                <div class="week-volume">${week.volume.toFixed(0)} kg</div>
+                <div class="week-progress">${progressHTML}</div>
+                ${isCurrentWeek ? '<div style="margin-top: 10px; color: #4CAF50; font-weight: 600;">📍 En cours</div>' : ''}
+            </div>
+        `;
+    });
+    
+    while (cycle.weeks.length < 3) {
+        weeksHTML += `
+            <div class="week-card">
+                <div class="week-number">Semaine ${cycle.weeks.length + 1}</div>
+                <div class="week-volume" style="color: #ccc;">À venir</div>
+            </div>
+        `;
+        cycle.weeks.push(null);
+    }
+    
+    container.innerHTML = `
+        <div class="cycle-card">
+            <div class="cycle-header">
+                <div class="cycle-title">Cycle #${cycle.cycleNumber} - Programme ${program}</div>
+                <div style="color: #666;">
+                    ${cycle.startDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} - 
+                    ${cycle.endDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </div>
+            </div>
+            
+            <div class="cycle-weeks">
+                ${weeksHTML}
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; text-align: center;">
+                <div style="font-size: 0.9em; color: #999; margin-bottom: 5px;">Volume total du cycle</div>
+                <div style="font-size: 2em; font-weight: bold; color: #2196F3;">${cycle.totalVolume.toFixed(0)} kg</div>
+                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    Moyenne : ${weeklyAverage.toFixed(0)} kg/semaine
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Affiche la comparaison inter-cycles
+ */
+function displayCycleComparison(program, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const cycles = detectCycles(program);
+    
+    if (cycles.length < 2) {
+        container.innerHTML = `
+            <p style="text-align: center; color: #666; padding: 20px;">
+                Pas encore assez de cycles pour comparer. Continue à t'entraîner !
+            </p>
+        `;
+        return;
+    }
+    
+    const currentCycle = cycles[cycles.length - 1];
+    const previousCycle = cycles[cycles.length - 2];
+    
+    let comparisonHTML = '';
+    
+    for (let weekIndex = 0; weekIndex < 3; weekIndex++) {
+        const currentWeek = currentCycle.weeks[weekIndex];
+        const previousWeek = previousCycle.weeks[weekIndex];
+        
+        if (!currentWeek && !previousWeek) continue;
+        
+        const currentVolume = currentWeek ? currentWeek.volume : 0;
+        const previousVolume = previousWeek ? previousWeek.volume : 0;
+        
+        let change = 0;
+        let changeHTML = '';
+        let arrowHTML = '→';
+        
+        if (previousVolume > 0 && currentVolume > 0) {
+            change = ((currentVolume - previousVolume) / previousVolume * 100).toFixed(1);
+            const sign = change >= 0 ? '+' : '';
+            const colorClass = change >= 0 ? 'positive' : 'negative';
+            changeHTML = `<span class="metric-change ${colorClass}">${sign}${change}%</span>`;
+            arrowHTML = change >= 0 ? '📈' : '📉';
+        }
+        
+        comparisonHTML += `
+            <div class="comparison-card">
+                <div class="comparison-title">Semaine ${weekIndex + 1}</div>
+                <div class="comparison-values">
+                    <div class="comparison-value">
+                        <div class="comparison-label">Cycle ${previousCycle.cycleNumber}</div>
+                        <div class="comparison-number">${previousVolume.toFixed(0)}</div>
+                        <div class="comparison-label">kg</div>
+                    </div>
+                    <div class="comparison-arrow">${arrowHTML}</div>
+                    <div class="comparison-value">
+                        <div class="comparison-label">Cycle ${currentCycle.cycleNumber}</div>
+                        <div class="comparison-number">${currentVolume.toFixed(0)}</div>
+                        <div class="comparison-label">kg</div>
+                    </div>
+                </div>
+                ${changeHTML}
+            </div>
+        `;
+    }
+    
+    container.innerHTML = comparisonHTML;
+}
+
+/**
+ * Graphique du volume par muscle pour un programme
+ */
+function generateMuscleChartByProgram(program, canvasId) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    
+    if (charts[canvasId]) charts[canvasId].destroy();
+    
+    const muscleGroups = { 'Pectoraux': 0, 'Dos': 0, 'Épaules': 0, 'Jambes': 0, 'Bras': 0, 'Abdos': 0 };
+    
+    const programData = processedData.filter(item => item.program === program);
+    
+    for (const item of programData) {
+        const volume = item.volume;
+        const workoutType = item.workoutType;
+        
+        if (workoutType === 'push') {
+            muscleGroups['Pectoraux'] += volume * 0.5;
+            muscleGroups['Épaules'] += volume * 0.3;
+            muscleGroups['Bras'] += volume * 0.2;
+        } else if (workoutType === 'pull') {
+            muscleGroups['Dos'] += volume * 0.7;
+            muscleGroups['Bras'] += volume * 0.3;
+        } else if (workoutType === 'leg' || workoutType === 'lower') {
+            muscleGroups['Jambes'] += volume;
+        } else if (workoutType === 'upper') {
+            muscleGroups['Pectoraux'] += volume * 0.3;
+            muscleGroups['Dos'] += volume * 0.3;
+            muscleGroups['Épaules'] += volume * 0.2;
+            muscleGroups['Bras'] += volume * 0.2;
+        } else if (workoutType === 'core_a' || workoutType === 'core_b') {
+            muscleGroups['Abdos'] += volume;
+        }
+    }
+    
+    charts[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(muscleGroups),
+            datasets: [{
+                label: 'Volume Total (kg)',
+                data: Object.values(muscleGroups),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+/**
+ * Graphique de progression long terme par programme
+ */
+function generateProgressionChartByProgram(program, canvasId) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    
+    if (charts[canvasId]) charts[canvasId].destroy();
+    
+    const cycles = detectCycles(program);
+    
+    if (cycles.length === 0) return;
+    
+    const labels = cycles.map(c => `Cycle ${c.cycleNumber}`);
+    const data = cycles.map(c => c.totalVolume);
+    
+    charts[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: `Programme ${program}`,
+                data: data,
+                borderColor: program === 'A' ? 'rgb(102, 126, 234)' : 'rgb(118, 75, 162)',
+                backgroundColor: program === 'A' ? 'rgba(102, 126, 234, 0.1)' : 'rgba(118, 75, 162, 0.1)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+/**
+ * Génère les métriques de comparaison A vs B
+ */
+function generateComparisonMetrics() {
+    const dataA = processedData.filter(item => item.program === 'A');
+    const dataB = processedData.filter(item => item.program === 'B');
+    
+    const volumeA = dataA.reduce((sum, item) => sum + item.volume, 0);
+    const volumeB = dataB.reduce((sum, item) => sum + item.volume, 0);
+    
+    const sessionsA = new Set(dataA.map(item => item.dateKey)).size;
+    const sessionsB = new Set(dataB.map(item => item.dateKey)).size;
+    
+    const ratio = volumeA > 0 ? (volumeB / volumeA).toFixed(2) : 0;
+    
+    document.getElementById('totalVolumeProgramA').textContent = volumeA.toFixed(0) + ' kg';
+    document.getElementById('totalVolumeProgramB').textContent = volumeB.toFixed(0) + ' kg';
+    document.getElementById('ratioBA').textContent = ratio + 'x';
+    document.getElementById('totalSessionsComparison').textContent = sessionsA + sessionsB;
+    document.getElementById('sessionsSplit').textContent = `A: ${sessionsA} | B: ${sessionsB}`;
+}
+
+/**
+ * Graphique d'évolution comparative A vs B
+ */
+function generateComparisonEvolutionChart() {
+    const ctx = document.getElementById('comparisonEvolutionChart');
+    if (!ctx) return;
+    
+    if (charts.comparisonEvolution) charts.comparisonEvolution.destroy();
+    
+    const cyclesA = detectCycles('A');
+    const cyclesB = detectCycles('B');
+    
+    const maxCycles = Math.max(cyclesA.length, cyclesB.length);
+    const labels = [];
+    const dataA = [];
+    const dataB = [];
+    
+    for (let i = 0; i < maxCycles; i++) {
+        labels.push(`Cycle ${i + 1}`);
+        dataA.push(cyclesA[i] ? cyclesA[i].totalVolume : 0);
+        dataB.push(cyclesB[i] ? cyclesB[i].totalVolume : 0);
+    }
+    
+    charts.comparisonEvolution = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Programme A (Libre)',
+                data: dataA,
+                borderColor: 'rgb(102, 126, 234)',
+                tension: 0.3
+            }, {
+                label: 'Programme B (Guidé)',
+                data: dataB,
+                borderColor: 'rgb(118, 75, 162)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+/**
+ * Graphique comparatif par type de séance
+ */
+function generateWorkoutTypeComparisonChart() {
+    const ctx = document.getElementById('workoutTypeComparisonChart');
+    if (!ctx) return;
+    
+    if (charts.workoutTypeComparison) charts.workoutTypeComparison.destroy();
+    
+    const workoutTypes = ['push', 'pull', 'leg', 'upper', 'lower', 'core_a', 'core_b'];
+    const volumesA = {};
+    const volumesB = {};
+    
+    workoutTypes.forEach(type => {
+        volumesA[type] = processedData
+            .filter(item => item.program === 'A' && item.workoutType === type)
+            .reduce((sum, item) => sum + item.volume, 0);
+        
+        volumesB[type] = processedData
+            .filter(item => item.program === 'B' && item.workoutType === type)
+            .reduce((sum, item) => sum + item.volume, 0);
+    });
+    
+    charts.workoutTypeComparison = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: workoutTypes.map(t => t.toUpperCase()),
+            datasets: [{
+                label: 'Programme A',
+                data: Object.values(volumesA),
+                backgroundColor: 'rgba(102, 126, 234, 0.8)'
+            }, {
+                label: 'Programme B',
+                data: Object.values(volumesB),
+                backgroundColor: 'rgba(118, 75, 162, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// FIN DES NOUVELLES FONCTIONS POUR LES CYCLES
+
+
     // ========================================================================
     // START: Fonctions de statistiques (optimisées)
     // ========================================================================
@@ -3028,13 +4875,20 @@
         const select = document.getElementById('goalExercise');
         const allExercises = new Set();
         
-        Object.values(workouts).forEach(program => {
-            Object.values(program).forEach(workout => {
-                workout.forEach(exercise => {
-                    allExercises.add(exercise.name);
+		Object.values(workouts).forEach(program => {
+    Object.values(program).forEach(workout => {
+        workout.forEach(exercise => {
+            if (exercise.isSuperset) {
+                // Ajouter chaque exercice du superset
+                exercise.exercises.forEach(subEx => {
+                    allExercises.add(subEx.name);
                 });
-            });
+            } else {
+                allExercises.add(exercise.name);
+            }
         });
+    });
+});
         
         select.innerHTML = '<option value="">Sélectionner un exercice</option>';
         [...allExercises].sort().forEach(exercise => {
@@ -3219,38 +5073,70 @@
     }
     
     // Tab switching (Lazy loading des graphiques)
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        document.querySelectorAll('.dashboard-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        document.getElementById(tabName).classList.add('active');
-        event.target.classList.add('active');
-        
-        try {
-            if (tabName === 'progress') {
-                generateTopExercisesChart();
-                generateProgressionChart();
-                generatePredictions();
-                generateStrengthStandards();
-            } else if (tabName === 'records') {
-                generatePRTable();
-            } else if (tabName === 'analysis') {
-                generateBalanceChart();
-                generateFatigueChart();
-                generateInsights();
-            } else if (tabName === 'goals') {
-                displayGoals();
-            }
-        } catch (e) {
-            console.error(`Erreur lors du changement d'onglet vers ${tabName}:`, e);
-            showToast("Erreur lors de l'affichage de cet onglet.");
-        }
-    }
+   function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.querySelectorAll('.dashboard-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
     
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+    
+    try {
+        // NOUVEAUX ONGLETS
+        if (tabName === 'programA') {
+            displayCycleCard('A', 'cycleCardProgramA');
+            displayCycleComparison('A', 'comparisonGridProgramA');
+            generateMuscleChartByProgram('A', 'muscleChartProgramA');
+            generateProgressionChartByProgram('A', 'progressionChartProgramA');
+            // Phase 2: Stats avancées pour Programme A
+            updatePushPullLegsDisplay('A');
+            updateFatigueDisplay('A');
+            updateRecordsDisplay('A');
+            // Phase 3: Insights & Prédictions pour Programme A
+            displayInsights('A');
+            displayRatioLibreGuide();
+            displayPredictions('A');
+        } else if (tabName === 'programB') {
+            displayCycleCard('B', 'cycleCardProgramB');
+            displayCycleComparison('B', 'comparisonGridProgramB');
+            generateMuscleChartByProgram('B', 'muscleChartProgramB');
+            generateProgressionChartByProgram('B', 'progressionChartProgramB');
+            // Phase 2: Stats avancées pour Programme B
+            updatePushPullLegsDisplay('B');
+            updateFatigueDisplay('B');
+            updateRecordsDisplay('B');
+            // Phase 3: Insights & Prédictions pour Programme B
+            displayInsights('B');
+            displayPredictions('B');
+        } else if (tabName === 'comparison') {
+            generateComparisonMetrics();
+            generateComparisonEvolutionChart();
+            generateWorkoutTypeComparisonChart();
+        }
+        // ONGLETS EXISTANTS
+        else if (tabName === 'progress') {
+            generateTopExercisesChart();
+            generateProgressionChart();
+            generatePredictions();
+            generateStrengthStandards();
+        } else if (tabName === 'records') {
+            generatePRTable();
+        } else if (tabName === 'analysis') {
+            generateBalanceChart();
+            generateFatigueChart();
+            generateInsights();
+        } else if (tabName === 'goals') {
+            displayGoals();
+        }
+    } catch (e) {
+        console.error(`Erreur lors du changement d'onglet vers ${tabName}:`, e);
+        showToast("Erreur lors de l'affichage de cet onglet.");
+    }
+}
+
     // Export functions
     function toggleExportMenu() {
         const menu = document.getElementById('exportMenu');
@@ -3391,6 +5277,1060 @@
             exportMenu.classList.remove('active');
         }
     }
+</script>
+
+<!-- ============================================
+     CHRONOMÈTRE TEMPS DE REPOS - HTML
+     ============================================ -->
+
+<!-- Bouton flottant -->
+<button class="rest-timer-fab" onclick="openRestTimer()" id="restTimerFab">
+    <span class="fab-icon">⏱️</span>
+</button>
+
+<!-- Modal du chronomètre -->
+<div class="rest-timer-modal" id="restTimerModal">
+    <div class="rest-timer-content">
+        <div class="rest-timer-header">
+            <h2 class="rest-timer-title">⏱️ Temps de Repos</h2>
+            <button class="rest-timer-close" onclick="closeRestTimer()">×</button>
+        </div>
+        
+        <div class="rest-timer-display">
+            <div class="rest-timer-time green" id="restTimerTime">00:00</div>
+        </div>
+        
+        <div class="rest-timer-progress">
+            <div class="rest-timer-progress-bar green" id="restTimerProgressBar" style="width: 100%"></div>
+        </div>
+        
+        <div class="rest-timer-status" id="restTimerStatus">Sélectionne un temps</div>
+        
+        <div class="rest-timer-presets">
+            <button class="rest-timer-preset" onclick="setRestTime(30)">30s</button>
+            <button class="rest-timer-preset" onclick="setRestTime(60)">1min</button>
+            <button class="rest-timer-preset" onclick="setRestTime(90)">1min30</button>
+            <button class="rest-timer-preset" onclick="setRestTime(120)">2min</button>
+            <button class="rest-timer-preset" onclick="setRestTime(180)">3min</button>
+            <button class="rest-timer-preset" onclick="setRestTime(300)">5min</button>
+        </div>
+        
+        <div class="rest-timer-controls">
+            <button class="rest-timer-btn rest-timer-btn-start" onclick="startRestTimer()" id="restTimerStartBtn">
+                ▶️ Start
+            </button>
+            <button class="rest-timer-btn rest-timer-btn-pause" onclick="pauseRestTimer()" id="restTimerPauseBtn" style="display: none;">
+                ⏸️ Pause
+            </button>
+            <button class="rest-timer-btn rest-timer-btn-reset" onclick="resetRestTimer()">
+                🔄 Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // CHRONOMÈTRE TEMPS DE REPOS - JAVASCRIPT
+    // ============================================
+    
+    let restTimerInterval = null;
+    let restTimerSeconds = 0;
+    let restTimerTotal = 0;
+    let restTimerRunning = false;
+    
+    function openRestTimer() {
+        document.getElementById('restTimerModal').classList.add('active');
+    }
+    
+    function closeRestTimer() {
+        document.getElementById('restTimerModal').classList.remove('active');
+        if (restTimerRunning) {
+            pauseRestTimer();
+        }
+    }
+    
+    function setRestTime(seconds) {
+        // Reset timer
+        if (restTimerRunning) {
+            pauseRestTimer();
+        }
+        
+        restTimerSeconds = seconds;
+        restTimerTotal = seconds;
+        
+        // Update UI
+        updateRestTimerDisplay();
+        document.getElementById('restTimerStatus').textContent = 'Prêt à démarrer';
+        
+        // Highlight selected preset
+        document.querySelectorAll('.rest-timer-preset').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+    }
+    
+    function startRestTimer() {
+        if (restTimerSeconds === 0 || restTimerTotal === 0) {
+            showToast('⏱️ Sélectionne d\'abord un temps de repos');
+            return;
+        }
+        
+        if (restTimerRunning) return;
+        
+        restTimerRunning = true;
+        document.getElementById('restTimerStartBtn').style.display = 'none';
+        document.getElementById('restTimerPauseBtn').style.display = 'block';
+        document.getElementById('restTimerStatus').textContent = 'En cours...';
+        
+        restTimerInterval = setInterval(() => {
+            restTimerSeconds--;
+            updateRestTimerDisplay();
+            
+            if (restTimerSeconds <= 0) {
+                restTimerComplete();
+            }
+        }, 1000);
+    }
+    
+    function pauseRestTimer() {
+        if (!restTimerRunning) return;
+        
+        restTimerRunning = false;
+        clearInterval(restTimerInterval);
+        
+        document.getElementById('restTimerStartBtn').style.display = 'block';
+        document.getElementById('restTimerPauseBtn').style.display = 'none';
+        document.getElementById('restTimerStatus').textContent = 'En pause';
+    }
+    
+    function resetRestTimer() {
+        pauseRestTimer();
+        restTimerSeconds = restTimerTotal;
+        updateRestTimerDisplay();
+        document.getElementById('restTimerStatus').textContent = 'Prêt à démarrer';
+    }
+    
+    function updateRestTimerDisplay() {
+        const minutes = Math.floor(restTimerSeconds / 60);
+        const seconds = restTimerSeconds % 60;
+        const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        const timeDisplay = document.getElementById('restTimerTime');
+        const progressBar = document.getElementById('restTimerProgressBar');
+        
+        timeDisplay.textContent = timeString;
+        
+        // Calculate percentage
+        const percentage = restTimerTotal > 0 ? (restTimerSeconds / restTimerTotal) * 100 : 0;
+        progressBar.style.width = percentage + '%';
+        
+        // Update colors based on time remaining
+        timeDisplay.classList.remove('green', 'orange', 'red');
+        progressBar.classList.remove('green', 'orange', 'red');
+        
+        if (percentage > 50) {
+            timeDisplay.classList.add('green');
+            progressBar.classList.add('green');
+        } else if (percentage > 20) {
+            timeDisplay.classList.add('orange');
+            progressBar.classList.add('orange');
+        } else {
+            timeDisplay.classList.add('red');
+            progressBar.classList.add('red');
+        }
+    }
+    
+    function restTimerComplete() {
+        pauseRestTimer();
+        
+        // Play sound
+        playRestTimerSound();
+        
+        // Vibrate on mobile
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+        }
+        
+        // Update UI
+        document.getElementById('restTimerStatus').textContent = '✅ Temps de repos terminé !';
+        showToast('⏱️ Temps de repos terminé ! C\'est reparti ! 💪');
+        
+        // Flash the display
+        const timeDisplay = document.getElementById('restTimerTime');
+        let flashCount = 0;
+        const flashInterval = setInterval(() => {
+            timeDisplay.style.opacity = timeDisplay.style.opacity === '0' ? '1' : '0';
+            flashCount++;
+            if (flashCount >= 6) {
+                clearInterval(flashInterval);
+                timeDisplay.style.opacity = '1';
+            }
+        }, 300);
+    }
+    
+    function playRestTimerSound() {
+        // Create audio context
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create oscillator (beep sound)
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Configure sound
+            oscillator.frequency.value = 800; // Frequency in Hz
+            oscillator.type = 'sine';
+            
+            // Volume envelope
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            // Play sound
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+            
+            // Second beep
+            setTimeout(() => {
+                const oscillator2 = audioContext.createOscillator();
+                const gainNode2 = audioContext.createGain();
+                
+                oscillator2.connect(gainNode2);
+                gainNode2.connect(audioContext.destination);
+                
+                oscillator2.frequency.value = 1000;
+                oscillator2.type = 'sine';
+                
+                gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode2.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+                gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator2.start(audioContext.currentTime);
+                oscillator2.stop(audioContext.currentTime + 0.5);
+            }, 300);
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    }
+    
+    // Close modal on outside click
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('restTimerModal');
+        if (event.target === modal) {
+            closeRestTimer();
+        }
+    });
+
+// ========================================
+// PHASE 2: FONCTIONS POUR LES NOUVELLES STATS
+// ========================================
+
+/**
+ * Catégorisation des exercices par groupe musculaire
+ */
+const muscleCategories = {
+    // PUSH (Poussée)
+    push: [
+        'développé', 'press', 'pec', 'dips', 'triceps', 'extension', 'élévations latérales',
+        'lateral raise', 'militaire', 'épaules', 'shoulder', 'incliné', 'supine', 'fly'
+    ],
+    // PULL (Traction)
+    pull: [
+        'tractions', 'pull', 'rowing', 'row', 'tirage', 'curl', 'biceps', 'shrugs',
+        'oiseau', 'reverse', 'peck deck'
+    ],
+    // LEGS (Jambes)
+    legs: [
+        'squat', 'fentes', 'lunge', 'rdl', 'deadlift', 'leg', 'mollets', 'calf',
+        'hack', 'presse', 'extensions lombaires', 'abducteurs', 'adductions'
+    ]
+};
+
+/**
+ * Détermine la catégorie Push/Pull/Legs d'un exercice
+ */
+function categorizeExercise(exerciseName) {
+    const name = exerciseName.toLowerCase();
+    
+    for (const [category, keywords] of Object.entries(muscleCategories)) {
+        if (keywords.some(keyword => name.includes(keyword))) {
+            return category;
+        }
+    }
+    
+    return 'other'; // Si non catégorisé
+}
+
+/**
+ * Calcule l'équilibre Push/Pull/Legs pour un programme donné
+ */
+function calculatePushPullLegsBalance(program) {
+    const balance = { push: 0, pull: 0, legs: 0 };
+    let totalVolume = 0;
+    
+    // Parcourir toutes les données de workout
+    Object.keys(workoutData).forEach(key => {
+        const [keyProgram, workout, date] = key.split('_');
+        
+        // Ne traiter que le programme demandé
+        if (keyProgram !== program) return;
+        
+        const sessionData = workoutData[key];
+        const exercises = workouts[program][workout];
+        
+        if (!exercises) return;
+        
+        // Parcourir les exercices de la session
+        exercises.forEach((exercise, idx) => {
+            const exerciseData = sessionData[idx];
+            if (!exerciseData || !exerciseData.reps || !exerciseData.weight) return;
+            
+            // Calculer le volume de l'exercice
+            const totalReps = exerciseData.reps.reduce((sum, r) => sum + (parseInt(r) || 0), 0);
+            const volume = totalReps * (parseFloat(exerciseData.weight) || 0);
+            
+            // Catégoriser et ajouter au volume
+            const category = categorizeExercise(exercise.name);
+            if (balance[category] !== undefined) {
+                balance[category] += volume;
+                totalVolume += volume;
+            }
+        });
+    });
+    
+    // Calculer les pourcentages
+    const percentages = {};
+    if (totalVolume > 0) {
+        percentages.push = Math.round((balance.push / totalVolume) * 100);
+        percentages.pull = Math.round((balance.pull / totalVolume) * 100);
+        percentages.legs = Math.round((balance.legs / totalVolume) * 100);
+    } else {
+        percentages.push = 0;
+        percentages.pull = 0;
+        percentages.legs = 0;
+    }
+    
+    return { volumes: balance, percentages, totalVolume };
+}
+
+/**
+ * Met à jour l'affichage de l'équilibre Push/Pull/Legs
+ */
+function updatePushPullLegsDisplay(program) {
+    const programId = program === 'A' ? 'ProgramA' : 'ProgramB';
+    const balance = calculatePushPullLegsBalance(program);
+    
+    // Mettre à jour les barres et les valeurs
+    const pushBar = document.getElementById(`pushBar${programId}`);
+    const pullBar = document.getElementById(`pullBar${programId}`);
+    const legsBar = document.getElementById(`legsBar${programId}`);
+    
+    const pushValue = document.getElementById(`pushValue${programId}`);
+    const pullValue = document.getElementById(`pullValue${programId}`);
+    const legsValue = document.getElementById(`legsValue${programId}`);
+    
+    if (pushBar && pullBar && legsBar) {
+        pushBar.style.width = balance.percentages.push + '%';
+        pullBar.style.width = balance.percentages.pull + '%';
+        legsBar.style.width = balance.percentages.legs + '%';
+    }
+    
+    if (pushValue && pullValue && legsValue) {
+        pushValue.textContent = balance.percentages.push + '%';
+        pullValue.textContent = balance.percentages.pull + '%';
+        legsValue.textContent = balance.percentages.legs + '%';
+    }
+    
+    // Vérifier les déséquilibres et afficher une alerte si nécessaire
+    const alertDiv = document.getElementById(`balanceAlert${programId}`);
+    if (alertDiv) {
+        const optimal = { push: 35, pull: 40, legs: 25 };
+        const diff = {
+            push: Math.abs(balance.percentages.push - optimal.push),
+            pull: Math.abs(balance.percentages.pull - optimal.pull),
+            legs: Math.abs(balance.percentages.legs - optimal.legs)
+        };
+        
+        // Si un déséquilibre est supérieur à 10%
+        const maxDiff = Math.max(diff.push, diff.pull, diff.legs);
+        if (maxDiff > 10) {
+            const underrepresented = Object.keys(diff).reduce((a, b) => 
+                balance.percentages[a] < balance.percentages[b] ? a : b
+            );
+            
+            alertDiv.innerHTML = `
+                <strong>⚠️ Déséquilibre détecté:</strong> 
+                Le groupe ${underrepresented.toUpperCase()} est sous-représenté de ${maxDiff}% par rapport à l'optimal.
+                <br><em>💡 Conseil: Ajoute 1-2 séries d'exercices ${underrepresented} lors des prochaines séances.</em>
+            `;
+            alertDiv.classList.add('visible');
+        } else {
+            alertDiv.classList.remove('visible');
+        }
+    }
+}
+
+/**
+ * Calcule l'indice de fatigue pour un programme donné
+ * Indice = Volume Semaine 3 / Volume Semaine 1
+ */
+function calculateFatigueIndex(program) {
+    // Obtenir toutes les dates de workout pour ce programme
+    const workoutDates = [];
+    Object.keys(workoutData).forEach(key => {
+        const [keyProgram, workout, date] = key.split('_');
+        if (keyProgram === program) {
+            workoutDates.push(new Date(date));
+        }
+    });
+    
+    if (workoutDates.length === 0) {
+        return { index: null, status: 'Pas assez de données' };
+    }
+    
+    // Trier par date
+    workoutDates.sort((a, b) => b - a);
+    
+    // Identifier le cycle actuel (dernières 3 semaines)
+    const now = new Date();
+    const threeWeeksAgo = new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000);
+    
+    // Séparer en semaines
+    const week1Dates = [];
+    const week2Dates = [];
+    const week3Dates = [];
+    
+    workoutDates.forEach(date => {
+        if (date < threeWeeksAgo) return;
+        
+        const daysAgo = Math.floor((now - date) / (24 * 60 * 60 * 1000));
+        
+        if (daysAgo < 7) {
+            week3Dates.push(date);
+        } else if (daysAgo < 14) {
+            week2Dates.push(date);
+        } else if (daysAgo < 21) {
+            week1Dates.push(date);
+        }
+    });
+    
+    // Calculer le volume de chaque semaine
+    const calculateWeekVolume = (dates) => {
+        let volume = 0;
+        dates.forEach(date => {
+            const dateStr = date.toISOString().split('T')[0];
+            Object.keys(workoutData).forEach(key => {
+                if (key.startsWith(program) && key.endsWith(dateStr)) {
+                    const sessionData = workoutData[key];
+                    const workout = key.split('_')[1];
+                    const exercises = workouts[program][workout];
+                    
+                    if (!exercises) return;
+                    
+                    exercises.forEach((exercise, idx) => {
+                        const exerciseData = sessionData[idx];
+                        if (!exerciseData || !exerciseData.reps || !exerciseData.weight) return;
+                        
+                        const totalReps = exerciseData.reps.reduce((sum, r) => sum + (parseInt(r) || 0), 0);
+                        volume += totalReps * (parseFloat(exerciseData.weight) || 0);
+                    });
+                }
+            });
+        });
+        return volume;
+    };
+    
+    const week1Volume = calculateWeekVolume(week1Dates);
+    const week3Volume = calculateWeekVolume(week3Dates);
+    
+    if (week1Volume === 0 || week3Volume === 0) {
+        return { index: null, status: 'Cycle incomplet' };
+    }
+    
+    const index = (week3Volume / week1Volume).toFixed(2);
+    
+    // Déterminer le statut
+    let status = '';
+    let statusClass = '';
+    
+    if (index < 0.90) {
+        status = '⚠️ Fatigue excessive - Envisage un deload';
+        statusClass = 'warning';
+    } else if (index >= 0.95 && index <= 1.05) {
+        status = '✅ Récupération optimale';
+        statusClass = 'optimal';
+    } else if (index > 1.10) {
+        status = '⚠️ Risque de surentraînement';
+        statusClass = 'danger';
+    } else {
+        status = '✅ Fatigue normale';
+        statusClass = 'optimal';
+    }
+    
+    return { index, status, statusClass };
+}
+
+/**
+ * Met à jour l'affichage de l'indice de fatigue
+ */
+function updateFatigueDisplay(program) {
+    const programId = program === 'A' ? 'ProgramA' : 'ProgramB';
+    const fatigue = calculateFatigueIndex(program);
+    
+    const indexElement = document.getElementById(`fatigueIndex${programId}`);
+    const statusElement = document.getElementById(`fatigueStatus${programId}`);
+    
+    if (indexElement) {
+        indexElement.textContent = fatigue.index !== null ? fatigue.index : '-';
+    }
+    
+    if (statusElement) {
+        statusElement.textContent = fatigue.status;
+        statusElement.className = 'fatigue-status ' + (fatigue.statusClass || '');
+    }
+}
+
+/**
+ * Calcule les records (PRs) pour un programme donné
+ */
+function calculateRecords(program) {
+    const records = {};
+    
+    // Parcourir toutes les données de workout
+    Object.keys(workoutData).forEach(key => {
+        const [keyProgram, workout, date] = key.split('_');
+        
+        // Ne traiter que le programme demandé
+        if (keyProgram !== program) return;
+        
+        const sessionData = workoutData[key];
+        const exercises = workouts[program][workout];
+        
+        if (!exercises) return;
+        
+        // Parcourir les exercices de la session
+        exercises.forEach((exercise, idx) => {
+            const exerciseData = sessionData[idx];
+            if (!exerciseData || !exerciseData.reps || !exerciseData.weight) return;
+            
+            const exerciseName = exercise.name;
+            const weight = parseFloat(exerciseData.weight);
+            
+            // Trouver le meilleur set (plus de reps avec ce poids)
+            const maxReps = Math.max(...exerciseData.reps.map(r => parseInt(r) || 0));
+            const volume = weight * maxReps;
+            
+            // Mettre à jour le record si c'est mieux
+            if (!records[exerciseName] || volume > records[exerciseName].volume) {
+                records[exerciseName] = {
+                    weight,
+                    reps: maxReps,
+                    volume,
+                    date,
+                    category: categorizeExercise(exerciseName)
+                };
+            }
+        });
+    });
+    
+    return records;
+}
+
+/**
+ * Met à jour l'affichage des records
+ */
+function updateRecordsDisplay(program) {
+    const programId = program === 'A' ? 'ProgramA' : 'ProgramB';
+    const records = calculateRecords(program);
+    const gridElement = document.getElementById(`recordsGrid${programId}`);
+    
+    if (!gridElement) return;
+    
+    // Grouper les records par catégorie
+    const recordsByCategory = {
+        push: [],
+        pull: [],
+        legs: []
+    };
+    
+    Object.entries(records).forEach(([name, record]) => {
+        if (recordsByCategory[record.category]) {
+            recordsByCategory[record.category].push({ name, ...record });
+        }
+    });
+    
+    // Générer le HTML
+    let html = '';
+    
+    const categoryNames = {
+        push: { emoji: '💪', name: 'Push (Poussée)' },
+        pull: { emoji: '🔙', name: 'Pull (Traction)' },
+        legs: { emoji: '🦵', name: 'Legs (Jambes)' }
+    };
+    
+    Object.entries(recordsByCategory).forEach(([category, categoryRecords]) => {
+        if (categoryRecords.length === 0) return;
+        
+        // Trier par volume décroissant
+        categoryRecords.sort((a, b) => b.volume - a.volume);
+        
+        // Prendre les 5 meilleurs
+        const top5 = categoryRecords.slice(0, 5);
+        
+        html += `
+            <div class="record-category">
+                <div class="record-category-title">
+                    ${categoryNames[category].emoji} ${categoryNames[category].name}
+                </div>
+        `;
+        
+        top5.forEach((record, idx) => {
+            const isRecent = new Date(record.date) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+            const badge = isRecent ? '<span class="record-badge">NOUVEAU</span>' : '';
+            
+            html += `
+                <div class="record-item">
+                    <div class="record-exercise">${record.name}</div>
+                    <div style="display: flex; align-items: center;">
+                        <span class="record-value">${record.weight}kg × ${record.reps}</span>
+                        ${badge}
+                        <span class="record-date">${new Date(record.date).toLocaleDateString('fr-FR')}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+    });
+    
+    if (html === '') {
+        html = '<p style="text-align: center; color: rgba(255,255,255,0.5);">Aucun record enregistré pour le moment.</p>';
+    }
+    
+    gridElement.innerHTML = html;
+}
+
+/**
+ * Fonction principale pour mettre à jour toutes les stats Phase 2
+ */
+function updatePhase2Stats() {
+    // Mettre à jour pour Programme A
+    updatePushPullLegsDisplay('A');
+    updateFatigueDisplay('A');
+    updateRecordsDisplay('A');
+    
+    // Mettre à jour pour Programme B
+    updatePushPullLegsDisplay('B');
+    updateFatigueDisplay('B');
+    updateRecordsDisplay('B');
+}
+
+// Ajouter l'appel à updatePhase2Stats() dans la fonction updateStats() existante
+
+
+// ========================================
+// PHASE 3: INSIGHTS & PRÉDICTIONS
+// ========================================
+
+// Calculer les progressions par exercice
+function calculateProgressions(workouts, program) {
+    try {
+        const exerciseStats = {};
+    
+    // Grouper par exercice
+    workouts.forEach(workout => {
+        workout.exercises.forEach(ex => {
+            if (!exerciseStats[ex.name]) {
+                exerciseStats[ex.name] = [];
+            }
+            
+            const totalVolume = ex.sets.reduce((sum, set) => {
+                return sum + (parseInt(set.reps) || 0) * (parseFloat(set.weight) || 0);
+            }, 0);
+            
+            exerciseStats[ex.name].push({
+                date: workout.date,
+                volume: totalVolume,
+                maxWeight: Math.max(...ex.sets.map(s => parseFloat(s.weight) || 0))
+            });
+        });
+    });
+    
+    // Calculer les progressions
+    const progressions = [];
+    
+    for (const [exercise, data] of Object.entries(exerciseStats)) {
+        if (data.length < 2) continue;
+        
+        // Trier par date
+        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        const firstSession = data[0];
+        const lastSession = data[data.length - 1];
+        
+        const volumeChange = ((lastSession.volume - firstSession.volume) / firstSession.volume) * 100;
+        const weightChange = lastSession.maxWeight - firstSession.maxWeight;
+        
+        progressions.push({
+            exercise,
+            volumeChange: volumeChange.toFixed(1),
+            weightChange: weightChange.toFixed(1),
+            sessionsCount: data.length,
+            trend: volumeChange > 0 ? 'up' : volumeChange < 0 ? 'down' : 'stable'
+        });
+    }
+    
+    return progressions.sort((a, b) => parseFloat(b.volumeChange) - parseFloat(a.volumeChange));
+    } catch (error) {
+        console.error('Erreur dans calculateProgressions:', error);
+        return [];
+    }
+}
+
+// Afficher les insights (top progressions et points d'attention)
+function displayInsights(program) {
+    try {
+        const workouts = getWorkoutsByProgram(program);
+        
+        if (workouts.length < 3) {
+            document.getElementById(`topProgressionsProgram${program}`).innerHTML = 
+                '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Pas assez de données (minimum 3 séances)</div>';
+            document.getElementById(`attentionPointsProgram${program}`).innerHTML = 
+                '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Pas assez de données (minimum 3 séances)</div>';
+            return;
+        }
+        
+        const progressions = calculateProgressions(workouts, program);
+    
+    // Top 3 progressions
+    const topProgressions = progressions.slice(0, 3).filter(p => parseFloat(p.volumeChange) > 0);
+    const topHtml = topProgressions.length > 0
+        ? topProgressions.map(p => `
+            <div class="progression-item">
+                <div class="progression-exercise">${p.exercise}</div>
+                <div class="progression-change progression-positive">
+                    📈 +${p.volumeChange}% volume | +${p.weightChange}kg
+                </div>
+                <div style="font-size: 0.85em; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                    ${p.sessionsCount} séances suivies
+                </div>
+            </div>
+        `).join('')
+        : '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Aucune progression significative détectée</div>';
+    
+    document.getElementById(`topProgressionsProgram${program}`).innerHTML = topHtml;
+    
+    // Points d'attention (stagnation ou régression)
+    const attentionPoints = progressions.filter(p => parseFloat(p.volumeChange) < -5).slice(0, 3);
+    const attentionHtml = attentionPoints.length > 0
+        ? attentionPoints.map(p => `
+            <div class="attention-item">
+                <div class="progression-exercise">${p.exercise}</div>
+                <div class="progression-change progression-negative">
+                    📉 ${p.volumeChange}% volume | ${p.weightChange}kg
+                </div>
+                <div style="font-size: 0.85em; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                    💡 Envisager une variation ou un deload
+                </div>
+            </div>
+        `).join('')
+        : '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">✅ Aucun point d\'attention majeur</div>';
+    
+    document.getElementById(`attentionPointsProgram${program}`).innerHTML = attentionHtml;
+    } catch (error) {
+        console.error('Erreur dans displayInsights:', error);
+        const topEl = document.getElementById(`topProgressionsProgram${program}`);
+        const attEl = document.getElementById(`attentionPointsProgram${program}`);
+        if (topEl) topEl.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Erreur lors du chargement</div>';
+        if (attEl) attEl.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Erreur lors du chargement</div>';
+    }
+}
+
+// Calculer le ratio Libre vs Guidé pour exercices similaires
+function displayRatioLibreGuide() {
+    try {
+        const workoutsA = getWorkoutsByProgram('A');
+        const workoutsB = getWorkoutsByProgram('B');
+    
+    if (workoutsA.length < 2 || workoutsB.length < 2) {
+        document.getElementById('ratioGridProgramA').innerHTML = 
+            '<div class="prediction-empty">Pas assez de données dans les deux programmes</div>';
+        return;
+    }
+    
+    // Groupes d'exercices similaires
+    const similarExercises = {
+        'Développé couché': ['Développé couché', 'Bench press', 'Développé incliné'],
+        'Squat': ['Squat', 'Front squat', 'Back squat'],
+        'Soulevé de terre': ['Soulevé de terre', 'Deadlift', 'Romanian deadlift'],
+        'Développé militaire': ['Développé militaire', 'Military press', 'Overhead press'],
+        'Rowing': ['Rowing barre', 'Rowing', 'Barbell row']
+    };
+    
+    const ratios = [];
+    
+    for (const [category, variations] of Object.entries(similarExercises)) {
+        // Trouver les exercices dans chaque programme
+        let volumeA = 0, countA = 0;
+        let volumeB = 0, countB = 0;
+        
+        workoutsA.forEach(workout => {
+            workout.exercises.forEach(ex => {
+                if (variations.some(v => ex.name.toLowerCase().includes(v.toLowerCase()))) {
+                    const vol = ex.sets.reduce((sum, set) => 
+                        sum + (parseInt(set.reps) || 0) * (parseFloat(set.weight) || 0), 0);
+                    volumeA += vol;
+                    countA++;
+                }
+            });
+        });
+        
+        workoutsB.forEach(workout => {
+            workout.exercises.forEach(ex => {
+                if (variations.some(v => ex.name.toLowerCase().includes(v.toLowerCase()))) {
+                    const vol = ex.sets.reduce((sum, set) => 
+                        sum + (parseInt(set.reps) || 0) * (parseFloat(set.weight) || 0), 0);
+                    volumeB += vol;
+                    countB++;
+                }
+            });
+        });
+        
+        if (countA > 0 && countB > 0) {
+            const avgA = volumeA / countA;
+            const avgB = volumeB / countB;
+            const ratio = (avgA / avgB).toFixed(2);
+            
+            let verdict = '';
+            let verdictClass = '';
+            if (Math.abs(ratio - 1) < 0.15) {
+                verdict = '✅ Performances équilibrées';
+                verdictClass = 'ratio-balanced';
+            } else if (ratio > 1) {
+                verdict = `💪 Libre ${((ratio - 1) * 100).toFixed(0)}% meilleur`;
+                verdictClass = 'ratio-libre-better';
+            } else {
+                verdict = `🎯 Guidé ${((1 - ratio) * 100).toFixed(0)}% meilleur`;
+                verdictClass = 'ratio-guide-better';
+            }
+            
+            ratios.push({
+                category,
+                avgA: avgA.toFixed(0),
+                avgB: avgB.toFixed(0),
+                ratio,
+                verdict,
+                verdictClass
+            });
+        }
+    }
+    
+    if (ratios.length === 0) {
+        document.getElementById('ratioGridProgramA').innerHTML = 
+            '<div class="prediction-empty">Aucun exercice similaire trouvé dans les deux programmes</div>';
+        return;
+    }
+    
+    const html = ratios.map(r => `
+        <div class="ratio-card">
+            <div class="ratio-exercise">${r.category}</div>
+            <div class="ratio-comparison">
+                <div class="ratio-program">
+                    <div class="ratio-label">Programme A (Libre)</div>
+                    <div class="ratio-value">${r.avgA}</div>
+                </div>
+                <div style="display: flex; align-items: center; color: rgba(255,255,255,0.5);">vs</div>
+                <div class="ratio-program">
+                    <div class="ratio-label">Programme B (Guidé)</div>
+                    <div class="ratio-value">${r.avgB}</div>
+                </div>
+            </div>
+            <div class="ratio-verdict ${r.verdictClass}">
+                ${r.verdict}
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('ratioGridProgramA').innerHTML = html;
+    } catch (error) {
+        console.error('Erreur dans displayRatioLibreGuide:', error);
+        const el = document.getElementById('ratioGridProgramA');
+        if (el) el.innerHTML = '<div class="prediction-empty">Erreur lors du chargement des données</div>';
+    }
+}
+
+// Prédictions de performance (simple régression linéaire)
+function displayPredictions(program) {
+    try {
+        const workouts = getWorkoutsByProgram(program);
+    
+    if (workouts.length < 4) {
+        document.getElementById(`predictionsProgram${program}`).innerHTML = 
+            '<div class="prediction-empty">Pas assez de données pour faire des prédictions (minimum 4 séances)</div>';
+        return;
+    }
+    
+    const exerciseData = {};
+    
+    // Collecter les données par exercice
+    workouts.forEach(workout => {
+        workout.exercises.forEach(ex => {
+            if (!exerciseData[ex.name]) {
+                exerciseData[ex.name] = [];
+            }
+            
+            const maxWeight = Math.max(...ex.sets.map(s => parseFloat(s.weight) || 0));
+            if (maxWeight > 0) {
+                exerciseData[ex.name].push({
+                    date: new Date(workout.date),
+                    weight: maxWeight
+                });
+            }
+        });
+    });
+    
+    const predictions = [];
+    
+    for (const [exercise, data] of Object.entries(exerciseData)) {
+        if (data.length < 3) continue;
+        
+        // Trier par date
+        data.sort((a, b) => a.date - b.date);
+        
+        // Régression linéaire simple
+        const n = data.length;
+        const firstDate = data[0].date.getTime();
+        const x = data.map((d, i) => i);
+        const y = data.map(d => d.weight);
+        
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        // Prédire dans 4 semaines (28 jours)
+        const currentWeight = y[y.length - 1];
+        const avgSessionsPerWeek = n / ((data[n-1].date - data[0].date) / (1000 * 60 * 60 * 24 * 7));
+        const futureSessions = Math.round(avgSessionsPerWeek * 4);
+        const predictedWeight = slope * (n + futureSessions) + intercept;
+        
+        if (predictedWeight > currentWeight) {
+            predictions.push({
+                exercise,
+                current: currentWeight.toFixed(1),
+                predicted: predictedWeight.toFixed(1),
+                gain: (predictedWeight - currentWeight).toFixed(1),
+                weeks: 4
+            });
+        }
+    }
+    
+    // Trier par gain prédit
+    predictions.sort((a, b) => parseFloat(b.gain) - parseFloat(a.gain));
+    
+    if (predictions.length === 0) {
+        document.getElementById(`predictionsProgram${program}`).innerHTML = 
+            '<div class="prediction-empty">Aucune prédiction positive disponible</div>';
+        return;
+    }
+    
+    const html = predictions.slice(0, 6).map(p => `
+        <div class="prediction-card">
+            <div class="prediction-exercise">${p.exercise}</div>
+            <div class="prediction-current">Actuel: ${p.current}kg</div>
+            <div class="prediction-target">🎯 Prédit: ${p.predicted}kg (+${p.gain}kg)</div>
+            <div class="prediction-timeline">⏱️ Dans ${p.weeks} semaines</div>
+        </div>
+    `).join('');
+    
+    document.getElementById(`predictionsProgram${program}`).innerHTML = html;
+    } catch (error) {
+        console.error('Erreur dans displayPredictions:', error);
+        const el = document.getElementById(`predictionsProgram${program}`);
+        if (el) el.innerHTML = '<div class="prediction-empty">Erreur lors du chargement des données</div>';
+    }
+}
+
+// Fonction helper pour récupérer les workouts par programme
+function getWorkoutsByProgram(program) {
+    try {
+        const workoutsArray = [];
+        
+        // Utiliser workoutData comme les fonctions Phase 2
+        Object.keys(workoutData).forEach(key => {
+        const [keyProgram, workout, date] = key.split('_');
+        
+        // Ne traiter que le programme demandé
+        if (keyProgram !== program) return;
+        
+        const sessionData = workoutData[key];
+        const exerciseTemplates = workouts[program][workout];
+        
+        if (!exerciseTemplates) return;
+        
+        // Construire un objet workout avec exercises
+        const workoutObj = {
+            date: date,
+            type: workout,
+            exercises: []
+        };
+        
+        // Parcourir les exercices de la session
+        exerciseTemplates.forEach((exercise, idx) => {
+            const exerciseData = sessionData[idx];
+            if (!exerciseData) return;
+            
+            // Construire la structure attendue par calculateProgressions
+            const sets = [];
+            if (exerciseData.reps && exerciseData.weight) {
+                for (let i = 0; i < exerciseData.reps.length; i++) {
+                    sets.push({
+                        reps: exerciseData.reps[i],
+                        weight: exerciseData.weight
+                    });
+                }
+            }
+            
+            workoutObj.exercises.push({
+                name: exercise.name,
+                sets: sets
+            });
+        });
+        
+        workoutsArray.push(workoutObj);
+    });
+    
+    return workoutsArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+    } catch (error) {
+        console.error('Erreur dans getWorkoutsByProgram:', error);
+        return [];
+    }
+}
+
+// Mettre à jour toutes les stats Phase 3
+function updatePhase3Stats() {
+    try {
+        // Programme A
+        displayInsights('A');
+        displayRatioLibreGuide();
+        displayPredictions('A');
+        
+        // Programme B
+        displayInsights('B');
+        displayPredictions('B');
+    } catch (error) {
+        console.error('Erreur dans updatePhase3Stats:', error);
+    }
+}
+
+
 </script>
 
 </body>

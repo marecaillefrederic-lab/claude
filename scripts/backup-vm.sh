@@ -120,6 +120,69 @@ else
     log_warning "Actual Budget non installé, skip"
 fi
 
+# XX. Filebrowser
+log "🗂️  Backup Filebrowser..."
+if [ -d /opt/filebrowser ]; then
+    mkdir -p "$TEMP_DIR/opt/filebrowser"
+    
+    # Binaire
+    if [ -f /opt/filebrowser/filebrowser ]; then
+        cp /opt/filebrowser/filebrowser "$TEMP_DIR/opt/filebrowser/" 2>/dev/null
+    fi
+    
+    log_success "Filebrowser binaire"
+else
+    log_warning "Filebrowser binaire non trouvé, skip"
+fi
+
+if [ -d /var/lib/filebrowser ]; then
+    mkdir -p "$TEMP_DIR/var/lib/filebrowser"
+    
+    # Config JSON
+    if [ -f /var/lib/filebrowser/filebrowser.json ]; then
+        cp /var/lib/filebrowser/filebrowser.json "$TEMP_DIR/var/lib/filebrowser/" 2>/dev/null
+    fi
+    
+    # Base de données SQLite
+    if [ -f /var/lib/filebrowser/filebrowser.db ]; then
+        cp /var/lib/filebrowser/filebrowser.db "$TEMP_DIR/var/lib/filebrowser/" 2>/dev/null
+    fi
+    
+    log_success "Filebrowser config + DB"
+else
+    log_warning "Filebrowser data non trouvé, skip"
+fi
+
+# XX. Nextcloud
+log "☁️  Backup Nextcloud..."
+if [ -d /var/www/nextcloud ]; then
+    mkdir -p "$TEMP_DIR/var/www/nextcloud"
+    
+    # Config uniquement (pas les données, trop gros + déjà sur SMB)
+    cp -r /var/www/nextcloud/config "$TEMP_DIR/var/www/nextcloud/" 2>/dev/null
+    
+    log_success "Nextcloud config"
+else
+    log_warning "Nextcloud non installé, skip"
+fi
+
+# XX. PostgreSQL
+log "🐘 Backup PostgreSQL (Nextcloud)..."
+if command -v pg_dump &> /dev/null; then
+    mkdir -p "$TEMP_DIR/var/lib/postgresql"
+    sudo -u postgres pg_dump nextcloud > "$TEMP_DIR/var/lib/postgresql/nextcloud.sql" 2>/dev/null
+    log_success "PostgreSQL Nextcloud"
+else
+    log_warning "PostgreSQL non installé, skip"
+fi
+
+# Service systemd
+if [ -f /etc/systemd/system/filebrowser.service ]; then
+    mkdir -p "$TEMP_DIR/etc/systemd/system"
+    cp /etc/systemd/system/filebrowser.service "$TEMP_DIR/etc/systemd/system/" 2>/dev/null
+    log_success "Filebrowser service"
+fi
+
 # 5. OpenVPN / ProtonVPN
 log "🌐 Backup ProtonVPN..."
 if [ -d /etc/openvpn ]; then
@@ -153,6 +216,25 @@ fi
 log "🔑 Backup credentials..."
 mkdir -p "$TEMP_DIR/root"
 [ -f /root/.smbcredentials ] && cp /root/.smbcredentials "$TEMP_DIR/root/" 2>/dev/null && log_success "SMB credentials"
+
+# XX. Fichiers cachés user freebox (dotfiles)
+log "🏠 Backup fichiers cachés /home/freebox..."
+mkdir -p "$TEMP_DIR/home/freebox"
+
+# Sauvegarder tous les fichiers cachés (dotfiles) dans /home/freebox
+if [ -d /home/freebox ]; then
+    # Copier tous les fichiers cachés (.*) mais exclure . et .. et les dossiers déjà backupés
+    rsync -a \
+        --include=".*" \
+        --exclude=".cache" \
+        --exclude=".local/share/Trash" \
+        --exclude=".mozilla" \
+        --exclude="rtorrent" \
+        --exclude=".config/rclone" \
+        /home/freebox/ "$TEMP_DIR/home/freebox/" 2>/dev/null && log_success "Dotfiles /home/freebox"
+fi
+
+# Note: cette section sauvegarde .zshrc, .zshrc~, .oh-my-zsh, .bashrc, .profile, .gitconfig, etc.
 
 # rclone config (pour restauration)
 if [ -f /home/freebox/.config/rclone/rclone.conf ]; then

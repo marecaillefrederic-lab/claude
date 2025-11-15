@@ -99,3 +99,20 @@ logpath = /var/log/caddy/budget-access.log
 maxretry = 5
 findtime = 600
 bantime = 3600
+
+[caddy-files]
+enabled = true
+port = http,https
+filter = caddy-files
+logpath = /var/log/caddy/files.leblais.net-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-nextcloud]
+enabled = true
+filter = caddy-nextcloud
+logpath = /var/log/caddy/cloud-access.log
+maxretry = 5
+bantime = 3600
+findtime = 600

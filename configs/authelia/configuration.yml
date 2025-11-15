@@ -35,6 +35,10 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
+    - domain: "files.leblais.net"
+      policy: one_factor
+      subject:
+        - "user:freebox"
     - domain: "*.leblais.net"
       policy: one_factor
 

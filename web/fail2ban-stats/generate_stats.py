@@ -641,6 +641,7 @@ def generate_html(data):
         'caddy-torrent': '🌊',
         'caddy-vaultwarden': '🔐',
         'caddy-adguard': '🛡️',
+        'caddy-files': '🗂️',
         'fail2ban-stats': '📊'
     }
     
