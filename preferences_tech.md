@@ -1,6 +1,6 @@
 # Infrastructure Technique - leblais.net
 
-**Dernière mise à jour : 15 novembre 2025**
+**Dernière mise à jour : 16 novembre 2025**
 
 ---
 
@@ -137,6 +137,29 @@ maxmemory-policy allkeys-lru
 
 ### Scripts de maintenance
 
+**Cleanup automatique des verrous** : `/usr/local/bin/nextcloud-cleanup-locks.sh`
+```bash
+#!/bin/bash
+# Nextcloud - Cleanup des verrous expirés
+# Empêche l'accumulation de verrous qui bloquent les crons
+
+LOCKS_DELETED=$(sudo -u postgres psql -d nextcloud -t -c "DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW()); SELECT ROW_COUNT();" 2>/dev/null | tr -d ' ')
+
+JOBS_FREED=$(sudo -u postgres psql -d nextcloud -t -c "UPDATE oc_jobs SET reserved_at = 0 WHERE reserved_at > 0; SELECT ROW_COUNT();" 2>/dev/null | tr -d ' ')
+
+# Log uniquement si des verrous ont été supprimés
+if [ "$LOCKS_DELETED" -gt 0 ] || [ "$JOBS_FREED" -gt 0 ]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - Locks deleted: $LOCKS_DELETED, Jobs freed: $JOBS_FREED" >> /var/log/nextcloud-cleanup.log
+    
+    # Push vers Uptime Kuma si problème important
+    if [ "$LOCKS_DELETED" -gt 100 ]; then
+        curl -s "https://uptime.leblais.net/api/push/PUSH_URL?status=up&msg=Cleanup_${LOCKS_DELETED}_locks"
+    fi
+fi
+```
+**Exécution** : Cron toutes les heures  
+**Log** : `/var/log/nextcloud-cleanup.log`
+
 **Maintenance mensuelle** : `/usr/local/bin/nextcloud-maintenance.sh`
 ```bash
 #!/bin/bash
@@ -188,10 +211,10 @@ fi
 ```
 **Exécution** : Cron tous les lundis à 9h
 
-**Health check** : `/usr/local/bin/nextcloud-health-check.sh`
+**Health check amélioré** : `/usr/local/bin/nextcloud-health-check.sh`
 ```bash
 #!/bin/bash
-# Health check Nextcloud + RAM
+# Health check Nextcloud + RAM + Détection cron bloqué
 
 # Vérifier status Nextcloud
 STATUS=$(curl -s https://cloud.leblais.net/status.php | grep -c "installed")
@@ -199,10 +222,31 @@ STATUS=$(curl -s https://cloud.leblais.net/status.php | grep -c "installed")
 # RAM disponible
 RAM_AVAIL=$(free -m | grep Mem | awk '{print $7}')
 
-if [ "$STATUS" -eq 1 ] && [ "$RAM_AVAIL" -gt 200 ]; then
+# Vérifier si un cron tourne depuis trop longtemps (>15 min)
+CRON_BLOCKED=0
+CRON_RUNNING=$(ps -eo pid,etime,cmd | grep "nextcloud/cron.php" | grep -v grep)
+
+if [ ! -z "$CRON_RUNNING" ]; then
+    # Extraire le temps d'exécution (format MM:SS ou HH:MM:SS)
+    ETIME=$(echo "$CRON_RUNNING" | awk '{print $2}')
+    
+    # Convertir en secondes (simplification : si contient ":", c'est au moins 1 min)
+    if [[ "$ETIME" == *:*:* ]]; then
+        # Format HH:MM:SS - c'est bloqué !
+        CRON_BLOCKED=1
+        PID=$(echo "$CRON_RUNNING" | awk '{print $1}')
+        echo "$(date) - CRON BLOQUÉ détecté ! PID: $PID, Durée: $ETIME" >> /var/log/nextcloud-cleanup.log
+    fi
+fi
+
+if [ "$STATUS" -eq 1 ] && [ "$RAM_AVAIL" -gt 200 ] && [ "$CRON_BLOCKED" -eq 0 ]; then
     curl -s "https://uptime.leblais.net/api/push/PUSH_URL?status=up&msg=OK_RAM_${RAM_AVAIL}MB"
 else
-    curl -s "https://uptime.leblais.net/api/push/PUSH_URL?status=down&msg=ERROR_RAM_${RAM_AVAIL}MB"
+    if [ "$CRON_BLOCKED" -eq 1 ]; then
+        curl -s "https://uptime.leblais.net/api/push/PUSH_URL?status=down&msg=CRON_BLOCKED"
+    else
+        curl -s "https://uptime.leblais.net/api/push/PUSH_URL?status=down&msg=ERROR_RAM_${RAM_AVAIL}MB"
+    fi
 fi
 ```
 **Exécution** : Cron toutes les 6 heures
@@ -221,22 +265,28 @@ fi
 
 ### Background Jobs (CRITIQUE)
 
-**Cron configuré** : 
+**Cron configuré avec timeout de 10 minutes** : 
 ```bash
-*/5 * * * * sudo -u www-data php -f /var/www/nextcloud/cron.php
+*/5 * * * * timeout 600 sudo -u www-data php -f /var/www/nextcloud/cron.php
 ```
 
-**⚠️ Important** : Utiliser `cron.php` et PAS `occ background:cron` (incompatible)
+**⚠️ Important** : 
+- Utiliser `cron.php` et PAS `occ background:cron` (incompatible)
+- Timeout de 600s (10 min) empêche les blocages prolongés
+- Cleanup automatique des verrous toutes les heures
 
 **Vérification** :
 - Nextcloud web → Paramètres → Administration → Paramètres de base
 - "Dernière tâche exécutée" doit être < 5 minutes
 - Mode : "Cron (Recommandé)" ✅
 
-**Historique problèmes** :
-- 18,553 jobs anciens supprimés (accumulation)
-- Verrous fichiers parfois nécessitent cleanup PostgreSQL
-- Solution : `DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW())`
+**Historique problèmes résolus** :
+- ✅ 18,553 jobs anciens supprimés (accumulation initiale)
+- ✅ 902 verrous de fichiers nettoyés (16 nov 2025)
+- ✅ Timeout ajouté pour éviter blocages >10 min
+- ✅ Script cleanup automatique mis en place
+- Solution verrous : `DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW())`
+- Solution jobs bloqués : `UPDATE oc_jobs SET reserved_at = 0 WHERE reserved_at > 0`
 
 ### Synchronisation mobile
 
@@ -337,6 +387,21 @@ sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 sudo -u postgres psql -d nextcloud -c "VACUUM ANALYZE;"
 ```
 
+**Debug verrous et jobs** :
+```bash
+# Débloquer verrous expirés (à faire en cas de problème)
+sudo -u postgres psql -d nextcloud -c "DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW());"
+
+# Débloquer jobs réservés
+sudo -u postgres psql -d nextcloud -c "UPDATE oc_jobs SET reserved_at = 0 WHERE reserved_at > 0;"
+
+# Voir logs
+tail -100 /mnt/WD_Freebox/nextcloud-data/nextcloud.log
+
+# Voir logs cleanup automatique
+tail -50 /var/log/nextcloud-cleanup.log
+```
+
 **Apps** :
 ```bash
 # Lister apps
@@ -356,18 +421,6 @@ sudo -u www-data php /var/www/nextcloud/occ user:add --display-name="Nom Complet
 
 # Réinitialiser mot de passe
 sudo -u www-data php /var/www/nextcloud/occ user:resetpassword USERNAME
-```
-
-**Debug** :
-```bash
-# Débloquer scans
-sudo -u postgres psql -d nextcloud -c "DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW());"
-
-# Débloquer jobs
-sudo -u postgres psql -d nextcloud -c "UPDATE oc_jobs SET reserved_at = 0 WHERE reserved_at > 0;"
-
-# Voir logs
-tail -100 /mnt/WD_Freebox/nextcloud-data/nextcloud.log
 ```
 
 ### Sauvegardes
@@ -706,15 +759,20 @@ pihole restartdns
 **Nextcloud Maintenance** :
 ```bash
 0 2 */20 * * /usr/local/bin/nextcloud-maintenance.sh
-30 2 * * 1 -u postgres psql -d nextcloud -c "VACUUM ANALYZE;" >> /var/log/nextcloud-maintenance.log 2>&1
+30 2 * * 1 sudo -u postgres psql -d nextcloud -c "VACUUM ANALYZE;" >> /var/log/nextcloud-maintenance.log 2>&1
 0 9 * * 1 /usr/local/bin/nextcloud-check-update.sh
 0 */6 * * * /usr/local/bin/nextcloud-health-check.sh
 0 1 * * * free -h >> /var/log/nextcloud-ram-daily.log
 ```
 
-**Nextcloud Background Jobs (CRITIQUE)** :
+**Nextcloud Background Jobs (CRITIQUE avec timeout)** :
 ```bash
-*/5 * * * * sudo -u www-data php -f /var/www/nextcloud/cron.php
+*/5 * * * * timeout 600 sudo -u www-data php -f /var/www/nextcloud/cron.php
+```
+
+**Nextcloud Cleanup Verrous (Nouveau)** :
+```bash
+0 * * * * /usr/local/bin/nextcloud-cleanup-locks.sh
 ```
 
 ### RAM Usage
@@ -792,6 +850,44 @@ cd /opt/SERVICE && docker-compose pull && docker-compose up -d
 sudo -u www-data php /var/www/nextcloud/occ update:check
 ```
 
+### Résolution problèmes Nextcloud
+
+**Symptômes** : Cron bloqué, consommation CPU élevée, scans qui ne terminent pas
+
+**Diagnostic** :
+```bash
+# Vérifier processus cron actifs
+ps aux | grep "nextcloud/cron.php" | grep -v grep
+
+# Vérifier logs
+tail -100 /mnt/WD_Freebox/nextcloud-data/nextcloud.log
+tail -50 /var/log/nextcloud-cleanup.log
+```
+
+**Solutions** :
+```bash
+# 1. Killer processus bloqué (si existe)
+kill -9 PID
+
+# 2. Nettoyer verrous PostgreSQL
+sudo -u postgres psql -d nextcloud
+DELETE FROM oc_file_locks WHERE ttl < EXTRACT(EPOCH FROM NOW());
+UPDATE oc_jobs SET reserved_at = 0 WHERE reserved_at > 0;
+\q
+
+# 3. Tester cron manuellement
+sudo -u www-data php -f /var/www/nextcloud/cron.php
+
+# 4. Vérifier RAM disponible
+free -h
+```
+
+**Prévention** :
+- ✅ Script cleanup automatique toutes les heures
+- ✅ Timeout 10 min sur le cron principal
+- ✅ Health check avec détection cron bloqué
+- ✅ Monitoring Uptime Kuma
+
 ---
 
 ## 🛠️ Outils Préférés
@@ -844,9 +940,12 @@ sudo -u www-data php /var/www/nextcloud/occ update:check
 
 **Nextcloud** :
 - `cron.php` > `occ background:cron` (plus compatible)
+- **Timeout obligatoire** sur le cron (600s = 10 min)
+- **Cleanup automatique verrous** indispensable (toutes les heures)
 - Scan progressif > Scan complet (gestion RAM)
 - Doublons = 50 GB économisés (analyse intelligente importante)
 - PostgreSQL + Redis = Meilleure performance que MySQL
+- **902 verrous** accumulés lors de la migration initiale
 
 **Sécurité** :
 - Fail2ban indispensable (tentatives quotidiennes)
@@ -866,8 +965,15 @@ sudo -u www-data php /var/www/nextcloud/occ update:check
 - Chiffrement E2EE = Protection même contre hébergeur
 - Rétention 30 jours = Bon compromis
 
+**Résolution problèmes** :
+- Logs = Premier réflexe (journalctl, tail)
+- Verrous PostgreSQL = Cause fréquente blocages Nextcloud
+- Timeout sur scripts critiques = Évite blocages prolongés
+- Cleanup préventif > Intervention manuelle
+
 ---
 
-**Dernière mise à jour : 15 novembre 2025**  
+**Dernière mise à jour : 16 novembre 2025**  
 **Nextcloud opérationnel depuis : 13 novembre 2025**  
+**Correctifs verrous appliqués : 16 novembre 2025**  
 **Infrastructure stable et optimisée pour 3 utilisateurs familiaux** ✅
