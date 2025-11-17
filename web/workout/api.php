@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Configuration
 define('DATA_DIR', __DIR__ . '/data');
 define('DATA_FILE', DATA_DIR . '/workout-data.json');
-define('API_KEY', [REDACTED]); // CHANGE CE MOT DE PASSE !
+define('API_KEY', 'freddebian79claudius'); // CHANGE CE MOT DE PASSE !
 
 // Vérification de l'authentification
 function checkAuth() {
