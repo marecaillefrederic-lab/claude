@@ -8,6 +8,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Google Fonts - Roboto (police fiable pour contourner polices système corrompues) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         /* Tout votre CSS original est ici (inchangé) */
         * {
@@ -751,8 +757,11 @@
         }
         
         .prediction-exercise {
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #FFFFFF !important;
             margin-bottom: 10px;
+            display: block;
         }
         
         .prediction-value {
@@ -1856,9 +1865,11 @@
         }
 
         .progression-exercise {
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
-            margin-bottom: 5px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #FFFFFF !important;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .progression-change {
@@ -5074,6 +5085,8 @@ function generateWorkoutTypeComparisonChart() {
     
     // Tab switching (Lazy loading des graphiques)
    function switchTab(tabName) {
+    console.log('🔄 switchTab appelé avec:', tabName);
+    
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
@@ -5096,6 +5109,7 @@ function generateWorkoutTypeComparisonChart() {
             updateFatigueDisplay('A');
             updateRecordsDisplay('A');
             // Phase 3: Insights & Prédictions pour Programme A
+            console.log('📊 Appel des fonctions Phase 3 pour Programme A...');
             displayInsights('A');
             displayRatioLibreGuide();
             displayPredictions('A');
@@ -5574,7 +5588,10 @@ function calculatePushPullLegsBalance(program) {
     
     // Parcourir toutes les données de workout
     Object.keys(workoutData).forEach(key => {
-        const [keyProgram, workout, date] = key.split('_');
+        const parsed = parseWorkoutKey(key);
+        if (!parsed) return;
+        
+        const { program: keyProgram, type: workout, date } = parsed;
         
         // Ne traiter que le programme demandé
         if (keyProgram !== program) return;
@@ -5682,9 +5699,11 @@ function calculateFatigueIndex(program) {
     // Obtenir toutes les dates de workout pour ce programme
     const workoutDates = [];
     Object.keys(workoutData).forEach(key => {
-        const [keyProgram, workout, date] = key.split('_');
-        if (keyProgram === program) {
-            workoutDates.push(new Date(date));
+        const parsed = parseWorkoutKey(key);
+        if (!parsed) return;
+        
+        if (parsed.program === program) {
+            workoutDates.push(new Date(parsed.date));
         }
     });
     
@@ -5795,6 +5814,25 @@ function updateFatigueDisplay(program) {
 }
 
 /**
+ * Parse une clé de workout au format workout-YYYY-MM-DD-PROGRAM-TYPE
+ * @param {string} key - La clé à parser (ex: "workout-2025-09-29-A-push")
+ * @returns {object} - {program: "A", type: "push", date: "2025-09-29"}
+ */
+function parseWorkoutKey(key) {
+    const parts = key.split('-');
+    
+    if (parts.length < 6) {
+        return null;
+    }
+    
+    return {
+        program: parts[4],
+        type: parts.slice(5).join('-'),
+        date: `${parts[1]}-${parts[2]}-${parts[3]}`
+    };
+}
+
+/**
  * Calcule les records (PRs) pour un programme donné
  */
 function calculateRecords(program) {
@@ -5802,7 +5840,10 @@ function calculateRecords(program) {
     
     // Parcourir toutes les données de workout
     Object.keys(workoutData).forEach(key => {
-        const [keyProgram, workout, date] = key.split('_');
+        const parsed = parseWorkoutKey(key);
+        if (!parsed) return;
+        
+        const { program: keyProgram, type: workout, date } = parsed;
         
         // Ne traiter que le programme demandé
         if (keyProgram !== program) return;
@@ -5935,9 +5976,11 @@ function updatePhase2Stats() {
 // ========================================
 // PHASE 3: INSIGHTS & PRÉDICTIONS
 // ========================================
+console.log('✅ Code JavaScript Phase 3 chargé');
 
 // Calculer les progressions par exercice
 function calculateProgressions(workouts, program) {
+    console.log('📈 calculateProgressions appelé avec', workouts.length, 'workouts pour programme:', program);
     try {
         const exerciseStats = {};
     
@@ -5993,25 +6036,29 @@ function calculateProgressions(workouts, program) {
 
 // Afficher les insights (top progressions et points d'attention)
 function displayInsights(program) {
+    console.log('🔥 displayInsights appelé pour programme:', program);
     try {
         const workouts = getWorkoutsByProgram(program);
         
         if (workouts.length < 3) {
             document.getElementById(`topProgressionsProgram${program}`).innerHTML = 
-                '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Pas assez de données (minimum 3 séances)</div>';
+                '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
             document.getElementById(`attentionPointsProgram${program}`).innerHTML = 
-                '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Pas assez de données (minimum 3 séances)</div>';
+                '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
             return;
         }
         
         const progressions = calculateProgressions(workouts, program);
-    
-    // Top 3 progressions
-    const topProgressions = progressions.slice(0, 3).filter(p => parseFloat(p.volumeChange) > 0);
+        
+        console.log('[displayInsights] Progressions calculées:', progressions);
+        
+        // Top 3 progressions
+        const topProgressions = progressions.slice(0, 3).filter(p => parseFloat(p.volumeChange) > 0);
+        console.log('[displayInsights] Top progressions filtrées:', topProgressions);
     const topHtml = topProgressions.length > 0
         ? topProgressions.map(p => `
             <div class="progression-item">
-                <div class="progression-exercise">${p.exercise}</div>
+                <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
                 <div class="progression-change progression-positive">
                     📈 +${p.volumeChange}% volume | +${p.weightChange}kg
                 </div>
@@ -6020,8 +6067,9 @@ function displayInsights(program) {
                 </div>
             </div>
         `).join('')
-        : '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Aucune progression significative détectée</div>';
+        : '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Aucune progression significative détectée</span></div>';
     
+    console.log('[displayInsights] HTML top progressions:', topHtml);
     document.getElementById(`topProgressionsProgram${program}`).innerHTML = topHtml;
     
     // Points d'attention (stagnation ou régression)
@@ -6029,7 +6077,7 @@ function displayInsights(program) {
     const attentionHtml = attentionPoints.length > 0
         ? attentionPoints.map(p => `
             <div class="attention-item">
-                <div class="progression-exercise">${p.exercise}</div>
+                <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
                 <div class="progression-change progression-negative">
                     📉 ${p.volumeChange}% volume | ${p.weightChange}kg
                 </div>
@@ -6038,20 +6086,21 @@ function displayInsights(program) {
                 </div>
             </div>
         `).join('')
-        : '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">✅ Aucun point d\'attention majeur</div>';
+        : '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">✅ Aucun point d\'attention majeur</span></div>';
     
     document.getElementById(`attentionPointsProgram${program}`).innerHTML = attentionHtml;
     } catch (error) {
         console.error('Erreur dans displayInsights:', error);
         const topEl = document.getElementById(`topProgressionsProgram${program}`);
         const attEl = document.getElementById(`attentionPointsProgram${program}`);
-        if (topEl) topEl.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Erreur lors du chargement</div>';
-        if (attEl) attEl.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">Erreur lors du chargement</div>';
+        if (topEl) topEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
+        if (attEl) attEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
     }
 }
 
 // Calculer le ratio Libre vs Guidé pour exercices similaires
 function displayRatioLibreGuide() {
+    console.log('⚖️ displayRatioLibreGuide appelé');
     try {
         const workoutsA = getWorkoutsByProgram('A');
         const workoutsB = getWorkoutsByProgram('B');
@@ -6130,14 +6179,17 @@ function displayRatioLibreGuide() {
     }
     
     if (ratios.length === 0) {
+        console.log('[displayRatioLibreGuide] Aucun ratio trouvé');
         document.getElementById('ratioGridProgramA').innerHTML = 
             '<div class="prediction-empty">Aucun exercice similaire trouvé dans les deux programmes</div>';
         return;
     }
     
+    console.log('[displayRatioLibreGuide] Ratios trouvés:', ratios);
+    
     const html = ratios.map(r => `
         <div class="ratio-card">
-            <div class="ratio-exercise">${r.category}</div>
+            <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 10px !important;">${r.category}</span>
             <div class="ratio-comparison">
                 <div class="ratio-program">
                     <div class="ratio-label">Programme A (Libre)</div>
@@ -6155,6 +6207,8 @@ function displayRatioLibreGuide() {
         </div>
     `).join('');
     
+    console.log('[displayRatioLibreGuide] HTML généré:', html);
+    
     document.getElementById('ratioGridProgramA').innerHTML = html;
     } catch (error) {
         console.error('Erreur dans displayRatioLibreGuide:', error);
@@ -6165,6 +6219,7 @@ function displayRatioLibreGuide() {
 
 // Prédictions de performance (simple régression linéaire)
 function displayPredictions(program) {
+    console.log('🔮 displayPredictions appelé pour programme:', program);
     try {
         const workouts = getWorkoutsByProgram(program);
     
@@ -6243,7 +6298,7 @@ function displayPredictions(program) {
     
     const html = predictions.slice(0, 6).map(p => `
         <div class="prediction-card">
-            <div class="prediction-exercise">${p.exercise}</div>
+            <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 10px !important;">${p.exercise}</span>
             <div class="prediction-current">Actuel: ${p.current}kg</div>
             <div class="prediction-target">🎯 Prédit: ${p.predicted}kg (+${p.gain}kg)</div>
             <div class="prediction-timeline">⏱️ Dans ${p.weeks} semaines</div>
@@ -6263,51 +6318,87 @@ function getWorkoutsByProgram(program) {
     try {
         const workoutsArray = [];
         
+        console.log(`[getWorkoutsByProgram] Programme demandé: ${program}`);
+        console.log('[getWorkoutsByProgram] workoutData keys:', Object.keys(workoutData));
+        
         // Utiliser workoutData comme les fonctions Phase 2
         Object.keys(workoutData).forEach(key => {
-        const [keyProgram, workout, date] = key.split('_');
-        
-        // Ne traiter que le programme demandé
-        if (keyProgram !== program) return;
-        
-        const sessionData = workoutData[key];
-        const exerciseTemplates = workouts[program][workout];
-        
-        if (!exerciseTemplates) return;
-        
-        // Construire un objet workout avec exercises
-        const workoutObj = {
-            date: date,
-            type: workout,
-            exercises: []
-        };
-        
-        // Parcourir les exercices de la session
-        exerciseTemplates.forEach((exercise, idx) => {
-            const exerciseData = sessionData[idx];
-            if (!exerciseData) return;
+            // Format: workout-YYYY-MM-DD-PROGRAM-TYPE
+            // Exemple: workout-2025-09-29-A-push
+            const parts = key.split('-');
             
-            // Construire la structure attendue par calculateProgressions
-            const sets = [];
-            if (exerciseData.reps && exerciseData.weight) {
-                for (let i = 0; i < exerciseData.reps.length; i++) {
-                    sets.push({
-                        reps: exerciseData.reps[i],
-                        weight: exerciseData.weight
-                    });
-                }
+            if (parts.length < 6) {
+                console.log(`[getWorkoutsByProgram] ✗ Format invalide: ${key}`);
+                return;
             }
             
-            workoutObj.exercises.push({
-                name: exercise.name,
-                sets: sets
+            const keyProgram = parts[4]; // A ou B
+            const workout = parts.slice(5).join('-'); // push, pull, leg, core_a, etc.
+            const date = `${parts[1]}-${parts[2]}-${parts[3]}`; // YYYY-MM-DD
+            
+            console.log(`[getWorkoutsByProgram] Clé: ${key}, Programme: ${keyProgram}, Type: ${workout}, Date: ${date}`);
+            
+            // Ne traiter que le programme demandé
+            if (keyProgram !== program) return;
+            
+            console.log(`[getWorkoutsByProgram] ✓ Match programme ${program}`);
+            
+            const sessionData = workoutData[key];
+            const exerciseTemplates = workouts[program][workout];
+            
+            console.log(`[getWorkoutsByProgram] SessionData:`, sessionData);
+            console.log(`[getWorkoutsByProgram] ExerciseTemplates:`, exerciseTemplates);
+            
+            if (!exerciseTemplates) {
+                console.log(`[getWorkoutsByProgram] ✗ Pas de template pour ${program}/${workout}`);
+                return;
+            }
+            
+            // Construire un objet workout avec exercises
+            const workoutObj = {
+                date: date,
+                type: workout,
+                exercises: []
+            };
+            
+            console.log(`[getWorkoutsByProgram] Constructing workoutObj for ${date}`);
+            
+            // Parcourir les exercices de la session
+            exerciseTemplates.forEach((exercise, idx) => {
+                const exerciseData = sessionData[idx];
+                if (!exerciseData) {
+                    console.log(`[getWorkoutsByProgram] No data for exercise ${idx}`);
+                    return;
+                }
+                
+                console.log(`[getWorkoutsByProgram] Exercise ${idx}: ${exercise.name}`, exerciseData);
+                
+                // Construire la structure attendue par calculateProgressions
+                const sets = [];
+                if (exerciseData.reps && exerciseData.weight) {
+                    for (let i = 0; i < exerciseData.reps.length; i++) {
+                        sets.push({
+                            reps: exerciseData.reps[i],
+                            weight: exerciseData.weight
+                        });
+                    }
+                    console.log(`[getWorkoutsByProgram] Created ${sets.length} sets for ${exercise.name}`);
+                }
+                
+                workoutObj.exercises.push({
+                    name: exercise.name,
+                    sets: sets
+                });
             });
+            
+            console.log(`[getWorkoutsByProgram] WorkoutObj created with ${workoutObj.exercises.length} exercises`);
+            workoutsArray.push(workoutObj);
         });
         
-        workoutsArray.push(workoutObj);
-    });
-    
-    return workoutsArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+        console.log(`[getWorkoutsByProgram] Total workouts found: ${workoutsArray.length}`);
+        console.log('[getWorkoutsByProgram] Workouts:', workoutsArray);
+        
+        return workoutsArray.sort((a, b) => new Date(a.date) - new Date(b.date));
     } catch (error) {
         console.error('Erreur dans getWorkoutsByProgram:', error);
         return [];

@@ -15,9 +15,9 @@ auth.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -36,9 +36,9 @@ vault.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -54,9 +54,9 @@ freebox.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -80,9 +80,9 @@ workout.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -106,9 +106,9 @@ fail2ban.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -128,9 +128,9 @@ rss.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -152,9 +152,9 @@ terminal.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -172,9 +172,9 @@ cockpit.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -199,9 +199,9 @@ torrent.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
 
        }
     }
@@ -218,9 +218,9 @@ adguard.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -238,9 +238,9 @@ vaultwarden.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -256,9 +256,9 @@ uptime.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -274,9 +274,9 @@ bookmarks.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
@@ -292,9 +292,9 @@ pihole.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
        }
     }
 }
@@ -310,9 +310,96 @@ budget.leblais.net {
     tls {
         dns ovh {
             endpoint ovh-eu
-            application_key [REDACTED]
-            application_secret [REDACTED][REDACTED][REDACTED]
-            consumer_key [REDACTED][REDACTED][REDACTED]
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
         }
     }
 }
+
+files.leblais.net {
+    # Protection Authelia
+    forward_auth localhost:9091 {
+        uri /api/verify?rd=https://auth.leblais.net
+        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+    }
+    
+    reverse_proxy 127.0.0.1:8083
+    
+    log {
+        output file /var/log/caddy/files.leblais.net-access.log
+        format json
+    }
+    
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
+        }
+    }
+}
+
+cloud.leblais.net {
+    root * /var/www/nextcloud
+
+    php_fastcgi unix//run/php/php8.2-fpm.sock {
+        env front_controller_active true
+    }
+
+    file_server
+
+    # Headers de sécurité Nextcloud
+    header {
+        Strict-Transport-Security "max-age=31536000;"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "no-referrer"
+        X-XSS-Protection "1; mode=block"
+        X-Permitted-Cross-Domain-Policies "none"
+        X-Robots-Tag "noindex, nofollow"
+        -Server
+    }
+
+    # Bloquer accès fichiers sensibles
+    @forbidden {
+        path /.htaccess
+        path /data/*
+        path /config/*
+        path /db_structure
+        path /.xml
+        path /README
+        path /3rdparty/*
+        path /lib/*
+        path /templates/*
+        path /occ
+        path /console.php
+    }
+
+    respond @forbidden 404
+
+    # Support WebDAV (CalDAV/CardDAV)
+    redir /.well-known/carddav /remote.php/dav 301
+    redir /.well-known/caldav /remote.php/dav 301
+
+    log {
+        output file /var/log/caddy/cloud-access.log {
+            roll_size 10MB
+            roll_keep 5
+        }
+        format json
+    }
+
+    tls {
+        dns ovh {
+            endpoint ovh-eu
+        
+            application_key e61f1eee87616eae
+            application_secret 880b4c02caedd4a31cc300a87293cb09
+            consumer_key 9f68317af99049fbda3e9137f46fa5a0
+    }
+    }
+}
+
+
