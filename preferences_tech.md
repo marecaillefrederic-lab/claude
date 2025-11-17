@@ -977,3 +977,142 @@ free -h
 **Nextcloud opérationnel depuis : 13 novembre 2025**  
 **Correctifs verrous appliqués : 16 novembre 2025**  
 **Infrastructure stable et optimisée pour 3 utilisateurs familiaux** ✅
+
+📝 Résumé de la session du 17 novembre 2025
+🎯 Objectifs accomplis
+1️⃣ Mise à jour Uptime Kuma (v1 → v2)
+Problème initial : Notification de mise à jour disponible dans l'interface Uptime Kuma.
+Solution appliquée :
+
+Modifié /opt/uptime-kuma/docker-compose.yml : changement du tag image: louislam/uptime-kuma:1 vers image: louislam/uptime-kuma:2
+Téléchargé la nouvelle image : docker-compose pull
+Recréé le container : docker-compose up -d
+Migration automatique de la base de données SQLite effectuée (durée ~5 min)
+
+Résultat : ✅ Uptime Kuma v2.0.2 opérationnel, tous les monitors préservés
+
+2️⃣ Correction du script check-pihole-update.sh
+Problème initial : Le script s'exécutait (logs OK) mais aucun push n'arrivait sur Uptime Kuma depuis le 07/11.
+4 bugs identifiés et corrigés :
+Bug #1 - URL malformée avec double ?
+
+Cause : UPTIME_PUSH_URL contenait déjà ?status=up&msg=OK&ping= et la fonction ajoutait encore ?status=...
+Fix : Nettoyé l'URL de base → https://uptime.leblais.net/api/push/FQd5HEJnWf
+
+Bug #2 - Caractères spéciaux non encodés
+
+Cause : Messages avec espaces, :, et autres caractères spéciaux cassaient l'URL
+Fix : Utilisé curl -G --data-urlencode pour encoder automatiquement les paramètres
+
+Bug #3 - Parenthèses dans l'extraction des versions
+
+Cause : grep -o "Latest:.*" | awk '{print $2}' capturait v6.2.2) au lieu de v6.2.2
+Fix : Ajouté tr -d '()' pour nettoyer les parenthèses
+
+Bug #4 - Casse incorrecte dans le grep
+
+Cause : Script utilisait "Version is" (V majuscule) alors que pihole retourne "version is" (v minuscule)
+Fix : Changé en "version is" (minuscule)
+
+Résultat : ✅ Script fonctionnel, push Uptime Kuma opérationnel, cron hebdomadaire (dimanche 6h) validé
+Emplacement : /usr/local/bin/check-pihole-update.sh
+
+3️⃣ Synchronisation et mise à jour du repo GitHub
+Fichiers ajoutés au repo :
+scripts/
+├── check-pihole-update.sh (corrigé)
+├── check-vpn-status.sh
+├── nextcloud-check-update.sh
+├── nextcloud-cleanup-locks.sh
+├── nextcloud-health-check.sh
+└── nextcloud-maintenance.sh
+
+docker-compose/
+└── uptime-kuma.yml (v1 → v2)
+
+configs/
+├── caddy/Caddyfile (màj 13/11)
+├── authelia/configuration.yml (màj 10/11)
+├── fail2ban/jail.local (màj 13/11)
+└── fail2ban/filter.d/
+    ├── caddy-files.conf (NOUVEAU - Filebrowser)
+    └── caddy-nextcloud.conf (NOUVEAU - Nextcloud)
+
+web/
+├── workout/index.html (màj 16/11)
+├── vault/index.html (màj 13/11)
+└── fail2ban-stats/
+    ├── generate_stats.py (màj 11/11)
+    └── index.html (NOUVEAU)
+Commits effectués :
+
+Mise à jour Uptime Kuma v2 et ajout scripts monitoring (7 fichiers, 203 insertions)
+Mise à jour configs et apps web récentes (5 fichiers)
+
+
+4️⃣ Automatisation de la synchronisation GitHub
+Script créé : /usr/local/bin/sync-claude-repo.sh
+Fonctionnalités :
+
+Copie automatique des configs importantes (/etc/caddy, /etc/authelia, /etc/fail2ban)
+Copie des scripts depuis /usr/local/bin/
+Copie des docker-compose depuis /opt/*/
+Copie des apps web (/var/www/workout, /var/www/vault, /var/www/fail2ban-stats)
+Détection automatique des changements via git status
+Commit automatique avec message daté
+Push automatique vers GitHub
+Logging dans /var/log/sync-claude-repo.log
+
+Configuration SSH :
+
+Clé SSH Ed25519 générée : ~/.ssh/id_ed25519
+Clé publique ajoutée à GitHub : "clé ssh terminal VM"
+Remote Git changé de HTTPS vers SSH : git@github.com:marecaillefrederic-lab/claude.git
+
+Cron configuré :
+bash30 3 * * * /usr/local/bin/sync-claude-repo.sh >> /var/log/sync-claude-repo.log 2>&1
+Exécution : Tous les jours à 3h30 du matin (après backup-vm.sh à 3h00)
+Résultat : ✅ Repo GitHub automatiquement synchronisé quotidiennement, garantissant des infos toujours à jour pour les conversations avec Claude
+
+📊 Workflow Git établi
+Mise à jour manuelle (si besoin avant le cron) :
+bashsudo cp fichiers_modifiés ~/claude/...
+sudo chown freebox:freebox ~/claude/...
+cd ~/claude
+git status
+git add .
+git commit -m "Description des changements"
+git push origin main
+Mise à jour automatique : Script sync-claude-repo.sh via cron quotidien ✅
+
+🎓 Commandes Git utiles apprises
+bashgit add .                           # Ajoute tous les fichiers
+git add dossier/                    # Ajoute tout un dossier
+git diff                            # Voir changements avant commit
+git diff --staged                   # Voir ce qui sera commité
+git restore --staged fichier        # Retirer du staging
+git remote -v                       # Voir URL du remote
+git remote set-url origin <URL>     # Changer l'URL du remote
+
+✅ État final de l'infrastructure
+Services mis à jour :
+
+✅ Uptime Kuma v2.0.2
+✅ Script Pi-hole update check opérationnel
+✅ Repo GitHub à jour et auto-synchronisé
+
+Automatisations actives :
+
+✅ Backup VM quotidien (3h00)
+✅ Sync GitHub quotidien (3h30)
+✅ Check Pi-hole update (dimanche 6h)
+✅ Check VPN status (toutes les 5 min)
+✅ Maintenance Nextcloud (tous les 20 jours)
+
+Monitoring opérationnel :
+
+✅ 15+ monitors Uptime Kuma actifs
+✅ Disponibilité : 99.9%
+
+
+Dernière mise à jour de cette section : 17 novembre 2025
