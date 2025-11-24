@@ -1,6 +1,6 @@
 # Profil Personnel - Frédéric
 
-**Dernière mise à jour : 15 novembre 2025**
+**Dernière mise à jour : 24 novembre 2025**
 
 ---
 
@@ -8,14 +8,15 @@
 
 **Âge** : 46 ans (né le 26/03/1979)  
 **Taille** : 1.81m  
-**Poids actuel** : 90kg  
-**Objectif poids** : 82-85 kg  
+**Poids actuel** : 90kgs -> 87kgs au 24/11/2025  
+**Objectif poids** : 82-85 kg -> <90kgs 
 
 ---
 
 ## 💼 Professionnel
 
 **Domaine** : Responsable moyens de paiement et fraude dans le e-commerce
+a partir du 01/12/2025 en plus des reponsabilités actuelles, poste de Chef de projet Finance à DOSI/Environnement technique SAP(Fiori)
 
 ---
 
@@ -45,6 +46,7 @@
 **Protocole** : ADF (Alternate Day Fasting - Jeûne alterné)
 - Jeûne : 1 jour sur 2
 - Jours d'alimentation : Protéines + créatine
+- Protocole de jeûne ADF arrêté le 24/11 après un cycle de 3 mois, motif: poids redescendu sous 90kgs et sensation de fatigue
 
 ### Compléments alimentaires
 
@@ -55,7 +57,7 @@
 **Timing** :
 - Protéines : Post-workout et/ou répartis dans la journée
 - Créatine : Timing flexible (peut être pris à tout moment)
-
+- Prise systématiquement en duo après les entraînements avec 1 ou 2 fruits
 ---
 
 ## ⚠️ Points d'attention
@@ -75,6 +77,8 @@
 3. **Composition corporelle**
    - L'important n'est pas tant le poids que le ratio muscle/gras
    - Privilégier les mesures de composition corporelle
+
+-->> Décision de stopper le jeûne ADF le 24/11 pour ces raisons <---
 
 ---
 
@@ -222,5 +226,5 @@
 
 ---
 
-**Dernière mise à jour : 15 novembre 2025**  
+**Dernière mise à jour : 24 novembre 2025**  
 **Prochain bilan recommandé : Février 2026**
