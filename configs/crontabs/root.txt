@@ -42,3 +42,6 @@
 0 3 * * * /usr/local/bin/backup-trigkey.sh >> /var/log/backup-trigkey.log 2>&1
 
 0 * * * * cd /var/www/fail2ban-stats && ./generate_stats.py >> /var/log/fail2ban-stats-cron.log 2>&1
+
+30 3 * * * /usr/local/bin/sync-claude-repo.sh >> /var/log/sync-claude-repo.log 2>&1
+
