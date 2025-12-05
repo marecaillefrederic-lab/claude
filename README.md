@@ -1,6 +1,6 @@
 # Infrastructure leblais.net - Documentation Complète
 
-**Repository GitHub privé** : https://github.com/marecaillefrederic-lab/claude
+**Repository GitHub** : https://github.com/marecaillefrederic-lab/claude
 
 Documentation complète de l'infrastructure auto-hébergée + profil personnel pour utilisation avec Claude AI.
 
@@ -11,14 +11,13 @@ Documentation complète de l'infrastructure auto-hébergée + profil personnel p
 ### 📄 `preferences_tech.md`
 **Infrastructure technique complète**
 
-Documentation de tous les services auto-hébergés sur VM Debian 12 (Freebox Server Ultra) :
-- 🌐 **Nextcloud** : Cloud familial souverain (290 GB, 3 utilisateurs)
-- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, Actual Budget
-- 🔒 **Sécurité** : Caddy, Fail2ban, Authelia, WireGuard VPN
-- 🌍 **Services Web** : Pi-hole, Terminal Web, Workout Tracker, Dashboard Fail2ban
-- 🔄 **Torrents + VPN** : ruTorrent + rtorrent avec ProtonVPN (kill switch)
-- 💾 **Backups** : Automatiques quotidiens (local + Google Drive chiffré E2EE)
-- ⚙️ **Configuration système** : Optimisations 2 GB RAM, crontab, scripts maintenance
+Documentation de tous les services auto-hébergés sur Trigkey N150 (Debian 13) + VPS OVH :
+- 🌐 **Nextcloud** : Cloud familial souverain (290 GB, 2 utilisateurs) + OnlyOffice
+- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, qBittorrent + Gluetun VPN
+- 🔒 **Sécurité** : Caddy, Fail2ban (13 jails), Authelia, WireGuard VPN
+- 🌍 **Services Web** : Pi-hole, Terminal Web, Workout Tracker, Budget, FreshRSS, Dashboard Fail2ban
+- 💾 **Backups** : Automatiques quotidiens vers VPS OVH
+- 📡 **Monitoring** : Uptime Kuma local + externe (VPS)
 
 **Utilisation avec Claude** :
 - Configuration détaillée de tous les services
@@ -34,16 +33,10 @@ Documentation de tous les services auto-hébergés sur VM Debian 12 (Freebox Ser
 
 Informations personnelles pour conseils adaptés :
 - 💪 **Fitness** : Programme PPL 5x/semaine, suivi Workout Tracker
-- 🍽️ **Nutrition** : Protocole ADF (jeûne alterné), protéines + créatine
-- 📊 **Objectifs** : Stabilisation 82-85 kg, préservation masse musculaire
+- 🍽️ **Nutrition** : Protéines + créatine (protocole ADF arrêté nov. 2025)
+- 📊 **Objectifs** : Maintien < 90 kg, préservation masse musculaire
 - ⚠️ **Points d'attention** : Surveillance performance, récupération, composition corporelle
 - 🎯 **Recommandations** : Santé long terme, métabolisme à 46 ans
-
-**Utilisation avec Claude** :
-- Conseils nutrition personnalisés
-- Recommandations fitness adaptées
-- Suivi progression et ajustements
-- Alertes santé si protocole inadapté
 
 ---
 
@@ -52,8 +45,8 @@ Informations personnelles pour conseils adaptés :
 **Permettre à Claude AI d'avoir un contexte complet** pour :
 
 ### Sur l'infrastructure technique
-- ✅ Comprendre l'architecture complète
-- ✅ Proposer des solutions adaptées à la configuration (2 GB RAM, ARM64)
+- ✅ Comprendre l'architecture distribuée (Trigkey + VPS)
+- ✅ Proposer des solutions adaptées à la configuration
 - ✅ Aider au troubleshooting avec contexte précis
 - ✅ Suggérer améliorations pertinentes
 - ✅ Maintenir documentation à jour
@@ -68,55 +61,66 @@ Informations personnelles pour conseils adaptés :
 
 ## 🔧 Infrastructure Actuelle
 
-**Hébergement** : VM Debian 12 ARM64 sur Freebox Server Ultra  
-**RAM** : 2 GB (optimisée, 500-800 MB disponibles)  
-**Stockage VM** : 32 GB  
-**Stockage externe** : 1 TB SMB (Freebox)  
+### Trigkey N150 (Serveur principal)
 
-**Services actifs (15+)** :
-- Nextcloud (cloud familial 290 GB)
+**Caractéristiques** :
+- **CPU** : Intel N150
+- **RAM** : 16 GB DDR5
+- **Stockage** : 500 GB SSD (système) + 1 TB SSD (données)
+- **OS** : Debian 13 (Trixie)
+
+**Services actifs (12+)** :
+- Nextcloud + OnlyOffice (cloud familial 290 GB)
 - Vaultwarden (passwords)
 - Uptime Kuma (monitoring 24/7)
 - Pi-hole (blocage pub DNS)
 - Linkding (bookmarks)
-- Actual Budget (finances)
-- ruTorrent + ProtonVPN (torrents sécurisés)
+- FreshRSS (agrégateur RSS)
+- qBittorrent + Gluetun (torrents via VPN)
 - Authelia (SSO)
 - Terminal Web (ttyd)
 - Workout Tracker (fitness PPL)
+- Budget Tracker (finances)
 - Dashboard Fail2ban (sécurité)
-- WireGuard VPN (accès distant)
+- File Browser
 
-**Sécurité** :
-- SSL partout (Caddy + Let's Encrypt)
+### VPS OVH (Backup + Monitoring externe)
+
+**Caractéristiques** :
+- **Offre** : VPS-1 (4,58€/mois)
+- **RAM** : 8 GB
+- **Stockage** : 75 GB SSD
+- **IP** : 151.80.59.35
+
+**Rôle** :
+- Réception backups quotidiens du Trigkey
+- Uptime Kuma externe (monitoring depuis l'extérieur)
+- Alertes SMS si Trigkey down
+
+---
+
+## 🔒 Sécurité
+
+- SSL partout (Caddy + Let's Encrypt DNS challenge OVH)
 - Fail2ban (13 jails actives)
-- Backups quotidiens chiffrés E2EE
-- Score SSL Labs : A+
-
-**Monitoring** :
-- Uptime Kuma : 15+ monitors
-- Disponibilité : 99.9%
-- Alertes automatiques
+- Backups quotidiens vers VPS OVH
+- Sync configs vers GitHub
+- Score Nextcloud : Rating A
 
 ---
 
 ## 📊 Statistiques
 
-**Infrastructure** :
-- Services auto-hébergés : 15+
-- Domaines actifs : 15+ sous-domaines leblais.net
-- RAM utilisée : ~1.1 GB / 2 GB (55%)
-- Stockage Nextcloud : ~240 GB / 1 TB
-- Jails Fail2ban : 13
-- Monitors Uptime Kuma : 15+
-- Backup quotidien : ✅ Local + Cloud chiffré
-- Uptime moyen : 99.9%
-
-**Personnel** :
-- Âge : 46 ans
-- Entraînements : 5x/semaine (PPL)
-- Protocole nutrition : ADF (jeûne alterné)
-- Objectif : 82-85 kg (actuellement 90 kg)
+| Métrique | Valeur |
+|----------|--------|
+| Services auto-hébergés | 12+ |
+| Sous-domaines actifs | 15 |
+| Jails Fail2ban | 13 |
+| Monitors Uptime Kuma | 15+ |
+| RAM utilisée | ~4 GB / 16 GB |
+| Stockage Nextcloud | ~290 GB / 1 TB |
+| Backup quotidien | ✅ Trigkey → VPS |
+| Uptime moyen | 99.9% |
 
 ---
 
@@ -126,23 +130,18 @@ Informations personnelles pour conseils adaptés :
 
 **Dans un projet Claude** :
 1. Ajouter ce repository GitHub
-2. Claude charge automatiquement les 2 fichiers preferences
+2. Claude charge automatiquement les fichiers preferences
 3. Contexte complet disponible pour toutes les conversations
-
-**Alternativement** :
-- Mentionner "selon mes preferences tech" → Claude utilise infrastructure
-- Mentionner "selon mon profil" → Claude utilise données personnelles
 
 ### Exemples de conversations
 
 **Technique** :
-- "Comment optimiser encore la RAM Nextcloud ?"
-- "Ajouter un service Docker pour XYZ"
-- "Troubleshooting : le cron Nextcloud ne tourne plus"
-- "Créer un script de maintenance pour le service ABC"
+- "Comment ajouter un nouveau service Docker ?"
+- "Troubleshooting : le backup vers VPS a échoué"
+- "Ajouter une jail Fail2ban pour un nouveau service"
+- "Vérifier le status de tous les containers"
 
 **Personnel** :
-- "Devrais-je ajuster mon protocole ADF vu ma baisse de force ?"
 - "Recommandations nutrition pour optimiser récupération"
 - "Mon poids stagne, que faire ?"
 - "Adapter entraînement si fatigue chronique"
@@ -151,57 +150,28 @@ Informations personnelles pour conseils adaptés :
 
 ## 📝 Maintenance
 
-**Mise à jour recommandée** :
-- **preferences_tech.md** : Après chaque ajout/modification service
-- **preferences_profil.md** : Mensuellement (poids, objectifs, ajustements)
-- **README.md** : Si changement structure
+**Synchronisation automatique** :
+- Script `sync-claude-repo.sh` exécuté quotidiennement à 3h30
+- Copie automatique des configs, scripts, docker-compose
+- Commit et push automatiques vers GitHub
 
-**Versioning** :
-- Chaque fichier indique "Dernière mise à jour" en haut
-- Commits GitHub avec messages descriptifs
-- Historique complet via Git
+**Mise à jour manuelle recommandée** :
+- **preferences_tech.md** : Après changement majeur d'architecture
+- **preferences_profil.md** : Mensuellement (poids, objectifs)
+- **README.md** : Si changement structure
 
 ---
 
 ## 🔒 Sécurité & Confidentialité
 
-**Repository privé** ✅  
-**Pas de secrets** : Aucun mot de passe, token, ou clé API dans les fichiers  
-**Données personnelles** : Limitées au strict nécessaire pour conseils pertinents  
-**Utilisation Claude** : Données restent dans le contexte Claude (chiffrement Anthropic)
-
 **⚠️ Important** : Ne JAMAIS commit de fichiers contenant :
 - Mots de passe
 - Tokens API
-- Clés privées
-- Credentials
+- Clés privées SSH
+- Credentials OVH/ProtonVPN
 - Informations bancaires
 
----
-
-## 🎓 Leçons Apprises
-
-**Infrastructure** :
-- 2 GB RAM suffisants pour 15+ services si optimisé
-- Chiffrement E2EE backups = Tranquillité
-- Monitoring 24/7 = Détection précoce problèmes
-- ARM64 compatible si attention aux binaires
-- PostgreSQL + Redis > MySQL pour Nextcloud
-
-**Personnel** :
-- Consistance > Perfection
-- Écoute du corps > Plan rigide
-- Patience avec résultats long terme
-- Préservation masse musculaire crucial à 46 ans
-- Adaptation protocole selon signaux corps
-
----
-
-## 📞 Contact
-
-**Infrastructure** : leblais.net  
-**Services** : Tous sur sous-domaines leblais.net  
-**Monitoring** : https://uptime.leblais.net  
+Les fichiers sensibles sont dans `.gitignore`.
 
 ---
 
@@ -210,35 +180,68 @@ Informations personnelles pour conseils adaptés :
 Quand j'ajoute un nouveau service :
 
 1. [ ] Installer et configurer le service
-2. [ ] Ajouter reverse proxy Caddy
+2. [ ] Ajouter reverse proxy dans Caddyfile
 3. [ ] Créer sous-domaine DNS OVH
-4. [ ] Configurer SSL (automatique via Caddy)
-5. [ ] Ajouter jail Fail2ban si authentification
-6. [ ] Ajouter au script backup-vm.sh
+4. [ ] Ajouter log JSON pour Fail2ban
+5. [ ] Créer filtre + jail Fail2ban
+6. [ ] Ajouter au script backup-trigkey.sh
 7. [ ] Créer monitor Uptime Kuma
-8. [ ] **Mettre à jour preferences_tech.md**
-9. [ ] Commit GitHub avec description
+8. [ ] **Lancer sync-claude-repo.sh**
 
 ---
 
 ## 🎯 Prochaines Étapes
 
 **Infrastructure** :
-- [ ] DD externe 1 TB → Backup local (remplacer Google Drive)
+- [ ] Backup données Nextcloud → USB 1 TB externe
 - [ ] Compte utilisateur Jerome sur Nextcloud
-- [ ] Client desktop Nextcloud sur PC famille
-- [ ] Évaluer OnlyOffice sur VPS (si besoin édition collaborative)
 
 **Personnel** :
 - [ ] Bilan mensuel (poids, composition, performance)
-- [ ] Ajuster protocole ADF selon résultats
 - [ ] Bilan sanguin trimestriel
-- [ ] Optimiser timing nutrition/entraînement
 
 ---
 
-**Dernière mise à jour README : 15 novembre 2025**
+## 📁 Structure du Repository
 
-**Infrastructure stable et optimisée ✅**  
-**Documentation complète et à jour ✅**  
-**Prêt pour utilisation avec Claude AI ✅**
+```
+claude/
+├── configs/
+│   ├── caddy/
+│   │   └── Caddyfile
+│   ├── authelia/
+│   │   └── configuration.yml
+│   ├── fail2ban/
+│   │   ├── jail.local
+│   │   └── filter.d/
+│   ├── crontabs/
+│   │   ├── root.txt
+│   │   └── frederic.txt
+│   └── pihole/
+├── scripts/
+│   ├── backup-trigkey.sh
+│   ├── sync-claude-repo.sh
+│   ├── check-vpn-status.sh
+│   ├── nextcloud-*.sh
+│   └── ...
+├── docker-compose/
+│   ├── rutorrent.yml
+│   ├── uptime-kuma.yml
+│   ├── vaultwarden.yml
+│   └── ...
+├── web/
+│   ├── workout/
+│   ├── vault/
+│   └── fail2ban-stats/
+├── preferences_tech.md
+├── preferences_profil.md
+└── README.md
+```
+
+---
+
+**Dernière mise à jour : 05 décembre 2025**
+
+**Migration VM Freebox → Trigkey : ✅ Complète**  
+**Infrastructure stable et opérationnelle ✅**  
+**Backup + Monitoring redondants ✅**
