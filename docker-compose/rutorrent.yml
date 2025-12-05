@@ -1,0 +1,39 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=EAR82Mm8/dZ3lztRXnSiEW98+hBKXCKoZx4hBHsXdlA=
+      - WIREGUARD_ADDRESSES=10.2.0.2/32
+      - VPN_ENDPOINT_IP=185.132.178.104
+      - VPN_ENDPOINT_PORT=51820
+      - WIREGUARD_PUBLIC_KEY=QZjgoZIyI1jeJO6dwrYIagUT1Ry4A9eYkRc3pGMLNRw=
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
+      - HTTPPROXY_LOG=off
+      - HTTP_CONTROL_SERVER_ADDRESS=:8001
+    ports:
+      - "8082:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - WEBUI_PORT=8080
+    volumes:
+      - /opt/rutorrent/qbittorrent-config:/config
+      - /mnt/datadisk/Téléchargements:/downloads
+    restart: unless-stopped

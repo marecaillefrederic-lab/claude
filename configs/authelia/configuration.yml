@@ -1,11 +1,10 @@
 ---
 # Authelia Configuration pour leblais.net
-
 theme: auto
 default_2fa_method: ""
 
 server:
-  address: 'tcp://0.0.0.0:9091'
+  address: 'tcp://127.0.0.1:9091'  # Modifié : écoute uniquement localhost
   endpoints:
     enable_pprof: false
     enable_expvars: false
@@ -35,11 +34,11 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    - domain: "files.leblais.net"
+    - domain: "workout.leblais.net"  # Nouveau
       policy: one_factor
-      subject:
-        - "user:freebox"
-    - domain: "*.leblais.net"
+    - domain: "budget.leblais.net"   # Nouveau
+      policy: one_factor
+    - domain: "terminal.leblais.net"
       policy: one_factor
 
 session:

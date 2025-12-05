@@ -1,0 +1,44 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').
+# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+
+
+*/5 * * * * /usr/local/bin/check-vpn-status.sh >> /var/log/check-vpn.log 2>&1
+
+0 4 1 * * /usr/local/bin/update-geoip.sh >> /var/log/geoip-update.log 2>&1
+
+0 6 * * 0 /usr/local/bin/check-pihole-update.sh >> /var/log/pihole-update-check.log 2>&1
+
+30 2 * * 1 sudo -u postgres psql -d nextcloud -c "VACUUM ANALYZE;" >> /var/log/nextcloud-maintenance.log 2>&1
+
+0 * * * * /usr/local/bin/nextcloud-cleanup-locks.sh
+
+0 2 */20 * * /usr/local/bin/nextcloud-maintenance.sh
+
+0 9 * * 1 /usr/local/bin/nextcloud-check-update.sh
+
+0 * * * * /usr/local/bin/nextcloud-health-check.sh
+
+0 3 * * * /usr/local/bin/backup-trigkey.sh >> /var/log/backup-trigkey.log 2>&1
+
+0 * * * * cd /var/www/fail2ban-stats && ./generate_stats.py >> /var/log/fail2ban-stats-cron.log 2>&1

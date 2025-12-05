@@ -4,28 +4,22 @@ findtime = 10m
 maxretry = 5
 ignoreip = 127.0.0.1/8 ::1 192.168.1.0/24
 
+# ========== SSH ==========
 [sshd]
 enabled = true
 port = 24589
 backend = systemd
 
-[caddy-cockpit]
-enabled = true
-filter = caddy-cockpit
-logpath = /var/log/caddy/cockpit-access.log
-port = 443
+# ========== SERVICES WEB (Caddy) ==========
 
-[caddy-freebox]
+[caddy-terminal]
 enabled = true
-filter = caddy-freebox
-logpath = /var/log/caddy/freebox-access.log
-port = 443
-
-[caddy-freshrss]
-enabled = true
-filter = caddy-freshrss
-logpath = /var/log/caddy/rss-access.log
-port = 443
+port = http,https
+filter = caddy-terminal
+logpath = /var/log/caddy/terminal-access.log
+maxretry = 3
+findtime = 600
+bantime = 3600
 
 [fail2ban-stats]
 enabled = true
@@ -37,20 +31,35 @@ findtime = 60
 bantime = 3600
 action = iptables-allports[name=fail2ban-stats]
 
-[caddy-terminal]
+[caddy-workout]
 enabled = true
 port = http,https
-filter = caddy-terminal
-logpath = /var/log/caddy/terminal-access.log
-maxretry = 3
+filter = caddy-workout
+logpath = /var/log/caddy/workout-access.log
+maxretry = 5
 findtime = 600
 bantime = 3600
+
+[caddy-freshrss]
+enabled = true
+filter = caddy-freshrss
+logpath = /var/log/caddy/rss-access.log
+port = 443
 
 [caddy-torrent]
 enabled = true
 port = http,https
 filter = caddy-torrent
 logpath = /var/log/caddy/torrent-access.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+[caddy-pihole]
+enabled = true
+port = http,https
+filter = caddy-pihole
+logpath = /var/log/caddy/pihole-access.log
 maxretry = 5
 findtime = 600
 bantime = 3600
@@ -82,15 +91,6 @@ maxretry = 5
 findtime = 600
 bantime = 3600
 
-[caddy-pihole]
-enabled = true
-port = http,https
-filter = caddy-pihole
-logpath = /var/log/caddy/pihole-access.log
-maxretry = 5
-findtime = 600
-bantime = 3600
-
 [caddy-budget]
 enabled = true
 port = http,https
@@ -104,7 +104,7 @@ bantime = 3600
 enabled = true
 port = http,https
 filter = caddy-files
-logpath = /var/log/caddy/files.leblais.net-access.log
+logpath = /var/log/caddy/files-access.log
 maxretry = 5
 findtime = 600
 bantime = 3600

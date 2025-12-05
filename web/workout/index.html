@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -759,7 +760,7 @@
         .prediction-exercise {
             font-weight: 700;
             font-size: 1.1em;
-            color: #FFFFFF !important;
+            color: #333333 !important;
             margin-bottom: 10px;
             display: block;
         }
@@ -1645,7 +1646,7 @@
     }
     
     .record-date {
-        color: rgba(255,255,255,0.5);
+        color: #666666;
         font-size: 0.85em;
         margin-left: 10px;
     }
@@ -1757,7 +1758,7 @@
     
     .fatigue-label {
         font-size: 0.9em;
-        color: rgba(255,255,255,0.7);
+        color: #666666;
         margin-bottom: 10px;
     }
     
@@ -1840,7 +1841,7 @@
         .insights-subtitle {
             font-size: 1.1em;
             margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #333333;
         }
 
         .progression-list, .attention-list {
@@ -1867,14 +1868,14 @@
         .progression-exercise {
             font-weight: 700;
             font-size: 1.1em;
-            color: #FFFFFF !important;
+            color: #333333 !important;
             margin-bottom: 8px;
             display: block;
         }
 
         .progression-change {
             font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.7);
+            color: #666666;
         }
 
         .progression-positive {
@@ -1915,7 +1916,7 @@
         .goal-title {
             font-weight: 600;
             margin-bottom: 10px;
-            color: rgba(255, 255, 255, 0.95);
+            color: #333333;
         }
 
         .goal-progress-bar {
@@ -1935,13 +1936,13 @@
 
         .goal-status {
             font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.7);
+            color: #666666;
         }
 
         .goal-empty {
             text-align: center;
             padding: 40px;
-            color: rgba(255, 255, 255, 0.6);
+            color: #666666;
         }
 
         /* PHASE 3: Ratio Libre/Guidé */
@@ -1960,7 +1961,7 @@
 
         .ratio-exercise {
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
+            color: #333333;
             margin-bottom: 10px;
         }
 
@@ -1978,14 +1979,14 @@
 
         .ratio-label {
             font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.6);
+            color: #666666;
             margin-bottom: 5px;
         }
 
         .ratio-value {
             font-size: 1.2em;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
+            color: #333333;
         }
 
         .ratio-verdict {
@@ -2028,13 +2029,13 @@
 
         .prediction-exercise {
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
+            color: #333333;
             margin-bottom: 10px;
         }
 
         .prediction-current {
             font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.7);
+            color: #666666;
             margin-bottom: 8px;
         }
 
@@ -2047,13 +2048,13 @@
 
         .prediction-timeline {
             font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.6);
+            color: #666666;
         }
 
         .prediction-empty {
             text-align: center;
             padding: 40px;
-            color: rgba(255, 255, 255, 0.6);
+            color: #666666;
         }
 
         @media (max-width: 768px) {
@@ -2066,9 +2067,57 @@
             }
         }
 
+        /* === STYLES DELOAD === */
+        .toggle-btn.deload {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .toggle-btn.deload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        .workout-btn.deload-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .workout-btn.deload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        .workout-btn.active-deload_push,
+        .workout-btn.active-deload_pull,
+        .workout-btn.active-deload_legs,
+        .workout-btn.active-deload_fullbody {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-color: #f093fb;
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.4);
+        }
+
 </style>
 </head>
 <body>
+    <!-- DELOAD COMPONENTS -->
+    <div id="deloadSuggestion" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color:white; padding:20px 30px; border-radius:15px; box-shadow:0 10px 40px rgba(240,147,251,0.4); z-index:10000; max-width:600px">
+        <div style="font-size:1.4em; font-weight:700; margin-bottom:10px">🔄 Semaine de DELOAD Recommandée</div>
+        <div style="margin-bottom:15px">Félicitations ! Tu viens de terminer 6 semaines. C'est le moment pour une récupération ! 💪</div>
+        <div style="display:flex; gap:10px; justify-content:center">
+            <button onclick="enableDeloadMode()" style="padding:12px 24px; border:none; border-radius:10px; background:white; color:#f5576c; font-weight:600; cursor:pointer">✅ Activer</button>
+            <button onclick="dismissDeloadSuggestion()" style="padding:12px 24px; border:none; border-radius:10px; background:rgba(255,255,255,0.2); color:white; font-weight:600; cursor:pointer">❌ Plus tard</button>
+        </div>
+    </div>
+    <div id="deloadBanner" style="display:none; background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color:white; padding:15px; text-align:center; border-radius:10px; margin:20px">
+        <div style="font-size:1.3em; font-weight:700">🔄 MODE DELOAD ACTIF</div>
+        <div>Volume: 50-60% | Intensité: 60-70%</div>
+        <button onclick="disableDeloadMode()" style="margin-top:10px; padding:10px 20px; border:none; border-radius:10px; background:rgba(255,255,255,0.2); color:white; font-weight:600; cursor:pointer">✓ Terminer</button>
+    </div>
+    <!-- END DELOAD COMPONENTS -->
     <div class="container">
         <div class="header">
             <button class="help-btn" onclick="openHelpModal()">
@@ -2090,6 +2139,7 @@
         <div class="program-toggle">
             <button class="toggle-btn active" onclick="setProgram('A')">Programme A (Libre)</button>
             <button class="toggle-btn" onclick="setProgram('B')">Programme B (Guidé)</button>
+            <button class="toggle-btn deload" onclick="setProgram('DELOAD')">🔄 DELOAD</button>
         </div>
         
         <div class="workout-selector">
@@ -2098,9 +2148,16 @@
             <button class="workout-btn" onclick="selectWorkout('pull')">PULL</button>
             <button class="workout-btn" onclick="selectWorkout('lower')">LOWER</button>
             <button class="workout-btn" onclick="selectWorkout('upper')">UPPER</button>
-            <button class="workout-btn" onclick="selectWorkout('core_a')">CORE A</button>
-            <button class="workout-btn" onclick="selectWorkout('core_b')">CORE B</button>
+            <button class="workout-btn" onclick="selectWorkout('core_a')">CORE</button>
             <button class="workout-btn" onclick="showStats()">📊 STATS</button>
+        </div>
+        
+        <!-- Boutons DELOAD (cachés par défaut) -->
+        <div class="workout-selector" id="deloadWorkoutSelector" style="display: none;">
+            <button class="workout-btn deload-btn" onclick="selectWorkout('deload_push')">🔄 PUSH</button>
+            <button class="workout-btn deload-btn" onclick="selectWorkout('deload_pull')">🔄 PULL</button>
+            <button class="workout-btn deload-btn" onclick="selectWorkout('deload_legs')">🔄 LEGS</button>
+            <button class="workout-btn deload-btn" onclick="selectWorkout('deload_fullbody')">🔄 FULL BODY</button>
         </div>
         
         <div class="controls" id="workoutControls">
@@ -2312,7 +2369,7 @@
         <div id="goalsGridProgramA" class="goals-grid">
             <div class="goal-empty">
                 <p>📝 Pas d'objectifs définis pour ce programme</p>
-                <p style="font-size: 0.9em; color: rgba(255,255,255,0.6);">
+                <p style="font-size: 0.9em; color: #666666;">
                     Les objectifs peuvent être ajoutés dans l'onglet "Objectifs"
                 </p>
             </div>
@@ -2322,7 +2379,7 @@
     <!-- ⚖️ PHASE 3: Ratio Libre/Guidé (uniquement pour Programme A) -->
     <div class="chart-container">
         <h3 class="chart-title">⚖️ Ratio Libre vs Guidé</h3>
-        <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+        <p style="color: #666666; margin-bottom: 15px;">
             Comparaison des performances sur exercices similaires entre Programme A (Libre) et B (Guidé)
         </p>
         <div id="ratioGridProgramA" class="ratio-grid"></div>
@@ -2449,7 +2506,7 @@
         <div id="goalsGridProgramB" class="goals-grid">
             <div class="goal-empty">
                 <p>📝 Pas d'objectifs définis pour ce programme</p>
-                <p style="font-size: 0.9em; color: rgba(255,255,255,0.6);">
+                <p style="font-size: 0.9em; color: #666666;">
                     Les objectifs peuvent être ajoutés dans l'onglet "Objectifs"
                 </p>
             </div>
@@ -2736,12 +2793,40 @@
                 <h2>📈 4. Statistiques disponibles</h2>
                 <p>Dans l'onglet <strong>📊 STATS</strong>, tu as accès à :</p>
                 <ul>
-                    <li><strong>Vue d'ensemble</strong> : Volume hebdo, nombre de séances, série en cours</li>
-                    <li><strong>Progrès</strong> : Graphiques de progression par exercice</li>
+                    <li><strong>Vue d'ensemble</strong> : Volume hebdo, nombre de séances, série en cours, cycles de 3 semaines</li>
+                    <li><strong>Programme A</strong> : Statistiques détaillées du Programme A (Libre)</li>
+                    <li><strong>Programme B</strong> : Statistiques détaillées du Programme B (Guidé)</li>
+                    <li><strong>Comparaison</strong> : Comparaison A vs B avec ratio de performance</li>
+                    <li><strong>Progression</strong> : Graphiques de progression par exercice et prédictions futures</li>
                     <li><strong>Records</strong> : Tous tes records personnels groupés par muscle</li>
                     <li><strong>Analyse</strong> : Équilibre push/pull/legs, insights personnalisés</li>
                     <li><strong>Objectifs</strong> : Suivi de tes objectifs avec barre de progression</li>
                 </ul>
+                
+                <h3>🔢 Comprendre le Ratio B/A</h3>
+                <p>Le ratio compare le <strong>Programme B (Guidé)</strong> par rapport au <strong>Programme A (Libre)</strong>.</p>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p><strong>Exemple : Ratio = 0.93x</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>Le Programme B génère <strong>93%</strong> du volume du Programme A</li>
+                        <li>Ou : le Programme A génère <strong>7% de volume en plus</strong></li>
+                    </ul>
+                </div>
+                <p><strong>Comment l'interpréter :</strong></p>
+                <ul>
+                    <li><strong>🟢 Ratio proche de 1.0</strong> (0.95 - 1.05) : Les deux programmes sont équilibrés</li>
+                    <li><strong>🔵 Ratio < 0.95</strong> : Programme A (Libre) génère plus de volume</li>
+                    <li><strong>🟣 Ratio > 1.05</strong> : Programme B (Guidé) génère plus de volume</li>
+                </ul>
+                
+                <h3>📊 Cycles et Semaines</h3>
+                <p>Tes entraînements sont organisés en cycles de 3 semaines. Pour chaque semaine, tu verras :</p>
+                <ul>
+                    <li><strong>Volume total</strong> : Charge totale soulevée en kg</li>
+                    <li><strong>Jours d'entraînement</strong> : Nombre de jours où tu t'es entraîné (X/5)</li>
+                    <li><strong>Progression</strong> : Évolution par rapport à la semaine précédente</li>
+                </ul>
+                <p><em>Note : Si tu fais 2 séances le même jour (ex: PUSH + CORE), cela compte comme 1 seul jour.</em></p>
                 
                 <div class="help-section">
                     <h3>💡 Astuce</h3>
@@ -2765,7 +2850,6 @@
             push: [
                 { name: "Développé couché barre", sets: 4, reps: "6-10" },
                 { name: "Développé incliné haltères", sets: 3, reps: "8-12" },
-                { name: "Écartés haltères plat", sets: 3, reps: "10-15" },
                 { name: "Développé militaire haltères", sets: 4, reps: "6-10" },
                 { name: "Élévations latérales haltères", sets: 3, reps: "12-15" },
                 { name: "Dips", sets: 3, reps: "8-12" },
@@ -2774,17 +2858,15 @@
             leg: [
                 { name: "Squat barre libre", sets: 4, reps: "8-12" },
                 { name: "Fentes bulgares", sets: 3, reps: "10-12" },
-                { name: "Walking lunges haltères", sets: 3, reps: "20 pas" },
-                { name: "Single Leg RDL (haltère)", sets: 3, reps: "12-15/j" },
                 { name: "RDL (Romanian Deadlift)", sets: 4, reps: "8-12" },
-                { name: "Sliding Leg Curls (disques)", sets: 3, reps: "12-15" },
-                { name: "Mollets debout barre", sets: 5, reps: "15-20" }
+                { name: "Good morning barre", sets: 3, reps: "10-12" },
+                { name: "Walking lunges haltères", sets: 3, reps: "20 pas" },
+                { name: "Mollets debout barre", sets: 4, reps: "15-20" }
             ],
             pull: [
                 { name: "Tractions", sets: 4, reps: "Max" },
                 { name: "Rowing barre", sets: 4, reps: "6-10" },
                 { name: "Rowing haltère unilatéral", sets: 3, reps: "8-12" },
-                { name: "Shrugs haltères", sets: 3, reps: "10-12" },
                 { name: "Oiseau haltères penché", sets: 3, reps: "15-20" },
                 { name: "Curl barre EZ", sets: 4, reps: "8-12" },
                 { name: "Curl marteau haltères", sets: 3, reps: "10-15" }
@@ -2793,29 +2875,30 @@
                 { name: "RDL barre", sets: 4, reps: "8-12" },
                 { name: "Front squat", sets: 4, reps: "8-12" },
                 { name: "Fentes avant haltères", sets: 3, reps: "10-12" },
-                { name: "Fentes arrière haltères", sets: 3, reps: "10-12/j" },
                 { name: "SLDL (Soulevé jambes tendues)", sets: 3, reps: "12-15" },
-                { name: "Mollets debout haltère unilatéral", sets: 5, reps: "15-20" }
+                { name: "Nordic curls", sets: 3, reps: "6-10" },
+                { name: "Mollets debout haltère unilatéral", sets: 4, reps: "15-20" }
             ],
             upper: [
                 { name: "Développé couché haltères", sets: 4, reps: "8-12" },
                 { name: "Rowing Pendlay", sets: 3, reps: "10-12" },
                 { name: "Développé militaire haltères", sets: 4, reps: "8-12" },
                 { name: "Tractions prise neutre", sets: 3, reps: "10-15" },
-                { name: "Shrugs barre", sets: 3, reps: "12-15" },
-                { name: "Dips", sets: 3, reps: "15-20" },
-                { name: "Superset: Curl barre / Extension nuque", sets: 3, reps: "10-12" }
+                { name: "Dips", sets: 3, reps: "Max" },
+                { 
+    name: "Superset Bras", 
+    isSuperset: true,
+    exercises: [
+        { name: "Curl barre EZ", sets: 3, reps: "10-12" },
+        { name: "Extension nuque haltère", sets: 3, reps: "10-12" }
+    ]
+}
             ],
-            // SESSIONS CORE AJOUTÉES
+            // SESSION CORE
             core_a: [
                 { name: "Roue Abdominale", sets: 3, reps: "8-12" },
                 { name: "Relevés de Jambes Suspendus", sets: 3, reps: "10-15" },
                 { name: "Planche", sets: 3, reps: "30-45s" }
-            ],
-            core_b: [
-                { name: "Pallof Press", sets: 3, reps: "12-15/côté" },
-                { name: "Crunch Poulie Haute", sets: 3, reps: "15-20" },
-                { name: "Portés en Valise", sets: 3, reps: "20 pas/côté" }
             ]
         },
         B: {
@@ -2825,31 +2908,27 @@
                 { name: "Pec fly", sets: 3, reps: "10-15" },
                 { name: "Développé militaire Smith", sets: 4, reps: "6-10" },
                 { name: "Lateral raise machine", sets: 3, reps: "12-15" },
-                { name: "Dips", sets: 3, reps: "8-12" },
                 { name: "Extensions triceps poulie haute", sets: 3, reps: "10-15" }
             ],
             leg: [
                 { name: "Hack squat", sets: 4, reps: "8-12" },
-                { name: "Fentes bulgares", sets: 3, reps: "10-12" },
                 { name: "Presse horizontale", sets: 3, reps: "15-20" },
                 { name: "Leg extensions", sets: 3, reps: "12-15" },
                 { name: "SLDL (Stiff Leg Deadlift)", sets: 4, reps: "8-12" },
                 { name: "Leg curls assis", sets: 3, reps: "10-15" },
-                { name: "Mollets presse", sets: 5, reps: "15-20" }
+                { name: "Mollets presse", sets: 4, reps: "15-20" }
             ],
             pull: [
                 { name: "Tractions", sets: 4, reps: "Max" },
                 { name: "T-Bar Row", sets: 4, reps: "6-10" },
                 { name: "Tirage vertical supination", sets: 3, reps: "8-12" },
-                { name: "Rowing haltère unilatéral", sets: 3, reps: "10-12" },
                 { name: "Reverse peck deck", sets: 3, reps: "15-20" },
                 { name: "Machine arm curl", sets: 4, reps: "8-12" },
                 { name: "Curl incliné haltères", sets: 3, reps: "10-15" }
             ],
             lower: [
-                { name: "RDL", sets: 4, reps: "8-12" },
                 { name: "Presse à cuisses", sets: 4, reps: "8-12" },
-                { name: "Fentes avant haltères", sets: 3, reps: "10-12" },
+                { name: "Fentes bulgares (Smith)", sets: 3, reps: "10-12" },
                 { name: "Leg curls allongé", sets: 4, reps: "10-15" },
                 {
     name: "Superset Abducteurs", 
@@ -2860,14 +2939,13 @@
     ]
 },
                 { name: "Extensions lombaires", sets: 3, reps: "12-15" },
-                { name: "Mollets machine", sets: 5, reps: "15-20" }
+                { name: "Mollets machine", sets: 4, reps: "15-20" }
             ],
             upper: [
                 { name: "Développé couché haltères", sets: 4, reps: "8-12" },
-                { name: "Landmine Press", sets: 3, reps: "10-12" },
                 { name: "Tirage horizontal poulie", sets: 4, reps: "8-12" },
+                { name: "Landmine Press", sets: 3, reps: "10-12" },
                 { name: "Machine convergente", sets: 3, reps: "10-15" },
-                { name: "Shrugs machine", sets: 3, reps: "12-15" },
                 { name: "Élévations latérales machine", sets: 3, reps: "15-20" },
                 { 
     name: "Superset Bras", 
@@ -2878,16 +2956,44 @@
     ]
 }
             ],
-            // SESSIONS CORE AJOUTÉES (aussi au programme B)
-            core_a: [
-                { name: "Roue Abdominale", sets: 3, reps: "8-12" },
+            // SESSION CORE
+            core_b: [
+                { name: "Crunch Poulie Haute", sets: 3, reps: "15-20" },
                 { name: "Relevés de Jambes Suspendus", sets: 3, reps: "10-15" },
                 { name: "Planche", sets: 3, reps: "30-45s" }
+            ]
+        },
+        // === PROGRAMME DELOAD ===
+        // Charges suggérées : 65% des charges habituelles
+        // Objectif : Récupération active, maintien de la technique
+        DELOAD: {
+            deload_push: [
+                { name: "Développé couché barre", sets: 2, reps: "8" },
+                { name: "Développé incliné haltères", sets: 2, reps: "10" },
+                { name: "Pec fly poulie", sets: 2, reps: "12" },
+                { name: "Élévations latérales machine", sets: 2, reps: "12" },
+                { name: "Extensions poulie", sets: 2, reps: "12" }
             ],
-            core_b: [
-                { name: "Pallof Press", sets: 3, reps: "12-15/côté" },
-                { name: "Crunch Poulie Haute", sets: 3, reps: "15-20" },
-                { name: "Portés en Valise", sets: 3, reps: "20 pas/côté" }
+            deload_pull: [
+                { name: "Rowing barre", sets: 2, reps: "8" },
+                { name: "Tirage vertical supination", sets: 2, reps: "10" },
+                { name: "Face pull poulie", sets: 2, reps: "15" },
+                { name: "Tirage horizontal poulie", sets: 2, reps: "12" },
+                { name: "Machine curl", sets: 2, reps: "12" }
+            ],
+            deload_legs: [
+                { name: "Hack squat", sets: 2, reps: "10" },
+                { name: "RDL barre", sets: 2, reps: "10" },
+                { name: "Leg curls assis", sets: 2, reps: "12" },
+                { name: "Leg extensions", sets: 2, reps: "12" },
+                { name: "Mollets presse", sets: 2, reps: "15" }
+            ],
+            deload_fullbody: [
+                { name: "Développé militaire haltères", sets: 2, reps: "10" },
+                { name: "Rowing haltère unilatéral", sets: 2, reps: "10" },
+                { name: "Fentes avant haltères", sets: 2, reps: "12" },
+                { name: "Pec fly", sets: 2, reps: "12" },
+                { name: "Machine curl", sets: 2, reps: "12" }
             ]
         }
     };
@@ -2903,24 +3009,21 @@
         'Supine Press',
         'Développé incliné Smith',
         'Pec fly',
-        'Développé couché haltères',
-        'Écartés haltères plat'
+        'Développé couché haltères'
     ],
     'Dos': [
         'Tirage horizontal machine',
         'Rowing barre pronation',
         'Rowing barre',
         'Rowing Pendlay',
-        'Shrugs barre',
-        'Shrugs haltères',
         'Pull-over machine',
         'Tractions',
+        'Tractions prise neutre',
         'T-Bar Row',
         'Tirage vertical supination',
         'Rowing haltère unilatéral',
         'Tirage horizontal poulie',
-        'Machine convergente',
-        'Shrugs machine'
+        'Machine convergente'
     ],
     'Épaules': [
         'Développé militaire barre',
@@ -2957,7 +3060,7 @@
         'Front squat',
         'Leg extensions',
         'Fentes bulgares',
-        'Fentes arrière haltères',
+        'Fentes bulgares (Smith)',
         'Walking lunges haltères',
         'Hack squat',
         'Presse horizontale',
@@ -2967,12 +3070,12 @@
     'Ischio-jambiers': [
         'Leg curls allongé',
         'RDL (Romanian Deadlift)',
-        'RDL',
         'RDL barre',
         'SLDL (Stiff Leg Deadlift)',
         'SLDL (Soulevé jambes tendues)',
-        'Single Leg RDL (haltère)',
-        'Leg curls assis'
+        'Leg curls assis',
+        'Good morning barre',
+        'Nordic curls'
     ],
     'Fessiers/Adducteurs': [
         'Hip thrust',
@@ -2983,6 +3086,7 @@
     'Mollets': [
         'Mollets à la Smith machine',
         'Mollets debout barre',
+        'Mollets debout haltère unilatéral',
         'Mollets presse',
         'Mollets machine'
     ],
@@ -2993,9 +3097,7 @@
         'Roue Abdominale',
         'Relevés de Jambes Suspendus',
         'Planche',
-        'Pallof Press',
-        'Crunch Poulie Haute',
-        'Portés en Valise'
+        'Crunch Poulie Haute'
     ]
 }; 
     // Fonction pour trouver la catégorie d'un exercice
@@ -3140,13 +3242,41 @@
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
-        if (currentWorkout && currentWorkout !== 'stats') {
+        
+        // Afficher/cacher les boutons workout selon le programme
+        const normalSelector = document.querySelector('.workout-selector:not(#deloadWorkoutSelector)');
+        const deloadSelector = document.getElementById('deloadWorkoutSelector');
+        
+        if (program === 'DELOAD') {
+            // Mode DELOAD : cacher boutons normaux, afficher boutons DELOAD
+            normalSelector.style.display = 'none';
+            deloadSelector.style.display = 'flex';
+            // Afficher la bannière DELOAD
+            document.getElementById('deloadBanner').style.display = 'block';
+            // Reset le workout sélectionné
+            currentWorkout = null;
+            document.getElementById('workoutTable').classList.remove('active');
+            document.getElementById('stats').style.display = 'none';
+        } else {
+            // Mode normal : afficher boutons normaux, cacher boutons DELOAD
+            normalSelector.style.display = 'flex';
+            deloadSelector.style.display = 'none';
+            // Cacher la bannière DELOAD
+            document.getElementById('deloadBanner').style.display = 'none';
+        }
+        
+        if (currentWorkout && currentWorkout !== 'stats' && program !== 'DELOAD') {
             selectWorkout(currentWorkout);
         }
     }
     
     // Workout selection
     function selectWorkout(type) {
+        // Adapter le core selon le programme
+        if (type === 'core_a') {
+            type = currentProgram === 'A' ? 'core_a' : 'core_b';
+        }
+        
         currentWorkout = type;
         
         // Update UI visibility
@@ -3158,10 +3288,11 @@
         
         // Update button styles
         document.querySelectorAll('.workout-btn').forEach(btn => {
-            // LIGNE MODIFIÉE : Ajout des nouvelles classes core
             btn.classList.remove('active-push', 'active-leg', 'active-pull', 
                                'active-lower', 'active-upper', 'active-stats',
-                               'active-core_a', 'active-core_b');
+                               'active-core_a', 'active-core_b',
+                               'active-deload_push', 'active-deload_pull',
+                               'active-deload_legs', 'active-deload_fullbody');
         });
         event.target.classList.add(`active-${type}`);
         
@@ -3183,10 +3314,11 @@
         
         // Update button styles
         document.querySelectorAll('.workout-btn').forEach(btn => {
-            // LIGNE MODIFIÉE : Ajout des nouvelles classes core
             btn.classList.remove('active-push', 'active-leg', 'active-pull', 
                                'active-lower', 'active-upper', 'active-stats',
-                               'active-core_a', 'active-core_b');
+                               'active-core_a', 'active-core_b',
+                               'active-deload_push', 'active-deload_pull',
+                               'active-deload_legs', 'active-deload_fullbody');
         });
         event.target.classList.add('active-stats');
         
@@ -3387,12 +3519,74 @@
     }
 }
     
+    // Fonction pour trouver le poids max historique d'un exercice
+    function getMaxWeightForExercise(exerciseName) {
+        let maxWeight = 0;
+        
+        // Parcourir toutes les sessions de workout
+        Object.keys(workoutData).forEach(key => {
+            // Ignorer les sessions DELOAD pour le calcul du max
+            if (key.includes('-DELOAD-')) return;
+            
+            const sessionData = workoutData[key];
+            if (!sessionData || typeof sessionData !== 'object') return;
+            
+            // Extraire le programme et le type de workout de la clé
+            // Format: workout-YYYY-MM-DD-PROGRAM-TYPE
+            const parts = key.split('-');
+            if (parts.length < 6) return;
+            
+            const program = parts[4]; // A ou B
+            const workoutType = parts.slice(5).join('-'); // push, pull, leg, etc.
+            
+            // Vérifier que le programme et workout existent
+            if (!workouts[program] || !workouts[program][workoutType]) return;
+            
+            const exerciseTemplates = workouts[program][workoutType];
+            
+            // Parcourir les exercices de la session
+            exerciseTemplates.forEach((exercise, idx) => {
+                const exerciseData = sessionData[idx];
+                if (!exerciseData) return;
+                
+                if (exercise.isSuperset && exerciseData.isSuperset && exerciseData.exercises) {
+                    // Superset : vérifier chaque sous-exercice
+                    exerciseData.exercises.forEach(subExercise => {
+                        if (subExercise.name === exerciseName && subExercise.weight) {
+                            const weight = parseFloat(subExercise.weight) || 0;
+                            if (weight > maxWeight) maxWeight = weight;
+                        }
+                    });
+                } else {
+                    // Exercice normal
+                    if (exercise.name === exerciseName && exerciseData.weight) {
+                        const weight = parseFloat(exerciseData.weight) || 0;
+                        if (weight > maxWeight) maxWeight = weight;
+                    }
+                }
+            });
+        });
+        
+        return maxWeight;
+    }
+    
+    // Calculer le poids DELOAD (30% du max, soit -70%)
+    function getDeloadWeight(exerciseName) {
+        const maxWeight = getMaxWeightForExercise(exerciseName);
+        if (maxWeight === 0) return 0;
+        
+        // 30% du max (réduction de 70%)
+        const deloadWeight = Math.round(maxWeight * 0.30 * 2) / 2; // Arrondir à 0.5kg près
+        return deloadWeight;
+    }
+
     function loadData() {
     if (!currentWorkout || currentWorkout === 'stats') return;
     
     const key = getDataKey();
     const data = workoutData[key] || {};
     const exercises = workouts[currentProgram][currentWorkout];
+    const isDeloadWorkout = currentProgram === 'DELOAD';
     
     let rowIndex = 0; // Index global pour correspondre aux IDs des inputs
     
@@ -3436,10 +3630,20 @@
                 });
             }
             
-            // Load weight
+            // Load weight (ou pré-remplir avec le poids DELOAD si pas de données)
             const weightInput = document.getElementById(`weight-${rowIndex}`);
-            if (weightInput && exerciseData.weight) {
-                weightInput.value = exerciseData.weight;
+            if (weightInput) {
+                if (exerciseData.weight) {
+                    // Données existantes : les charger
+                    weightInput.value = exerciseData.weight;
+                } else if (isDeloadWorkout) {
+                    // Pas de données et workout DELOAD : pré-remplir avec 30% du max
+                    const deloadWeight = getDeloadWeight(exercise.name);
+                    if (deloadWeight > 0) {
+                        weightInput.value = deloadWeight;
+                        weightInput.placeholder = `${deloadWeight}kg (30% max)`;
+                    }
+                }
             }
             
             // Load notes
@@ -3660,12 +3864,14 @@ function detectCycles(program) {
                 weekStart: weekStart,
                 volume: 0,
                 sessions: new Set(),
-                data: []
+                data: [],
+                trainedDays: 0
             };
         }
         
         weeklyData[weekKey].volume += item.volume;
         weeklyData[weekKey].sessions.add(item.dateKey);
+        weeklyData[weekKey].trainedDays = weeklyData[weekKey].sessions.size;
         weeklyData[weekKey].data.push(item);
     });
     
@@ -3753,6 +3959,7 @@ function displayCycleCard(program, containerId) {
             <div class="week-card ${isCurrentWeek ? 'current' : ''}">
                 <div class="week-number">Semaine ${index + 1}</div>
                 <div class="week-volume">${week.volume.toFixed(0)} kg</div>
+                <div style="font-size: 0.85em; color: #666; margin-top: 5px;">${week.trainedDays}/5 jours</div>
                 <div class="week-progress">${progressHTML}</div>
                 ${isCurrentWeek ? '<div style="margin-top: 10px; color: #4CAF50; font-weight: 600;">📍 En cours</div>' : ''}
             </div>
@@ -3764,6 +3971,7 @@ function displayCycleCard(program, containerId) {
             <div class="week-card">
                 <div class="week-number">Semaine ${cycle.weeks.length + 1}</div>
                 <div class="week-volume" style="color: #ccc;">À venir</div>
+                <div style="font-size: 0.85em; color: #ccc; margin-top: 5px;">-/5 jours</div>
             </div>
         `;
         cycle.weeks.push(null);
@@ -5834,9 +6042,36 @@ function parseWorkoutKey(key) {
 
 /**
  * Calcule les records (PRs) pour un programme donné
+ * Critère principal : POIDS MAXIMUM (puis reps max à poids égal)
  */
 function calculateRecords(program) {
     const records = {};
+    
+    // Fonction helper pour traiter un exercice
+    function processExercise(exerciseName, weight, reps, date) {
+        if (!weight || weight <= 0) return;
+        
+        const maxReps = Array.isArray(reps) 
+            ? Math.max(...reps.map(r => parseInt(r) || 0))
+            : (parseInt(reps) || 0);
+        
+        if (maxReps <= 0) return;
+        
+        const volume = weight * maxReps;
+        
+        // Critère : poids max, puis reps max à poids égal
+        if (!records[exerciseName] || 
+            weight > records[exerciseName].weight ||
+            (weight === records[exerciseName].weight && maxReps > records[exerciseName].reps)) {
+            records[exerciseName] = {
+                weight,
+                reps: maxReps,
+                volume,
+                date,
+                category: categorizeExercise(exerciseName)
+            };
+        }
+    }
     
     // Parcourir toutes les données de workout
     Object.keys(workoutData).forEach(key => {
@@ -5856,24 +6091,19 @@ function calculateRecords(program) {
         // Parcourir les exercices de la session
         exercises.forEach((exercise, idx) => {
             const exerciseData = sessionData[idx];
-            if (!exerciseData || !exerciseData.reps || !exerciseData.weight) return;
+            if (!exerciseData) return;
             
-            const exerciseName = exercise.name;
-            const weight = parseFloat(exerciseData.weight);
-            
-            // Trouver le meilleur set (plus de reps avec ce poids)
-            const maxReps = Math.max(...exerciseData.reps.map(r => parseInt(r) || 0));
-            const volume = weight * maxReps;
-            
-            // Mettre à jour le record si c'est mieux
-            if (!records[exerciseName] || volume > records[exerciseName].volume) {
-                records[exerciseName] = {
-                    weight,
-                    reps: maxReps,
-                    volume,
-                    date,
-                    category: categorizeExercise(exerciseName)
-                };
+            // Gérer les supersets
+            if (exercise.isSuperset && exerciseData.isSuperset && exerciseData.exercises) {
+                exerciseData.exercises.forEach(subExercise => {
+                    const weight = parseFloat(subExercise.weight) || 0;
+                    processExercise(subExercise.name, weight, subExercise.reps, date);
+                });
+            } else {
+                // Exercice normal
+                if (!exerciseData.reps || !exerciseData.weight) return;
+                const weight = parseFloat(exerciseData.weight) || 0;
+                processExercise(exercise.name, weight, exerciseData.reps, date);
             }
         });
     });
@@ -5949,7 +6179,7 @@ function updateRecordsDisplay(program) {
     });
     
     if (html === '') {
-        html = '<p style="text-align: center; color: rgba(255,255,255,0.5);">Aucun record enregistré pour le moment.</p>';
+        html = '<p style="text-align: center; color: #666666;">Aucun record enregistré pour le moment.</p>';
     }
     
     gridElement.innerHTML = html;
@@ -6042,9 +6272,9 @@ function displayInsights(program) {
         
         if (workouts.length < 3) {
             document.getElementById(`topProgressionsProgram${program}`).innerHTML = 
-                '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
+                '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
             document.getElementById(`attentionPointsProgram${program}`).innerHTML = 
-                '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
+                '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">Pas assez de données (minimum 3 séances)</span></div>';
             return;
         }
         
@@ -6058,16 +6288,16 @@ function displayInsights(program) {
     const topHtml = topProgressions.length > 0
         ? topProgressions.map(p => `
             <div class="progression-item">
-                <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
+                <span style="font-family: monospace !important; font-weight: 400 !important; font-size: 1.3em !important; color: #333333 !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
                 <div class="progression-change progression-positive">
                     📈 +${p.volumeChange}% volume | +${p.weightChange}kg
                 </div>
-                <div style="font-size: 0.85em; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                <div style="font-size: 0.85em; color: #666666; margin-top: 5px;">
                     ${p.sessionsCount} séances suivies
                 </div>
             </div>
         `).join('')
-        : '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Aucune progression significative détectée</span></div>';
+        : '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">Aucune progression significative détectée</span></div>';
     
     console.log('[displayInsights] HTML top progressions:', topHtml);
     document.getElementById(`topProgressionsProgram${program}`).innerHTML = topHtml;
@@ -6077,24 +6307,24 @@ function displayInsights(program) {
     const attentionHtml = attentionPoints.length > 0
         ? attentionPoints.map(p => `
             <div class="attention-item">
-                <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
+                <span style="font-family: monospace !important; font-weight: 400 !important; font-size: 1.3em !important; color: #333333 !important; display: block !important; margin-bottom: 8px !important;">${p.exercise}</span>
                 <div class="progression-change progression-negative">
                     📉 ${p.volumeChange}% volume | ${p.weightChange}kg
                 </div>
-                <div style="font-size: 0.85em; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                <div style="font-size: 0.85em; color: #666666; margin-top: 5px;">
                     💡 Envisager une variation ou un deload
                 </div>
             </div>
         `).join('')
-        : '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">✅ Aucun point d\'attention majeur</span></div>';
+        : '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">✅ Aucun point d\'attention majeur</span></div>';
     
     document.getElementById(`attentionPointsProgram${program}`).innerHTML = attentionHtml;
     } catch (error) {
         console.error('Erreur dans displayInsights:', error);
         const topEl = document.getElementById(`topProgressionsProgram${program}`);
         const attEl = document.getElementById(`attentionPointsProgram${program}`);
-        if (topEl) topEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
-        if (attEl) attEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; color: #FFFFFF !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
+        if (topEl) topEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
+        if (attEl) attEl.innerHTML = '<div style="text-align: center; padding: 20px;"><span style="font-family: monospace !important; font-weight: 400 !important; color: #333333 !important; font-size: 1.2em;">Erreur lors du chargement</span></div>';
     }
 }
 
@@ -6189,13 +6419,13 @@ function displayRatioLibreGuide() {
     
     const html = ratios.map(r => `
         <div class="ratio-card">
-            <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 10px !important;">${r.category}</span>
+            <span style="font-family: monospace !important; font-weight: 400 !important; font-size: 1.3em !important; color: #333333 !important; display: block !important; margin-bottom: 10px !important;">${r.category}</span>
             <div class="ratio-comparison">
                 <div class="ratio-program">
                     <div class="ratio-label">Programme A (Libre)</div>
                     <div class="ratio-value">${r.avgA}</div>
                 </div>
-                <div style="display: flex; align-items: center; color: rgba(255,255,255,0.5);">vs</div>
+                <div style="display: flex; align-items: center; color: #666666;">vs</div>
                 <div class="ratio-program">
                     <div class="ratio-label">Programme B (Guidé)</div>
                     <div class="ratio-value">${r.avgB}</div>
@@ -6298,7 +6528,7 @@ function displayPredictions(program) {
     
     const html = predictions.slice(0, 6).map(p => `
         <div class="prediction-card">
-            <span style="font-family: &quot;Roboto&quot;, Arial, sans-serif !important; font-weight: 400 !important; font-size: 1.3em !important; color: #FFFFFF !important; display: block !important; margin-bottom: 10px !important;">${p.exercise}</span>
+            <span style="font-family: monospace !important; font-weight: 400 !important; font-size: 1.3em !important; color: #333333 !important; display: block !important; margin-bottom: 10px !important;">${p.exercise}</span>
             <div class="prediction-current">Actuel: ${p.current}kg</div>
             <div class="prediction-target">🎯 Prédit: ${p.predicted}kg (+${p.gain}kg)</div>
             <div class="prediction-timeline">⏱️ Dans ${p.weeks} semaines</div>
@@ -6371,24 +6601,47 @@ function getWorkoutsByProgram(program) {
                     return;
                 }
                 
-                console.log(`[getWorkoutsByProgram] Exercise ${idx}: ${exercise.name}`, exerciseData);
+                console.log(`[getWorkoutsByProgram] Exercise ${idx}:`, exercise.name || exercise, exerciseData);
                 
-                // Construire la structure attendue par calculateProgressions
-                const sets = [];
-                if (exerciseData.reps && exerciseData.weight) {
-                    for (let i = 0; i < exerciseData.reps.length; i++) {
-                        sets.push({
-                            reps: exerciseData.reps[i],
-                            weight: exerciseData.weight
+                // Gérer les supersets
+                if (exercise.isSuperset && exerciseData.isSuperset && exerciseData.exercises) {
+                    console.log(`[getWorkoutsByProgram] Processing superset: ${exercise.name}`);
+                    
+                    exerciseData.exercises.forEach((subExerciseData) => {
+                        const sets = [];
+                        if (subExerciseData.reps && subExerciseData.weight) {
+                            for (let i = 0; i < subExerciseData.reps.length; i++) {
+                                sets.push({
+                                    reps: subExerciseData.reps[i],
+                                    weight: subExerciseData.weight
+                                });
+                            }
+                            console.log(`[getWorkoutsByProgram] Created ${sets.length} sets for ${subExerciseData.name}`);
+                        }
+                        
+                        workoutObj.exercises.push({
+                            name: subExerciseData.name,
+                            sets: sets
                         });
+                    });
+                } else {
+                    // Exercice normal
+                    const sets = [];
+                    if (exerciseData.reps && exerciseData.weight) {
+                        for (let i = 0; i < exerciseData.reps.length; i++) {
+                            sets.push({
+                                reps: exerciseData.reps[i],
+                                weight: exerciseData.weight
+                            });
+                        }
+                        console.log(`[getWorkoutsByProgram] Created ${sets.length} sets for ${exercise.name}`);
                     }
-                    console.log(`[getWorkoutsByProgram] Created ${sets.length} sets for ${exercise.name}`);
+                    
+                    workoutObj.exercises.push({
+                        name: exercise.name,
+                        sets: sets
+                    });
                 }
-                
-                workoutObj.exercises.push({
-                    name: exercise.name,
-                    sets: sets
-                });
             });
             
             console.log(`[getWorkoutsByProgram] WorkoutObj created with ${workoutObj.exercises.length} exercises`);
@@ -6424,6 +6677,39 @@ function updatePhase3Stats() {
 
 </script>
 
+    <script>
+    // === DELOAD FUNCTIONS (version simplifiée) ===
+    function showDeloadSuggestion() {
+        document.getElementById('deloadSuggestion').style.display = 'block';
+    }
+    
+    function dismissDeloadSuggestion() {
+        document.getElementById('deloadSuggestion').style.display = 'none';
+        const d = new Date();
+        d.setDate(d.getDate() + 7);
+        localStorage.setItem('deloadDismissedUntil', d.toISOString());
+    }
+    
+    // Fonction appelée depuis le popup de suggestion
+    function enableDeloadMode() {
+        // Fermer le popup
+        document.getElementById('deloadSuggestion').style.display = 'none';
+        // Activer le programme DELOAD
+        const deloadBtn = document.querySelector('.toggle-btn.deload');
+        if (deloadBtn) {
+            deloadBtn.click();
+        }
+    }
+    
+    // Fonction pour désactiver le mode DELOAD (appelée depuis la bannière)
+    function disableDeloadMode() {
+        // Retourner au programme A par défaut
+        const programABtn = document.querySelector('.toggle-btn:not(.deload)');
+        if (programABtn) {
+            programABtn.click();
+        }
+    }
+    </script>
 </body>
 </html>
 
