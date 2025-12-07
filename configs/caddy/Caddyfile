@@ -223,3 +223,7 @@ terminal.leblais.net {
     
     reverse_proxy localhost:7681
 }
+
+monitoring.leblais.net {
+    reverse_proxy localhost:8090
+}

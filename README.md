@@ -13,11 +13,11 @@ Documentation complète de l'infrastructure auto-hébergée + profil personnel p
 
 Documentation de tous les services auto-hébergés sur Trigkey N150 (Debian 13) + VPS OVH :
 - 🌐 **Nextcloud** : Cloud familial souverain (290 GB, 2 utilisateurs) + OnlyOffice
-- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, qBittorrent + Gluetun VPN
+- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, qBittorrent + Gluetun VPN, Beszel
 - 🔒 **Sécurité** : Caddy, Fail2ban (13 jails), Authelia, WireGuard VPN
 - 🌍 **Services Web** : Pi-hole, Terminal Web, Workout Tracker, Budget, FreshRSS, Dashboard Fail2ban
 - 💾 **Backups** : Automatiques quotidiens vers VPS OVH
-- 📡 **Monitoring** : Uptime Kuma local + externe (VPS)
+- 📡 **Monitoring** : Beszel (système + SMART) + Uptime Kuma local + externe (VPS)
 
 **Utilisation avec Claude** :
 - Configuration détaillée de tous les services
@@ -66,13 +66,14 @@ Informations personnelles pour conseils adaptés :
 **Caractéristiques** :
 - **CPU** : Intel N150
 - **RAM** : 16 GB DDR5
-- **Stockage** : 500 GB SSD (système) + 1 TB SSD (données)
+- **Stockage** : 500 GB SSD (système) + 1 TB NVMe (données)
 - **OS** : Debian 13 (Trixie)
 
-**Services actifs (12+)** :
+**Services actifs (13+)** :
 - Nextcloud + OnlyOffice (cloud familial 290 GB)
 - Vaultwarden (passwords)
 - Uptime Kuma (monitoring 24/7)
+- Beszel (monitoring système + SMART)
 - Pi-hole (blocage pub DNS)
 - Linkding (bookmarks)
 - FreshRSS (agrégateur RSS)
@@ -88,14 +89,57 @@ Informations personnelles pour conseils adaptés :
 
 **Caractéristiques** :
 - **Offre** : VPS-1 (4,58€/mois)
+- **CPU** : 4 vCores
 - **RAM** : 8 GB
 - **Stockage** : 75 GB SSD
 - **IP** : 151.80.59.35
+- **OS** : Debian 13
+- **Firewall** : ufw (SSH, Uptime Kuma, Beszel)
 
 **Rôle** :
 - Réception backups quotidiens du Trigkey
 - Uptime Kuma externe (monitoring depuis l'extérieur)
 - Alertes SMS si Trigkey down
+- Agent Beszel (monitoring VPS)
+
+---
+
+## 📡 Monitoring
+
+### Beszel (Monitoring système)
+
+**URL** : https://monitoring.leblais.net  
+**Version** : 0.17.0
+
+**Systèmes monitorés** :
+
+| Système | CPU | RAM | Stockage | Services |
+|---------|-----|-----|----------|----------|
+| trigkey-n150 | Intel N150 | 16 GB | 500GB + 1TB | 50 containers |
+| vps-ovh | 4 vCores | 8 GB | 75 GB | 43 containers |
+
+**Fonctionnalités** :
+- CPU, RAM, disque, réseau, températures
+- Données S.M.A.R.T. des disques (Trigkey uniquement)
+- Monitoring containers Docker
+- Alertes configurables
+
+**Architecture** :
+- **Hub** : Docker sur Trigkey (`network_mode: host`)
+- **Agent Trigkey** : Binaire natif systemd (pour accès SMART)
+- **Agent VPS** : Binaire natif systemd
+
+**Disques SMART monitorés (Trigkey)** :
+
+| Appareil | Modèle | Capacité | Type | Heures |
+|----------|--------|----------|------|--------|
+| /dev/nvme0 | WD_BLACK SN770 1TB | 931.5 GB | NVMe | 11301h |
+| /dev/sda | 512GB SSD | 476.9 GB | SATA | 202h |
+
+### Uptime Kuma
+
+- **Local** : https://uptime.leblais.net (tous services internes)
+- **Externe** : http://151.80.59.35:3001 (monitoring trigkey depuis VPS)
 
 ---
 
@@ -106,6 +150,7 @@ Informations personnelles pour conseils adaptés :
 - Backups quotidiens vers VPS OVH
 - Sync configs vers GitHub
 - Score Nextcloud : Rating A
+- VPS protégé par ufw (ports 22, 3001, 45876)
 
 ---
 
@@ -113,12 +158,13 @@ Informations personnelles pour conseils adaptés :
 
 | Métrique | Valeur |
 |----------|--------|
-| Services auto-hébergés | 12+ |
-| Sous-domaines actifs | 15 |
+| Services auto-hébergés | 13+ |
+| Sous-domaines actifs | 16 |
 | Jails Fail2ban | 13 |
 | Monitors Uptime Kuma | 15+ |
-| RAM utilisée | ~4 GB / 16 GB |
-| Stockage Nextcloud | ~290 GB / 1 TB |
+| Systèmes Beszel | 2 |
+| RAM utilisée (Trigkey) | ~4 GB / 16 GB |
+| Stockage Nextcloud | ~320 GB / 1 TB |
 | Backup quotidien | ✅ Trigkey → VPS |
 | Uptime moyen | 99.9% |
 
@@ -186,7 +232,8 @@ Quand j'ajoute un nouveau service :
 5. [ ] Créer filtre + jail Fail2ban
 6. [ ] Ajouter au script backup-trigkey.sh
 7. [ ] Créer monitor Uptime Kuma
-8. [ ] **Lancer sync-claude-repo.sh**
+8. [ ] Ajouter au monitoring Beszel (si applicable)
+9. [ ] **Lancer sync-claude-repo.sh**
 
 ---
 
@@ -225,6 +272,7 @@ claude/
 │   ├── nextcloud-*.sh
 │   └── ...
 ├── docker-compose/
+│   ├── beszel.yml
 │   ├── rutorrent.yml
 │   ├── uptime-kuma.yml
 │   ├── vaultwarden.yml
@@ -240,8 +288,9 @@ claude/
 
 ---
 
-**Dernière mise à jour : 05 décembre 2025**
+**Dernière mise à jour : 07 décembre 2025**
 
 **Migration VM Freebox → Trigkey : ✅ Complète**  
 **Infrastructure stable et opérationnelle ✅**  
-**Backup + Monitoring redondants ✅**
+**Backup + Monitoring redondants ✅**  
+**Beszel avec données SMART : ✅ Trigkey + VPS**

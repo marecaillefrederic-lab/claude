@@ -256,7 +256,141 @@ services:
 
 ## 📡 Monitoring
 
-### Uptime Kuma local (trigkey)
+### Beszel (Monitoring système + SMART)
+
+**URL** : https://monitoring.leblais.net  
+**Version** : 0.17.0  
+**Installation** : `/opt/beszel`
+
+**Systèmes monitorés** :
+
+| Système | Hôte/IP | Port | Type agent |
+|---------|---------|------|------------|
+| trigkey-n150 | 172.17.0.1 | 45876 | systemd natif |
+| vps-ovh | 151.80.59.35 | 45876 | systemd natif |
+
+**Fonctionnalités** :
+- Monitoring CPU, RAM, disque, réseau
+- Températures système (CPU, NVMe, RAM)
+- **Données S.M.A.R.T.** des disques (Trigkey uniquement)
+- Monitoring containers Docker
+- Alertes configurables
+
+**Disques SMART monitorés (Trigkey)** :
+
+| Appareil | Modèle | Capacité | Type | Heures | Cycles |
+|----------|--------|----------|------|--------|--------|
+| /dev/nvme0 | WD_BLACK SN770 1TB | 931.5 GB | NVMe | 11301h | 52 |
+| /dev/sda | 512GB SSD | 476.9 GB | SATA | 202h | 10 |
+
+**Note** : Le VPS OVH n'a pas de données SMART (disque virtualisé).
+
+---
+
+#### Configuration Hub (Trigkey)
+
+**Fichier** : `/opt/beszel/docker-compose.yml`
+
+```yaml
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./beszel_data:/beszel_data
+    environment:
+      - LISTEN=127.0.0.1:8090
+```
+
+---
+
+#### Configuration Agent Trigkey (systemd)
+
+**Fichier** : `/etc/systemd/system/beszel-agent.service`
+
+```ini
+[Unit]
+Description=Beszel Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment="PORT=45876"
+Environment="KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMEevsCCEm6yvr9073DzKk5gjiEgtB92pXQ57DayD8Jf"
+ExecStart=/usr/local/bin/beszel-agent
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Prérequis SMART** :
+- `smartmontools` installé (`apt install smartmontools`)
+- Agent en binaire natif (pas Docker) pour accès `/dev/*`
+
+---
+
+#### Configuration Agent VPS OVH (systemd)
+
+**Fichier** : `/etc/systemd/system/beszel-agent.service`
+
+```ini
+[Unit]
+Description=Beszel Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment="PORT=45876"
+Environment="KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMEevsCCEm6yvr9073DzKk5gjiEgtB92pXQ57DayD8Jf"
+ExecStart=/usr/local/bin/beszel-agent
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Firewall VPS** (ufw) :
+```bash
+sudo ufw allow from 82.67.173.61 to any port 45876 proto tcp
+```
+
+---
+
+#### Commandes utiles Beszel
+
+```bash
+# === TRIGKEY ===
+# Status agent
+sudo systemctl status beszel-agent
+
+# Logs agent
+journalctl -u beszel-agent -f
+
+# Redémarrer agent
+sudo systemctl restart beszel-agent
+
+# Status hub
+docker logs beszel --tail 50
+
+# Mise à jour agent
+sudo beszel-agent update
+
+# === VPS ===
+ssh vps
+sudo systemctl status beszel-agent
+sudo beszel-agent update
+```
+
+---
+
+### Uptime Kuma local (Trigkey)
 
 **URL** : https://uptime.leblais.net  
 **Monitors** : Tous les services internes  

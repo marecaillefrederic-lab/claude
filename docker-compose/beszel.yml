@@ -1,0 +1,10 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./beszel_data:/beszel_data
+    environment:
+      - LISTEN=127.0.0.1:8090
