@@ -304,6 +304,9 @@ claude/
 │   ├── uptime-kuma.yml
 │   ├── vaultwarden.yml
 │   └── ...
+├── docs/
+│   ├── onlyoffice-config.md
+│   └── troubleshooting-onlyoffice.md
 ├── web/
 │   ├── workout/
 │   ├── vault/

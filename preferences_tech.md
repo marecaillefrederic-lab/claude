@@ -433,6 +433,35 @@ docker exec -u www-data nextcloud php occ maintenance:mode --off
 docker exec -u www-data nextcloud php occ upgrade
 ```
 
+### OnlyOffice Document Server
+
+**URL** : https://office.leblais.net  
+**Port interne** : 127.0.0.1:8088→80  
+**Image Docker** : onlyoffice/documentserver:latest  
+**Conteneur** : `onlyoffice`
+
+**Configuration JWT** :
+- JWT activé pour sécurité
+- Secret partagé avec Nextcloud
+- Documentation complète : `docs/onlyoffice-config.md`
+
+**Commandes utiles** :
+```bash
+# Status
+docker ps | grep onlyoffice
+
+# Healthcheck
+curl -k https://office.leblais.net/healthcheck
+
+# Logs
+docker logs onlyoffice
+
+# Récupérer JWT Secret
+docker inspect onlyoffice | grep JWT_SECRET
+```
+
+**Troubleshooting** : Voir `docs/troubleshooting-onlyoffice.md`
+
 ---
 
 ## 🎯 **Workflow Ajout Service**
