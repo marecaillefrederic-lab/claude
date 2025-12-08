@@ -13,11 +13,12 @@ Documentation complète de l'infrastructure auto-hébergée + profil personnel p
 
 Documentation de tous les services auto-hébergés sur Trigkey N150 (Debian 13) + VPS OVH :
 - 🌐 **Nextcloud** : Cloud familial souverain (290 GB, 2 utilisateurs) + OnlyOffice
-- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, qBittorrent + Gluetun VPN, Beszel
+- 🐳 **Docker Services** : Vaultwarden, Uptime Kuma, Linkding, qBittorrent + Gluetun VPN
 - 🔒 **Sécurité** : Caddy, Fail2ban (13 jails), Authelia, WireGuard VPN
 - 🌍 **Services Web** : Pi-hole, Terminal Web, Workout Tracker, Budget, FreshRSS, Dashboard Fail2ban
 - 💾 **Backups** : Automatiques quotidiens vers VPS OVH
-- 📡 **Monitoring** : Beszel (système + SMART) + Uptime Kuma local + externe (VPS)
+- 📡 **Monitoring** : Uptime Kuma local + externe (VPS), Netdata
+- 🖥️ **VM Desktop** : Debian 13 + Xfce sur VPS (bureautique + Python)
 
 **Utilisation avec Claude** :
 - Configuration détaillée de tous les services
@@ -66,14 +67,13 @@ Informations personnelles pour conseils adaptés :
 **Caractéristiques** :
 - **CPU** : Intel N150
 - **RAM** : 16 GB DDR5
-- **Stockage** : 500 GB SSD (système) + 1 TB NVMe (données)
+- **Stockage** : 500 GB SSD (système) + 1 TB SSD (données)
 - **OS** : Debian 13 (Trixie)
 
 **Services actifs (13+)** :
 - Nextcloud + OnlyOffice (cloud familial 290 GB)
 - Vaultwarden (passwords)
 - Uptime Kuma (monitoring 24/7)
-- Beszel (monitoring système + SMART)
 - Pi-hole (blocage pub DNS)
 - Linkding (bookmarks)
 - FreshRSS (agrégateur RSS)
@@ -84,89 +84,104 @@ Informations personnelles pour conseils adaptés :
 - Budget Tracker (finances)
 - Dashboard Fail2ban (sécurité)
 - File Browser
+- Netdata (monitoring système)
 
-### VPS OVH (Backup + Monitoring externe)
+### VPS OVH (Backup + Monitoring externe + VM Desktop)
 
 **Caractéristiques** :
 - **Offre** : VPS-1 (4,58€/mois)
-- **CPU** : 4 vCores
 - **RAM** : 8 GB
 - **Stockage** : 75 GB SSD
 - **IP** : 151.80.59.35
-- **OS** : Debian 13
-- **Firewall** : ufw (SSH, Uptime Kuma, Beszel)
+- **OS** : Debian 13 (Trixie)
 
-**Rôle** :
+**Services actifs** :
+- **Uptime Kuma** (monitoring externe Trigkey)
+- **Caddy** (reverse proxy avec SSL automatique)
+- **KVM/libvirt** (hyperviseur pour VM)
+- **VM Desktop** : Debian 13 + Xfce (5 GB RAM, 40 GB disk)
+- **noVNC + websockify** (accès web à la VM)
 - Réception backups quotidiens du Trigkey
-- Uptime Kuma externe (monitoring depuis l'extérieur)
 - Alertes SMS si Trigkey down
-- Agent Beszel (monitoring VPS)
 
----
+**VM Desktop (desktop-vm)** :
+- **OS** : Debian 13 + Xfce
+- **RAM** : 5 GB (5120 MB)
+- **vCPU** : 2 cœurs
+- **Stockage** : 40 GB (format qcow2)
+- **Réseau** : NAT via virbr0 (192.168.122.x)
+- **Usage** : Bureautique légère + formation Python
+- **Logiciels** : LibreOffice, Firefox, Python 3.11+, client Nextcloud
+- **Accès** : https://desktop-vps.leblais.net (noVNC via navigateur web)
+- **Autostart** : Activé (démarre automatiquement au boot du VPS)
 
-## 📡 Monitoring
+**Gestion VM** :
+```bash
+# Commandes virsh
+virsh list --all              # Lister VMs
+virsh start desktop-vm        # Démarrer
+virsh shutdown desktop-vm     # Éteindre proprement
+virsh reboot desktop-vm       # Redémarrer
+virsh autostart desktop-vm    # Activer démarrage auto
+virsh vncdisplay desktop-vm   # Voir port VNC
 
-### Beszel (Monitoring système)
-
-**URL** : https://monitoring.leblais.net  
-**Version** : 0.17.0
-
-**Systèmes monitorés** :
-
-| Système | CPU | RAM | Stockage | Services |
-|---------|-----|-----|----------|----------|
-| trigkey-n150 | Intel N150 | 16 GB | 500GB + 1TB | 50 containers |
-| vps-ovh | 4 vCores | 8 GB | 75 GB | 43 containers |
-
-**Fonctionnalités** :
-- CPU, RAM, disque, réseau, températures
-- Données S.M.A.R.T. des disques (Trigkey uniquement)
-- Monitoring containers Docker
-- Alertes configurables
-
-**Architecture** :
-- **Hub** : Docker sur Trigkey (`network_mode: host`)
-- **Agent Trigkey** : Binaire natif systemd (pour accès SMART)
-- **Agent VPS** : Binaire natif systemd
-
-**Disques SMART monitorés (Trigkey)** :
-
-| Appareil | Modèle | Capacité | Type | Heures |
-|----------|--------|----------|------|--------|
-| /dev/nvme0 | WD_BLACK SN770 1TB | 931.5 GB | NVMe | 11301h |
-| /dev/sda | 512GB SSD | 476.9 GB | SATA | 202h |
-
-### Uptime Kuma
-
-- **Local** : https://uptime.leblais.net (tous services internes)
-- **Externe** : http://151.80.59.35:3001 (monitoring trigkey depuis VPS)
+# Alias zsh pour démarrage rapide
+startvm                       # Démarre la VM
+```
 
 ---
 
 ## 🔒 Sécurité
 
 - SSL partout (Caddy + Let's Encrypt DNS challenge OVH)
-- Fail2ban (13 jails actives)
-- Backups quotidiens vers VPS OVH
+- Fail2ban (13 jails actives sur Trigkey)
+- Backups quotidiens Trigkey → VPS OVH
 - Sync configs vers GitHub
 - Score Nextcloud : Rating A
-- VPS protégé par ufw (ports 22, 3001, 45876)
+- Monitoring redondant (Trigkey + VPS)
+
+---
+
+## 🌐 Sous-domaines
+
+### Trigkey N150
+| Service | URL | Protection |
+|---------|-----|------------|
+| Nextcloud | cloud.leblais.net | Login requis |
+| Vaultwarden | vaultwarden.leblais.net | Login requis |
+| Uptime Kuma | uptime.leblais.net | Login requis |
+| Pi-hole | pihole.leblais.net | Login requis |
+| Terminal Web | terminal.leblais.net | Authelia |
+| Workout Tracker | workout.leblais.net | Authelia |
+| Budget | budget.leblais.net | Authelia |
+| FreshRSS | rss.leblais.net | Login requis |
+| qBittorrent | torrent.leblais.net | Login requis |
+| Linkding | bookmarks.leblais.net | Login requis |
+| File Browser | files.leblais.net | Login requis |
+| Fail2ban Stats | fail2ban.leblais.net | Authelia |
+| Netdata | monitoring.leblais.net | Login requis |
+
+### VPS OVH
+| Service | URL | Type |
+|---------|-----|------|
+| VM Desktop | desktop-vps.leblais.net | noVNC web |
+| Uptime Kuma VPS | uptime-vps.leblais.net | Login requis |
 
 ---
 
 ## 📊 Statistiques
 
-| Métrique | Valeur |
-|----------|--------|
-| Services auto-hébergés | 13+ |
-| Sous-domaines actifs | 16 |
-| Jails Fail2ban | 13 |
-| Monitors Uptime Kuma | 15+ |
-| Systèmes Beszel | 2 |
-| RAM utilisée (Trigkey) | ~4 GB / 16 GB |
-| Stockage Nextcloud | ~320 GB / 1 TB |
-| Backup quotidien | ✅ Trigkey → VPS |
-| Uptime moyen | 99.9% |
+| Métrique | Trigkey N150 | VPS OVH |
+|----------|--------------|---------|
+| Services | 13+ | 2 (+ 1 VM) |
+| RAM utilisée | ~4 GB / 16 GB | ~6 GB / 8 GB |
+| Stockage Nextcloud | ~290 GB / 1 TB | - |
+| VM Desktop | - | 5 GB RAM, 40 GB disk |
+| Sous-domaines | 13 | 2 |
+| Jails Fail2ban | 13 | - |
+| Monitors Uptime Kuma | 15+ (local) | 2 (externe) |
+| Backup quotidien | ✅ → VPS | ✅ Réception |
+| Uptime moyen | 99.9% | 99.9% |
 
 ---
 
@@ -186,6 +201,8 @@ Informations personnelles pour conseils adaptés :
 - "Troubleshooting : le backup vers VPS a échoué"
 - "Ajouter une jail Fail2ban pour un nouveau service"
 - "Vérifier le status de tous les containers"
+- "Comment augmenter la résolution de la VM Desktop ?"
+- "Installer Python et VS Code dans la VM"
 
 **Personnel** :
 - "Recommandations nutrition pour optimiser récupération"
@@ -225,15 +242,22 @@ Les fichiers sensibles sont dans `.gitignore`.
 
 Quand j'ajoute un nouveau service :
 
+**Sur Trigkey :**
 1. [ ] Installer et configurer le service
 2. [ ] Ajouter reverse proxy dans Caddyfile
 3. [ ] Créer sous-domaine DNS OVH
 4. [ ] Ajouter log JSON pour Fail2ban
 5. [ ] Créer filtre + jail Fail2ban
 6. [ ] Ajouter au script backup-trigkey.sh
-7. [ ] Créer monitor Uptime Kuma
-8. [ ] Ajouter au monitoring Beszel (si applicable)
-9. [ ] **Lancer sync-claude-repo.sh**
+7. [ ] Créer monitor Uptime Kuma (local + VPS)
+8. [ ] **Lancer sync-claude-repo.sh**
+
+**Sur VPS :**
+1. [ ] Installer et configurer le service
+2. [ ] Ajouter reverse proxy dans Caddyfile VPS
+3. [ ] Créer sous-domaine DNS OVH
+4. [ ] Créer monitor Uptime Kuma VPS
+5. [ ] **Mettre à jour ce README**
 
 ---
 
@@ -242,6 +266,9 @@ Quand j'ajoute un nouveau service :
 **Infrastructure** :
 - [ ] Backup données Nextcloud → USB 1 TB externe
 - [ ] Compte utilisateur Jerome sur Nextcloud
+- [ ] Optimiser résolution VM Desktop (1920x1080)
+- [ ] Installer environnement Python complet dans VM
+- [ ] Configurer sync Nextcloud dans VM
 
 **Personnel** :
 - [ ] Bilan mensuel (poids, composition, performance)
@@ -255,7 +282,8 @@ Quand j'ajoute un nouveau service :
 claude/
 ├── configs/
 │   ├── caddy/
-│   │   └── Caddyfile
+│   │   ├── Caddyfile (Trigkey)
+│   │   └── Caddyfile.vps (VPS OVH)
 │   ├── authelia/
 │   │   └── configuration.yml
 │   ├── fail2ban/
@@ -272,7 +300,6 @@ claude/
 │   ├── nextcloud-*.sh
 │   └── ...
 ├── docker-compose/
-│   ├── beszel.yml
 │   ├── rutorrent.yml
 │   ├── uptime-kuma.yml
 │   ├── vaultwarden.yml
@@ -280,7 +307,10 @@ claude/
 ├── web/
 │   ├── workout/
 │   ├── vault/
+│   │   └── index.html (portail d'accès)
 │   └── fail2ban-stats/
+├── vm/
+│   └── desktop-vm/ (configs VM VPS)
 ├── preferences_tech.md
 ├── preferences_profil.md
 └── README.md
@@ -288,9 +318,9 @@ claude/
 
 ---
 
-**Dernière mise à jour : 07 décembre 2025**
+**Dernière mise à jour : 08 décembre 2025**
 
-**Migration VM Freebox → Trigkey : ✅ Complète**  
-**Infrastructure stable et opérationnelle ✅**  
+**Infrastructure Trigkey ✅ Complète et stable**  
+**Infrastructure VPS ✅ VM Desktop opérationnelle**  
 **Backup + Monitoring redondants ✅**  
-**Beszel avec données SMART : ✅ Trigkey + VPS**
+**Total : 15+ services auto-hébergés**

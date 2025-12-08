@@ -1,622 +1,536 @@
-# Infrastructure Technique - leblais.net
+# Préférences Techniques - Infrastructure leblais.net
 
-**Dernière mise à jour : 05 décembre 2025**
-
----
-
-## 🎯 Vue d'ensemble
-
-Infrastructure auto-hébergée distribuée sur deux machines :
-- **Trigkey N150** : Serveur principal (services, données)
-- **VPS OVH** : Backup externe + monitoring
-
-### Trigkey N150 (Serveur principal)
-
-**Caractéristiques système :**
-- **CPU** : Intel N150
-- **RAM** : 16 GB DDR5
-- **Stockage** : 500 GB SSD (système) + 1 TB SSD (données)
-- **OS** : Debian 13 (Trixie)
-- **Utilisateur** : frederic
-- **Services** : 12+ services auto-hébergés
-- **Sécurité** : A+ (SSL, Fail2ban 13 jails, Authelia)
-
-### VPS OVH (Backup + Monitoring externe)
-
-**Caractéristiques :**
-- **Offre** : VPS-1 (4,58€/mois)
-- **CPU** : 4 vCores
-- **RAM** : 8 GB
-- **Stockage** : 75 GB SSD
-- **OS** : Debian 13
-- **IP** : 151.80.59.35
-- **Utilisateur** : debian
-- **Rôle** : Backups trigkey + Uptime Kuma externe
+**Mise à jour** : 08 décembre 2025
 
 ---
 
-## 📊 Nextcloud - Cloud Familial
+## 🏗️ Architecture Globale
 
-**URL** : https://cloud.leblais.net  
-**Version** : Nextcloud 32.0.2  
-**Installation** : `/var/www/nextcloud`  
-**Données** : `/mnt/datadisk/nextcloud-data/`  
-**Base de données** : PostgreSQL 16  
-**Cache** : Redis  
-**Sécurité** : Rating A  
-**Office** : OnlyOffice Document Server (port 8088)
+### Infrastructure distribuée sur 2 machines :
 
-### Utilisateurs
+1. **Trigkey N150** (Serveur principal - Production)
+   - 16 GB RAM DDR5, Intel N150
+   - Debian 13 (Trixie)
+   - 13+ services Docker + natifs
+   - Services 24/7 accessibles via sous-domaines
 
-| Utilisateur | Rôle | Stockage |
-|-------------|------|----------|
-| frederic | Admin | ~50 GB |
-| sylvie | User | ~240 GB |
+2. **VPS OVH** (Backup + Monitoring + VM Desktop)
+   - 8 GB RAM, 75 GB SSD
+   - Debian 13 (Trixie)
+   - Monitoring externe + Backups + VM bureautique
+   - IP publique : 151.80.59.35
 
-### Configuration PHP-FPM
+---
 
-**Fichier** : `/etc/php/8.4/fpm/pool.d/www.conf`
-```ini
-pm = dynamic
-pm.max_children = 20
-pm.start_servers = 4
-pm.min_spare_servers = 2
-pm.max_spare_servers = 8
-```
+## 🖥️ **VM Desktop sur VPS OVH**
 
-### Scripts de maintenance
+### Caractéristiques VM
 
-| Script | Fréquence | Fonction |
-|--------|-----------|----------|
-| `nextcloud-cleanup-locks.sh` | Toutes les heures | Nettoie verrous expirés |
-| `nextcloud-maintenance.sh` | Tous les 20 jours | Maintenance complète |
-| `nextcloud-health-check.sh` | Toutes les heures | Push Uptime Kuma |
-| `nextcloud-check-update.sh` | Lundis 9h | Vérifie mises à jour |
+**Hyperviseur** : KVM/libvirt  
+**Nom VM** : `desktop-vm`  
+**OS** : Debian 13 (Trixie) + Xfce  
+**RAM** : 5 GB (5120 MB)  
+**vCPU** : 2 cœurs  
+**Stockage** : 40 GB (qcow2, expansion dynamique)  
+**Réseau** : NAT via virbr0 (192.168.122.x)  
+**Accès** : https://desktop-vps.leblais.net (noVNC web)
 
-### Cron Nextcloud
+### Usage
+
+- **Bureautique légère** : LibreOffice, Firefox
+- **Formation Python** : Python 3.11+, pip, venv, VS Code/PyCharm Community
+- **Stockage docs** : Client Nextcloud (sync auto vers cloud.leblais.net)
+- **Accès** : Depuis n'importe quel navigateur web
+
+### Commandes de gestion
 
 ```bash
-*/5 * * * * timeout 600 sudo -u www-data php -f /var/www/nextcloud/cron.php
+# Lister toutes les VMs
+sudo virsh list --all
+
+# Démarrer la VM
+sudo virsh start desktop-vm
+
+# Éteindre proprement
+sudo virsh shutdown desktop-vm
+
+# Forcer l'arrêt
+sudo virsh destroy desktop-vm
+
+# Redémarrer
+sudo virsh reboot desktop-vm
+
+# Voir infos VM
+sudo virsh dominfo desktop-vm
+
+# Voir port VNC
+sudo virsh vncdisplay desktop-vm
+
+# Console texte (Ctrl+] pour sortir)
+sudo virsh console desktop-vm
+
+# Activer autostart (déjà fait)
+sudo virsh autostart desktop-vm
 ```
 
----
-
-## 🐳 Docker Services
-
-### qBittorrent + Gluetun (VPN)
-
-**URL** : https://torrent.leblais.net  
-**Installation** : `/opt/rutorrent`  
-**VPN** : Gluetun avec WireGuard (ProtonVPN)  
-**IP VPN** : 185.132.178.126 (Pays-Bas)  
-**Téléchargements** : `/mnt/datadisk/Téléchargements`
-
-**docker-compose.yml** :
-```yaml
-services:
-  gluetun:
-    image: qmcgaw/gluetun:latest
-    container_name: gluetun
-    cap_add:
-      - NET_ADMIN
-    environment:
-      - VPN_SERVICE_PROVIDER=custom
-      - VPN_TYPE=wireguard
-    ports:
-      - "8082:8080"
-      - "6881:6881"
-      - "6881:6881/udp"
-    restart: unless-stopped
-
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    network_mode: "service:gluetun"
-    depends_on:
-      - gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Paris
-      - WEBUI_PORT=8080
-    volumes:
-      - /opt/rutorrent/qbittorrent-config:/config
-      - /mnt/datadisk/Téléchargements:/downloads
-    restart: unless-stopped
-```
-
-### Vaultwarden
-
-**URL** : https://vaultwarden.leblais.net  
-**Installation** : `/opt/vaultwarden`  
-**Port** : 8080
-
-### Uptime Kuma (local)
-
-**URL** : https://uptime.leblais.net  
-**Installation** : `/opt/uptime-kuma`  
-**Port** : 3001  
-**Monitors** : 15+ services
-
-### Linkding
-
-**URL** : https://bookmarks.leblais.net  
-**Installation** : `/opt/linkding`  
-**Port** : 9092
-
-### OnlyOffice Document Server
-
-**URL** : https://office.leblais.net  
-**Port** : 8088
-
-### File Browser
-
-**URL** : https://files.leblais.net  
-**Port** : 8081
-
----
-
-## 🌐 Services Web (PHP)
-
-### FreshRSS
-
-**URL** : https://rss.leblais.net  
-**Installation** : `/var/www/freshrss`
-
-### Budget Tracker
-
-**URL** : https://budget.leblais.net  
-**Installation** : `/var/www/budget`  
-**Protection** : Authelia
-
-### Workout Tracker
-
-**URL** : https://workout.leblais.net  
-**Installation** : `/var/www/workout`  
-**Protection** : Authelia
-
-### Dashboard Fail2ban
-
-**URL** : https://fail2ban.leblais.net  
-**Installation** : `/var/www/fail2ban-stats`  
-**Script** : `generate_stats.py` (cron toutes les heures)
-
-### Portail Vault
-
-**URL** : https://vault.leblais.net  
-**Installation** : `/var/www/vault`
-
----
-
-## 🔒 Sécurité
-
-### Caddy (Reverse Proxy)
-
-**Configuration** : `/etc/caddy/Caddyfile`  
-**Logs JSON** : `/var/log/caddy/*.log`  
-**SSL** : Let's Encrypt via DNS challenge OVH  
-**Credentials** : `/etc/caddy/caddy.env`
-
-### Fail2ban
-
-**Configuration** : `/etc/fail2ban/jail.local`  
-**Filtres** : `/etc/fail2ban/filter.d/caddy-*.conf`
-
-**13 Jails actives :**
-- sshd (port 24589)
-- caddy-terminal
-- caddy-workout
-- caddy-freshrss
-- caddy-torrent
-- caddy-pihole
-- caddy-vaultwarden
-- caddy-uptime
-- caddy-bookmarks
-- caddy-budget
-- caddy-files
-- caddy-nextcloud
-- fail2ban-stats (META)
-
-### Authelia (SSO)
-
-**URL** : https://auth.leblais.net  
-**Configuration** : `/etc/authelia/configuration.yml`  
-**Port** : 9091
-
-### Pi-hole
-
-**URL** : https://pihole.leblais.net  
-**Port** : 8053
-
----
-
-## 💾 Backups
-
-### Trigkey → VPS OVH
-
-**Script** : `/usr/local/bin/backup-trigkey.sh`  
-**Fréquence** : Quotidien à 3h  
-**Destination** : `vps:/home/debian/backups/trigkey/`  
-**Rétention** : 30 jours  
-**Taille** : ~35 MB compressé
-
-**Contenu sauvegardé :**
-- Configurations : Caddy, Fail2ban, WireGuard, SSH, Authelia, Pi-hole
-- Apps : Nextcloud config, Vaultwarden, Uptime Kuma, Linkding, FreshRSS
-- PostgreSQL dump Nextcloud
-- Scripts `/usr/local/bin/*.sh`
-- Crontabs, dotfiles
-- Sites web `/var/www/`
-
-### Données Nextcloud → USB 1 TB
-
-**À configurer** : Backup des données Nextcloud (290 GB) vers disque USB externe
-
----
-
-## 📡 Monitoring
-
-### Beszel (Monitoring système + SMART)
-
-**URL** : https://monitoring.leblais.net  
-**Version** : 0.17.0  
-**Installation** : `/opt/beszel`
-
-**Systèmes monitorés** :
-
-| Système | Hôte/IP | Port | Type agent |
-|---------|---------|------|------------|
-| trigkey-n150 | 172.17.0.1 | 45876 | systemd natif |
-| vps-ovh | 151.80.59.35 | 45876 | systemd natif |
-
-**Fonctionnalités** :
-- Monitoring CPU, RAM, disque, réseau
-- Températures système (CPU, NVMe, RAM)
-- **Données S.M.A.R.T.** des disques (Trigkey uniquement)
-- Monitoring containers Docker
-- Alertes configurables
-
-**Disques SMART monitorés (Trigkey)** :
-
-| Appareil | Modèle | Capacité | Type | Heures | Cycles |
-|----------|--------|----------|------|--------|--------|
-| /dev/nvme0 | WD_BLACK SN770 1TB | 931.5 GB | NVMe | 11301h | 52 |
-| /dev/sda | 512GB SSD | 476.9 GB | SATA | 202h | 10 |
-
-**Note** : Le VPS OVH n'a pas de données SMART (disque virtualisé).
-
----
-
-#### Configuration Hub (Trigkey)
-
-**Fichier** : `/opt/beszel/docker-compose.yml`
-
-```yaml
-services:
-  beszel:
-    image: henrygd/beszel:latest
-    container_name: beszel
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - ./beszel_data:/beszel_data
-    environment:
-      - LISTEN=127.0.0.1:8090
-```
-
----
-
-#### Configuration Agent Trigkey (systemd)
-
-**Fichier** : `/etc/systemd/system/beszel-agent.service`
-
-```ini
-[Unit]
-Description=Beszel Agent
-After=network.target
-
-[Service]
-Type=simple
-User=root
-Environment="PORT=45876"
-Environment="KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMEevsCCEm6yvr9073DzKk5gjiEgtB92pXQ57DayD8Jf"
-ExecStart=/usr/local/bin/beszel-agent
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**Prérequis SMART** :
-- `smartmontools` installé (`apt install smartmontools`)
-- Agent en binaire natif (pas Docker) pour accès `/dev/*`
-
----
-
-#### Configuration Agent VPS OVH (systemd)
-
-**Fichier** : `/etc/systemd/system/beszel-agent.service`
-
-```ini
-[Unit]
-Description=Beszel Agent
-After=network.target
-
-[Service]
-Type=simple
-User=root
-Environment="PORT=45876"
-Environment="KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMEevsCCEm6yvr9073DzKk5gjiEgtB92pXQ57DayD8Jf"
-ExecStart=/usr/local/bin/beszel-agent
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**Firewall VPS** (ufw) :
-```bash
-sudo ufw allow from 82.67.173.61 to any port 45876 proto tcp
-```
-
----
-
-#### Commandes utiles Beszel
+### Alias zsh configuré
 
 ```bash
-# === TRIGKEY ===
-# Status agent
-sudo systemctl status beszel-agent
-
-# Logs agent
-journalctl -u beszel-agent -f
-
-# Redémarrer agent
-sudo systemctl restart beszel-agent
-
-# Status hub
-docker logs beszel --tail 50
-
-# Mise à jour agent
-sudo beszel-agent update
-
-# === VPS ===
-ssh vps
-sudo systemctl status beszel-agent
-sudo beszel-agent update
+# Dans ~/.zshrc
+alias startvm='sudo virsh start desktop-vm && echo "VM démarrée, connecte-toi sur https://desktop-vps.leblais.net"'
 ```
 
----
-
-### Uptime Kuma local (Trigkey)
-
-**URL** : https://uptime.leblais.net  
-**Monitors** : Tous les services internes  
-**Alertes** : SMS
-
-### Uptime Kuma externe (VPS)
-
-**URL** : http://151.80.59.35:3001  
-**Rôle** : Monitorer le trigkey depuis l'extérieur  
-**Sonde** : TCP port 24589 (SSH) sur 82.67.173.61  
-**Alertes** : SMS
-
----
-
-## ⚙️ Crontab Root
+### Gestion noVNC/websockify
 
 ```bash
-# VPN Check - Toutes les 5 minutes
-*/5 * * * * /usr/local/bin/check-vpn-status.sh >> /var/log/check-vpn.log 2>&1
+# Démarrer websockify (accès web)
+websockify -D --web=/usr/share/novnc/ 6080 localhost:5900
 
-# GeoIP Update - 1er du mois
-0 4 1 * * /usr/local/bin/update-geoip.sh >> /var/log/geoip-update.log 2>&1
+# Vérifier que websockify tourne
+ps aux | grep websockify
 
-# Pi-hole Update Check - Dimanche 6h
-0 6 * * 0 /usr/local/bin/check-pihole-update.sh >> /var/log/pihole-update-check.log 2>&1
+# Tuer websockify
+pkill websockify
 
-# PostgreSQL VACUUM - Lundis 2h30
-30 2 * * 1 sudo -u postgres psql -d nextcloud -c "VACUUM ANALYZE;" >> /var/log/nextcloud-maintenance.log 2>&1
+# Relancer websockify
+websockify -D --web=/usr/share/novnc/ 6080 localhost:5900
+```
 
-# Nextcloud Cleanup Locks - Toutes les heures
-0 * * * * /usr/local/bin/nextcloud-cleanup-locks.sh
+### Configuration Caddy VPS
 
-# Nextcloud Maintenance - Tous les 20 jours
-0 2 */20 * * /usr/local/bin/nextcloud-maintenance.sh
+**Caddyfile VPS** (`/etc/caddy/Caddyfile`) :
 
-# Nextcloud Check Update - Lundis 9h
-0 9 * * 1 /usr/local/bin/nextcloud-check-update.sh
+```caddy
+# VM Desktop - noVNC
+desktop-vps.leblais.net {
+    # Rediriger la racine vers /vnc.html
+    redir / /vnc.html
+    
+    # Proxy inverse pour noVNC
+    reverse_proxy localhost:6080
+}
 
-# Nextcloud Health Check - Toutes les heures
-0 * * * * /usr/local/bin/nextcloud-health-check.sh
+# Uptime Kuma VPS
+uptime-vps.leblais.net {
+    reverse_proxy localhost:3001
+}
+```
 
-# Nextcloud Cron - Toutes les 5 minutes
-*/5 * * * * timeout 600 sudo -u www-data php -f /var/www/nextcloud/cron.php
+### Logiciels installés dans la VM
 
-# Backup Trigkey → VPS - 3h
-0 3 * * * /usr/local/bin/backup-trigkey.sh >> /var/log/backup-trigkey.log 2>&1
+**Bureautique** :
+- LibreOffice (Writer, Calc, Impress)
+- Firefox (navigateur)
+- Lecteur PDF
 
-# Fail2ban Stats - Toutes les heures
-0 * * * * cd /var/www/fail2ban-stats && ./generate_stats.py >> /var/log/fail2ban-stats-cron.log 2>&1
+**Développement Python** :
+- Python 3.11+
+- pip, virtualenv
+- VS Code ou PyCharm Community Edition
+- Git
+
+**Synchronisation** :
+- Client Nextcloud Desktop (sync automatique des documents)
+
+### Résolution d'écran
+
+**Modifier la résolution** (depuis la VM) :
+
+```bash
+# Via interface graphique Xfce
+Applications → Settings → Display → Choisir 1920x1080 ou 1600x900
+
+# Via ligne de commande (si besoin)
+sudo vim /etc/default/grub
+# Ajouter : GRUB_GFXMODE=1920x1080
+# Puis : sudo update-grub && sudo reboot
+```
+
+### Troubleshooting
+
+**Problème : VM ne démarre pas**
+```bash
+# Vérifier l'état
+sudo virsh list --all
+
+# Voir les logs
+sudo cat /var/log/libvirt/qemu/desktop-vm.log
+
+# Redémarrer libvirtd
+sudo systemctl restart libvirtd
+
+# Redémarrer la VM
+sudo virsh start desktop-vm
+```
+
+**Problème : noVNC ne se connecte pas**
+```bash
+# Vérifier que websockify tourne
+ps aux | grep websockify
+
+# Relancer websockify
+pkill websockify
+websockify -D --web=/usr/share/novnc/ 6080 localhost:5900
+
+# Vérifier le port VNC de la VM
+sudo virsh vncdisplay desktop-vm
+```
+
+**Problème : VM éteinte après shutdown**
+```bash
+# C'est normal ! Autostart = démarre au boot du VPS, pas après shutdown manuel
+# Pour redémarrer : sudo virsh start desktop-vm
+# Ou utiliser l'alias : startvm
 ```
 
 ---
 
-## 🔧 Accès SSH
+## 🐳 **Services Docker sur Trigkey N150**
 
-### Trigkey
+### Liste complète des services
 
-**Domaine** : trigkey.leblais.net  
-**Port** : 24589  
-**User** : frederic  
-**Clé** : `~/.ssh/id_ed25519`
+**Cloud & Productivité** :
+- **Nextcloud** + OnlyOffice : Cloud familial (290 GB, 2 users)
+- **Vaultwarden** : Gestionnaire mots de passe
+- **Linkding** : Gestionnaire bookmarks
+- **File Browser** : Explorateur fichiers téléchargés
 
-### VPS OVH
+**Monitoring & Sécurité** :
+- **Uptime Kuma** : Monitoring services 24/7
+- **Netdata** : Monitoring système temps réel
+- **Dashboard Fail2ban** : Stats sécurité
+- **Authelia** : SSO (Single Sign-On)
 
-**IP** : 151.80.59.35  
-**Port** : 22  
-**User** : debian  
-**Alias SSH** : `ssh vps` (via `~/.ssh/config`)
+**Torrents & Média** :
+- **qBittorrent** + **Gluetun** : Torrents via ProtonVPN (Pologne)
+- **FreshRSS** : Agrégateur flux RSS
 
-**~/.ssh/config :**
-```
-Host vps
-    HostName 151.80.59.35
-    User debian
-    IdentityFile ~/.ssh/vps
-```
+**Outils** :
+- **Terminal Web (ttyd)** : Accès SSH via navigateur
+- **Pi-hole** : Blocage pub DNS
+- **Workout Tracker** : Suivi musculation PPL (HTML/JS custom)
+- **Budget Tracker** : Gestion finances (HTML/JS custom)
 
----
-
-## 📁 Arborescence Stockage
-
-### Disque système (500 GB SSD)
+### Architecture Docker
 
 ```
-/
-├── etc/
-│   ├── caddy/
-│   ├── fail2ban/
-│   ├── authelia/
-│   ├── pihole/
-│   └── wireguard/
-├── opt/
-│   ├── rutorrent/          # qBittorrent + Gluetun
+/home/frederic/
+├── docker/
+│   ├── nextcloud/
 │   ├── vaultwarden/
 │   ├── uptime-kuma/
 │   ├── linkding/
-│   └── onlyoffice/
-├── var/www/
-│   ├── nextcloud/
+│   ├── gluetun/
+│   ├── qbittorrent/
 │   ├── freshrss/
-│   ├── budget/
+│   ├── authelia/
+│   ├── file-browser/
+│   └── netdata/
+├── web/
 │   ├── workout/
+│   ├── budget/
 │   ├── vault/
 │   └── fail2ban-stats/
-└── home/frederic/
-    └── claude/             # Repo GitHub
-```
-
-### Disque données (1 TB SSD)
-
-```
-/mnt/datadisk/
-├── nextcloud-data/         # ~290 GB
-└── Téléchargements/
-    ├── complete/
-    └── incomplete/
+└── scripts/
+    ├── backup-trigkey.sh
+    ├── sync-claude-repo.sh
+    └── ...
 ```
 
 ---
 
-## 🔄 Réseau
+## 🔒 **Sécurité**
 
-### Ports ouverts (Freebox)
+### Caddy (Reverse Proxy)
 
-| Port externe | Port interne | Service |
-|--------------|--------------|---------|
-| 24589 | 24589 | SSH |
-| 443 | 443 | HTTPS (Caddy) |
-| 80 | 80 | HTTP (redirect) |
+**Trigkey** : Configuration dans `/etc/caddy/Caddyfile`  
+**VPS** : Configuration dans `/etc/caddy/Caddyfile`
 
-### DMZ
+**Fonctionnalités** :
+- SSL automatique (Let's Encrypt DNS challenge OVH)
+- Reverse proxy pour tous les services
+- Logs JSON pour Fail2ban
+- Compression automatique
+- HTTP/2 & HTTP/3
 
-**IP DMZ** : 192.168.1.50 (Trigkey)
+### Fail2ban (Trigkey uniquement)
 
-### WireGuard VPN
+**13 jails actives** :
+- sshd
+- caddy-auth
+- authelia
+- nextcloud
+- vaultwarden
+- pihole
+- freshrss
+- qbittorrent
+- linkding
+- workout
+- budget
+- terminal-web
+- file-browser
 
-**Port** : 51820/UDP  
-**Réseau** : 10.8.0.0/24  
-**Config** : `/etc/wireguard/wg0.conf`
+**Configuration** : `/etc/fail2ban/jail.local`  
+**Filtres custom** : `/etc/fail2ban/filter.d/`
+
+### Authelia (SSO)
+
+**Services protégés** :
+- Terminal Web (ttyd)
+- Workout Tracker
+- Budget Tracker
+- Dashboard Fail2ban
+
+**Configuration** : `/home/frederic/docker/authelia/configuration.yml`
 
 ---
 
-## 🛠️ Commandes Utiles
+## 💾 **Backups**
 
-### Docker
+### Script backup quotidien (3h00)
+
+**Fichier** : `/home/frederic/scripts/backup-trigkey.sh`
+
+**Sauvegarde vers VPS OVH** :
+- Configs Caddy, Authelia, Fail2ban
+- Docker-compose de tous les services
+- Configs applicatives importantes
+- Scripts maintenance
+- Crontabs
+
+**Exclusions** :
+- Données volumineuses (Nextcloud data déjà redondant)
+- Logs
+- Fichiers temporaires
+
+**Vérification** : Login SSH sur VPS → `/root/backups/trigkey/`
+
+---
+
+## 🌐 **Réseau & DNS**
+
+### Domaine principal
+
+**leblais.net** (géré chez OVH)
+
+### Sous-domaines Trigkey (IP locale via DDNS)
+
+| Service | Sous-domaine |
+|---------|--------------|
+| Nextcloud | cloud.leblais.net |
+| Vaultwarden | vaultwarden.leblais.net |
+| Uptime Kuma | uptime.leblais.net |
+| Terminal Web | terminal.leblais.net |
+| Pi-hole | pihole.leblais.net |
+| Workout | workout.leblais.net |
+| Budget | budget.leblais.net |
+| FreshRSS | rss.leblais.net |
+| qBittorrent | torrent.leblais.net |
+| Linkding | bookmarks.leblais.net |
+| File Browser | files.leblais.net |
+| Fail2ban Stats | fail2ban.leblais.net |
+| Netdata | monitoring.leblais.net |
+
+### Sous-domaines VPS (IP publique 151.80.59.35)
+
+| Service | Sous-domaine |
+|---------|--------------|
+| VM Desktop | desktop-vps.leblais.net |
+| Uptime Kuma VPS | uptime-vps.leblais.net |
+
+### Configuration DNS OVH
+
+**Enregistrements A** :
+- `*.leblais.net` → IP Trigkey (via DDNS)
+- `desktop-vps.leblais.net` → 151.80.59.35
+- `uptime-vps.leblais.net` → 151.80.59.35
+
+---
+
+## 📊 **Monitoring**
+
+### Uptime Kuma (2 instances)
+
+**Instance locale (Trigkey)** :
+- URL : https://uptime.leblais.net
+- Monitore : Tous les services Trigkey
+- Notifications : Email + SMS
+
+**Instance externe (VPS)** :
+- URL : https://uptime-vps.leblais.net
+- Monitore : Services Trigkey depuis l'extérieur
+- Alertes : SMS si Trigkey down
+
+### Netdata
+
+**URL** : https://monitoring.leblais.net  
+**Métriques** : CPU, RAM, disque, réseau, Docker containers
+
+---
+
+## 🔧 **Commandes Utiles**
+
+### Docker (Trigkey)
 
 ```bash
-# Voir containers
-docker ps
+# Voir tous les containers
+docker ps -a
 
-# Logs qBittorrent
-docker logs qbittorrent --tail 50
+# Logs d'un container
+docker logs -f <container_name>
 
-# Vérifier IP VPN
-docker exec qbittorrent curl -s ifconfig.me
+# Redémarrer un container
+docker restart <container_name>
 
-# Redémarrer stack torrent
-cd /opt/rutorrent && docker compose restart
+# Entrer dans un container
+docker exec -it <container_name> bash
+
+# Voir l'utilisation ressources
+docker stats
+```
+
+### Caddy
+
+```bash
+# Trigkey
+sudo systemctl status caddy
+sudo systemctl reload caddy
+sudo journalctl -u caddy -f
+
+# VPS
+sudo systemctl status caddy
+sudo systemctl reload caddy
+sudo journalctl -u caddy -f
+```
+
+### Fail2ban (Trigkey)
+
+```bash
+# Statut général
+sudo fail2ban-client status
+
+# Statut d'une jail
+sudo fail2ban-client status <jail_name>
+
+# Débannir une IP
+sudo fail2ban-client set <jail_name> unbanip <IP>
+
+# Voir les bans actifs
+sudo fail2ban-client banned
 ```
 
 ### Nextcloud
 
 ```bash
-# Mode maintenance
-sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --on
-
 # Scan fichiers
-sudo -u www-data php /var/www/nextcloud/occ files:scan --all
+docker exec -u www-data nextcloud php occ files:scan --all
 
-# Status
-curl -s https://cloud.leblais.net/status.php | jq
-```
+# Maintenance mode
+docker exec -u www-data nextcloud php occ maintenance:mode --on
+docker exec -u www-data nextcloud php occ maintenance:mode --off
 
-### Fail2ban
-
-```bash
-# Status
-sudo fail2ban-client status
-
-# Status d'une jail
-sudo fail2ban-client status sshd
-
-# Débannir IP
-sudo fail2ban-client set sshd unbanip 1.2.3.4
-```
-
-### Backup
-
-```bash
-# Lancer backup manuel
-sudo /usr/local/bin/backup-trigkey.sh
-
-# Voir backups sur VPS
-ssh vps "ls -la /home/debian/backups/trigkey/"
+# Mise à jour
+docker exec -u www-data nextcloud php occ upgrade
 ```
 
 ---
 
-## 📊 Statistiques
+## 🎯 **Workflow Ajout Service**
 
-| Métrique | Valeur |
-|----------|--------|
-| Services actifs | 12+ |
-| Sous-domaines | 15 |
-| Jails Fail2ban | 13 |
-| Monitors Uptime Kuma | 15+ |
-| RAM utilisée | ~4 GB / 16 GB |
-| Stockage données | ~290 GB / 1 TB |
-| Backup quotidien | ✅ Trigkey → VPS |
-| SSL | ✅ Tous les services |
-| Uptime | 99.9% |
+### Sur Trigkey
 
----
+1. Créer dossier dans `/home/frederic/docker/<service>/`
+2. Créer `docker-compose.yml`
+3. Lancer : `docker-compose up -d`
+4. Ajouter reverse proxy dans Caddyfile
+5. Créer sous-domaine DNS OVH
+6. Ajouter filtre + jail Fail2ban si applicable
+7. Ajouter au script `backup-trigkey.sh`
+8. Créer monitor Uptime Kuma (local + VPS)
+9. Lancer `sync-claude-repo.sh`
 
-## ✅ Migration VM Freebox → Trigkey
+### Sur VPS
 
-**Date** : Décembre 2025
-
-**Améliorations :**
-- RAM : 2 GB → 16 GB (+700%)
-- Stockage : 32 GB VM → 1.5 TB SSD
-- CPU : ARM64 VM → Intel N150
-- Torrent : rtorrent + namespace VPN → qBittorrent + Gluetun Docker
-- Backup : Google Drive → VPS OVH dédié
-- Monitoring : Local uniquement → Local + externe (VPS)
+1. Installer service ou créer container
+2. Ajouter reverse proxy dans Caddyfile VPS
+3. Créer sous-domaine DNS OVH (→ 151.80.59.35)
+4. Créer monitor Uptime Kuma VPS
+5. Mettre à jour README.md et preferences_tech.md
 
 ---
 
-**Infrastructure stable et opérationnelle ✅**
+## 📚 **Documentation Importante**
+
+### Portail d'accès
+
+**URL** : https://vault.leblais.net  
+**Fichier** : `/var/www/vault/index.html`
+
+Liste tous les services avec badges (Authelia / Login requis) et séparation Trigkey / VPS.
+
+### Repository GitHub
+
+**URL** : https://github.com/marecaillefrederic-lab/claude
+
+**Synchronisation automatique** (3h30 quotidien) :
+- Configs (Caddy, Authelia, Fail2ban)
+- Scripts
+- Docker-compose
+- Documentation
+
+---
+
+## 💡 **Bonnes Pratiques**
+
+### Avant tout changement majeur
+
+1. ✅ Backup manuel si nécessaire
+2. ✅ Tester en dev si possible
+3. ✅ Noter les commandes dans un fichier texte
+4. ✅ Faire le changement
+5. ✅ Vérifier logs
+6. ✅ Tester le service
+7. ✅ Mettre à jour documentation
+8. ✅ Lancer `sync-claude-repo.sh`
+
+### Maintenance régulière
+
+**Hebdomadaire** :
+- Vérifier Dashboard Fail2ban
+- Vérifier Uptime Kuma (2 instances)
+- Vérifier espace disque
+
+**Mensuel** :
+- Mises à jour système : `sudo apt update && sudo apt upgrade`
+- Mises à jour Docker images : `docker-compose pull && docker-compose up -d`
+- Vérifier backups VPS
+
+**Trimestriel** :
+- Audit sécurité Nextcloud
+- Révision jails Fail2ban
+- Nettoyage logs anciens
+
+---
+
+## 🚀 **Optimisations Futures**
+
+### Trigkey
+- [ ] Backup Nextcloud data → USB externe 1 TB
+- [ ] Ajout utilisateur Jerome sur Nextcloud
+- [ ] Migration Pi-hole vers container Docker
+
+### VPS
+- [ ] Optimiser résolution VM Desktop (1920x1080)
+- [ ] Setup complet environnement Python dans VM
+- [ ] Automatiser backup snapshot VM
+
+### Infrastructure
+- [ ] Monitoring températures Trigkey
+- [ ] Alertes proactives (espace disque, charge CPU)
+- [ ] Documentation vidéo procédures critiques
+
+---
+
+**Dernière mise à jour** : 08 décembre 2025  
+**Infrastructure stable et opérationnelle** ✅  
+**15+ services en production** 🚀
